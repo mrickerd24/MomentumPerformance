@@ -38,9 +38,11 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
 }
+
 * {
   font-family: 'Inter', sans-serif;
 }
+
 .login-page {
   min-height: 100vh;
   display: flex;
@@ -215,6 +217,23 @@ button:active {
   background: #CBD7F7;
 }
 
+.field-error {
+  color: #C9372C;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.form-box {
+	width: 320px;
+	padding: 24px;
+	background: white;
+	border: 1px solid #DFE1E6;
+	border-radius: 16px;
+	box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+
+
 /* Mobile polish */
 @media (max-width: 480px) {
   .login-page {
@@ -239,6 +258,7 @@ body {
   background: var(--color-bg);
   color: var(--color-text);
 }
+
 * {
   font-family: 'Inter', sans-serif;
 }

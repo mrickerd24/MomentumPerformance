@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Momentum Performance</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-content">
+      <div class="logo" align=center>Momentum Performance</div>
+	  <br>
+	  <div class="lang-switch">
+		<a href="signupFormFR.html" class="lang-btn" id="Lang-btn">FR</a>
+</div>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="app-main">
+    <div class="container">
+    <div class="form-box">
+	
+	<form id="signupForm">
+	
+	<label for="name">Name</label><br>
+	<input type="text" id="name" placeholder="Skater name" />
+	<div id="name-error" class="field-error"></div>
+	
+	<label for="lastName">Last Name</label><br>
+    <input type="text" id="lastName" placeholder="Skater last name" />
+	<div id="lastName-error" class="field-error"></div>
+	
+    <br>
+	<label for="parentName">Parent name (Optional)</label><br>
+	<input type="text" placeholder="Parent name" id="parentName" />
+    <br>
+	
+	<label for="emailAddress">Email address</label><br>
+	<input type="email" id="emailAddress" placeholder="Email address" />
+	<div id="emailAddress-error" class="field-error"></div>
+	<br>
+	
+	<label for="phoneNumber">Phone number</label><br>
+	<input type="tel" id="phoneNumber" placeholder="XXX-XXX-XXXX" />
+	<div id="phoneNumber-error" class="field-error"></div>
+	<br>
+	
+	<label for="skateCanadaNumber">Skate Canada number</label><br>
+	<input type="text" id="skateCanadaNumber" placeholder="XXXXXXXXXXX" />
+	<div id="skateCanadaNumber-error" class="field-error"></div>
+	<br>
+	
+	<label for="password">Create a password</label><br>
+	<input type="password" id="password" placeholder="Password" />
+	<div id="password-error" class="field-error"></div>
+	
+	<label for="passwordConfirmation">Password confirmation</label><br>
+	<input type="password" id="passwordConfirmation" placeholder="Password confirmation" />
+	<div id="passwordConfirmation-error" class="field-error"></div>
+	<br><br>
+
+    <button type="submit" id="createAccount" >Create account</button>
+	<br><br>	
+
+	</form>
+	
+    
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="app-footer">
+    <div class="footer-content">
+      <span>© 2026 Momentum Performance</span>
+    </div>
+	<script type="module" src="signupForm.js"></script>
+  </footer>
+</body>
+</html>
