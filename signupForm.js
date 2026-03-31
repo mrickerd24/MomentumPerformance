@@ -52,12 +52,12 @@ document.addEventListener("DOMContentLoaded", () => {
 	
 
     if (!name.value) {
-      nameError.innerText = "Skater's name is required";
+      nameError.innerText = "First name is required";
       valid = false;
     }
 
     if (!lastName.value) {
-      lastNameError.innerText = "Skater's last name is required";
+      lastNameError.innerText = "last name is required";
       valid = false;
     }
    
@@ -68,11 +68,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!phoneNumber.value) {
       phoneNumberError.innerText = "Phone number is required";
-      valid = false;
-    }	
-
-    if (!skateCanadaNumber.value) {
-      skateCanadaNumberError.innerText = "Skate Canada number is required";
       valid = false;
     }	
 
@@ -94,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	
 	if (valid) {
 	alert("Account created successfully");
-	form.reset();
+	window.location.href = "index.html";
 	}
 	
    

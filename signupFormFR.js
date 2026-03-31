@@ -55,12 +55,12 @@ document.addEventListener("DOMContentLoaded", () => {
 	
 
     if (!name.value) {
-      nameError.innerText = "Nom du patineur requis";
+      nameError.innerText = "Prénom requis";
       valid = false;
     }
 
     if (!lastName.value) {
-      lastNameError.innerText = "Nom de famille du patineur requis";
+      lastNameError.innerText = "Nom de famille requis";
       valid = false;
     }
    
@@ -76,11 +76,7 @@ document.addEventListener("DOMContentLoaded", () => {
       phoneNumberError.innerText = "Numéro de téléphone requis";
       valid = false;
     }	
-
-    if (!skateCanadaNumber.value) {
-      skateCanadaNumberError.innerText = "Numéro Patinage Canada requis";
-      valid = false;
-    }	
+	
 
 
     if (!password.value) {
@@ -100,7 +96,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	
 	if (valid) {
 	alert("Compte créé avec succès!");
-	form.reset();
+	window.location.href = "loginFR.html";
 	}
 	
  
