@@ -2,15 +2,15 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA-17uYmpblsb3b-NlB5_RK7ci7ZvUkH4Q",
-  authDomain: "momentum-performance.firebaseapp.com",
-  projectId: "momentum-performance",
-  storageBucket: "momentum-performance.firebasestorage.app",
-  messagingSenderId: "571184327943",
-  appId: "1:571184327943:web:a5df6568228ca686faa9a2",
-  measurementId: "G-4996PSTP69"
-};
+	const firebaseConfig = {
+	apiKey: "AIzaSyA-17uYmpblsb3b-NlB5_RK7ci7ZvUkH4Q",
+	authDomain: "momentum-performance.firebaseapp.com",
+	projectId: "momentum-performance",
+	storageBucket: "momentum-performance.firebasestorage.app",
+	messagingSenderId: "571184327943",
+	appId: "1:571184327943:web:a5df6568228ca686faa9a2",
+	measurementId: "G-4996PSTP69"
+	};
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -18,7 +18,8 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 document.addEventListener("DOMContentLoaded", () => {
-
+	
+	const role = document.querySelector('input[name="role"]:checked');
 	const name = document.getElementById("name");
 	const lastName = document.getElementById("lastName");
 	const emailAddress = document.getElementById("emailAddress");
@@ -61,6 +62,11 @@ document.addEventListener("DOMContentLoaded", () => {
       nameError.innerText = "Prénom requis";
       valid = false;
     }
+	
+	if (!role) {
+	alert("Sélectionnez un type de compte");
+	valid = false;
+	}
 
     if (!lastName.value) {
       lastNameError.innerText = "Nom de famille requis";
@@ -107,6 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
         email: emailAddress.value,
         phoneNumber: phoneNumber.value,
         skateCanadaNumber: skateCanadaNumber.value
+		role: role.value
+		parentName: parentname.value
       });
     })
     .then(() => {

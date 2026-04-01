@@ -2,38 +2,39 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyA-17uYmpblsb3b-NlB5_RK7ci7ZvUkH4Q",
-  authDomain: "momentum-performance.firebaseapp.com",
-  projectId: "momentum-performance",
-  storageBucket: "momentum-performance.firebasestorage.app",
-  messagingSenderId: "571184327943",
-  appId: "1:571184327943:web:a5df6568228ca686faa9a2",
-  measurementId: "G-4996PSTP69"
+	const firebaseConfig = {
+	apiKey: "AIzaSyA-17uYmpblsb3b-NlB5_RK7ci7ZvUkH4Q",
+	authDomain: "momentum-performance.firebaseapp.com",
+	projectId: "momentum-performance",
+	storageBucket: "momentum-performance.firebasestorage.app",
+	messagingSenderId: "571184327943",
+	appId: "1:571184327943:web:a5df6568228ca686faa9a2",
+	measurementId: "G-4996PSTP69"
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+	const app = initializeApp(firebaseConfig);
+	const auth = getAuth(app);
+	const db = getFirestore(app);
 
 document.addEventListener("DOMContentLoaded", () => {
 
-  const name = document.getElementById("name");
-  const lastName = document.getElementById("lastName");
-  const emailAddress = document.getElementById("emailAddress");
-  const phoneNumber = document.getElementById("phoneNumber");
-  const skateCanadaNumber = document.getElementById("skateCanadaNumber");
-  const password = document.getElementById("password");
-  const passwordConfirmation = document.getElementById("passwordConfirmation");
+	const role = document.querySelector('input[name="role"]:checked');
+	const name = document.getElementById("name");
+	const lastName = document.getElementById("lastName");
+	const emailAddress = document.getElementById("emailAddress");
+	const phoneNumber = document.getElementById("phoneNumber");
+	const skateCanadaNumber = document.getElementById("skateCanadaNumber");
+	const password = document.getElementById("password");
+	const passwordConfirmation = document.getElementById("passwordConfirmation");
   
-  const nameError = document.getElementById("name-error");
-  const lastNameError = document.getElementById("lastName-error");
-  const emailAddressError = document.getElementById("emailAddress-error");
-  const phoneNumberError = document.getElementById("phoneNumber-error");
-  const skateCanadaNumberError = document.getElementById("skateCanadaNumber-error");
-  const passwordError = document.getElementById("password-error");
-  const passwordConfirmationError = document.getElementById("passwordConfirmation-error");
+	const nameError = document.getElementById("name-error");
+	const lastNameError = document.getElementById("lastName-error");
+	const emailAddressError = document.getElementById("emailAddress-error");
+	const phoneNumberError = document.getElementById("phoneNumber-error");
+	const skateCanadaNumberError = document.getElementById("skateCanadaNumber-error");
+	const passwordError = document.getElementById("password-error");
+	const passwordConfirmationError = document.getElementById("passwordConfirmation-error");
 
 	const form = document.getElementById("signupForm");
 		
@@ -66,6 +67,10 @@ document.addEventListener("DOMContentLoaded", () => {
       valid = false;
     }
    
+	if (!role) {
+	alert("Please select account type");
+	valid = false;
+	}
    
 	if (!emailAddress.value) {
 	emailAddressError.innerText = "Email required";
@@ -107,6 +112,8 @@ document.addEventListener("DOMContentLoaded", () => {
         email: emailAddress.value,
         phoneNumber: phoneNumber.value,
         skateCanadaNumber: skateCanadaNumber.value
+		role: role.value
+		parentName: parentname.value
       });
     })
     .then(() => {
