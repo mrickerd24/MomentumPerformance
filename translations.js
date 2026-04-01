@@ -14,7 +14,8 @@ export const translations = {
 	phoneNumber: "Phone number",
 	skateCan: "Skate Canada number",
 	createpw: "Create a password",
-	confirmpw: "Confirm password"
+	confirmpw: "Confirm password",
+	toLogin: "login"
 
   },
   
@@ -35,7 +36,8 @@ export const translations = {
 	phoneNumber: "Numéro de téléphone",
 	skateCan: "Numéro Patinage Canada",
 	createpw: "Créer un mot de passe",
-	confirmpw: "Confirmation du mot de passe"
+	confirmpw: "Confirmation du mot de passe",
+	toLogin: "Se connecter "
 	
   }
 };
