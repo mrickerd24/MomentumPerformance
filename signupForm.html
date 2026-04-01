@@ -29,6 +29,19 @@
 	
 	<form id="signupForm">
 	
+	<label for="roleCoach">Account type</label><br>
+	<br>
+	<div class="role-option">
+    <input type="radio" name="role" value="coach" id="roleCoach" required>
+    <label>Coach</label>
+    </div>
+	<br>
+	<div class="role-option">
+	<input type="radio" name="role" value="Skater or Parent">
+	<label>Skater or parent</label>
+	</div>
+	<br><br>
+	
 	<label for="name">Name</label><br>
 	<input type="text" id="name" placeholder="Name" />
 	<div id="name-error" class="field-error"></div>
@@ -37,10 +50,10 @@
     <input type="text" id="lastName" placeholder="Last name" />
 	<div id="lastName-error" class="field-error"></div>
 	
-    <br>
 	<label for="parentName">Parent name (Optional)</label><br>
 	<input type="text" placeholder="Parent name" id="parentName" />
     <br>
+	<br>
 	
 	<label for="emailAddress">Email address</label><br>
 	<input type="email" id="emailAddress" placeholder="Email address" />

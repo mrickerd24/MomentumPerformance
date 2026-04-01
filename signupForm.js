@@ -1,5 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA-17uYmpblsb3b-NlB5_RK7ci7ZvUkH4Q",
@@ -14,7 +15,7 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-
+const db = getFirestore(app);
 
 document.addEventListener("DOMContentLoaded", () => {
 
@@ -35,6 +36,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const passwordConfirmationError = document.getElementById("passwordConfirmation-error");
 
 	const form = document.getElementById("signupForm");
+		
+	name.addEventListener("input", () => {
+	nameError.innerText = "";
+	});
 	
 	form.addEventListener("submit", (e) => {
 	e.preventDefault();
@@ -61,8 +66,12 @@ document.addEventListener("DOMContentLoaded", () => {
       valid = false;
     }
    
-	if (!emailAddress.value.includes("@")) {
-	emailAddressError.innerText = "Invalid email address";
+   
+	if (!emailAddress.value) {
+	emailAddressError.innerText = "Email required";
+	valid = false;
+	} else if (!emailAddress.value.includes("@")) {
+	emailAddressError.innerText = "Invalid email";
 	valid = false;
 	}
 
@@ -87,12 +96,26 @@ document.addEventListener("DOMContentLoaded", () => {
 	valid = false;
 	}
 	
-	if (valid) {
-	alert("Account created successfully");
-	window.location.href = "index.html";
-	}
-	
-   
-  });
+	if (!valid) return;
+	  createUserWithEmailAndPassword(auth, emailAddress.value, password.value)
+    .then((userCredential) => {
+      const user = userCredential.user;
 
+      return setDoc(doc(db, "users", user.uid), {
+        firstName: name.value,
+        lastName: lastName.value,
+        email: emailAddress.value,
+        phoneNumber: phoneNumber.value,
+        skateCanadaNumber: skateCanadaNumber.value
+      });
+    })
+    .then(() => {
+      alert("Compte créé avec succès!");
+      window.location.href = "index.html";
+    })
+    .catch((error) => {
+      emailAddressError.innerText = error.message;
+    });
+});
+	
 });
