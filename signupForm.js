@@ -19,7 +19,7 @@ import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10
 
 document.addEventListener("DOMContentLoaded", () => {
 
-	const role = document.querySelector('input[name="role"]:checked');
+	
 	const name = document.getElementById("name");
 	const lastName = document.getElementById("lastName");
 	const emailAddress = document.getElementById("emailAddress");
@@ -44,6 +44,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	
 	form.addEventListener("submit", (e) => {
 	e.preventDefault();
+	
+	const role = document.querySelector('input[name="role"]:checked');
 
 
     let valid = true;
