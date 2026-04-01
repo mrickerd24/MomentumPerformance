@@ -1,5 +1,27 @@
+import { translations } from "./translations.js";
+
+function setLanguage(lang) {
+  // Text content
+  document.querySelectorAll("[data-key]").forEach(el => {
+    const key = el.getAttribute("data-key");
+    el.textContent = translations[lang][key];
+  });
+
+  // Placeholders
+  document.querySelectorAll("[data-key-placeholder]").forEach(el => {
+    const key = el.getAttribute("data-key-placeholder");
+    el.placeholder = translations[lang][key];
+  });
+}
+
+let currentLang = "fr";
+
+
+
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA-17uYmpblsb3b-NlB5_RK7ci7ZvUkH4Q",
@@ -14,9 +36,15 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-
+const db = getFirestore(app);
 
 document.addEventListener("DOMContentLoaded", () => {
+	setLanguage(currentLang);
+	
+document.getElementById("lang-toggle").addEventListener("click", () => {
+  currentLang = currentLang === "fr" ? "en" : "fr";
+  setLanguage(currentLang);
+});
 
   const email = document.getElementById("email");
   const password = document.getElementById("password");
@@ -45,14 +73,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (valid) {
 	signInWithEmailAndPassword(auth, email.value, password.value)
-    .then((userCredential) => {
-      alert("Login successful");
-      console.log(userCredential.user);
+    .then(async(userCredential) => {
+		const user = userCredential.user;
+
+		const docRef = doc(db, "users", user.uid);
+		const docSnap = await getDoc(docRef);
+		
+		if (docSnap.exists()) {
+			const userData = docSnap.data();
+
+		if (userData.role === "coach") {
+			window.location.href = "coachAccount.html";
+		} else {
+			window.location.href = "skaterAccount.html";
+		}
+		} else {
+			alert("User data not found");
+		}
+		console.log(userCredential.user);
+	}
+		
+
     })
     .catch((error) => {
       emailError.innerText = error.message;
     });
-}
+	}
   });
 
 });

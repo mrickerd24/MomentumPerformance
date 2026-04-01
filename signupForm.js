@@ -120,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     })
     .then(() => {
-      alert("Compte créé avec succès!");
+      alert("Account creation successful!");
       window.location.href = "index.html";
     })
     .catch(async (error) => {
