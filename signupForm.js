@@ -115,7 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
         phoneNumber: phoneNumber.value,
         skateCanadaNumber: skateCanadaNumber.value,
 		role: role.value,
-		parentName: parentname.value
+		parentName: parentName.value
       });
     })
     .then(() => {
