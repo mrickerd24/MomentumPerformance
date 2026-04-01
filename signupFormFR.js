@@ -27,6 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
 	const skateCanadaNumber = document.getElementById("skateCanadaNumber");
 	const password = document.getElementById("password");
 	const passwordConfirmation = document.getElementById("passwordConfirmation");
+	const parentName = document.getElementById("parentName");
   
 	const nameError = document.getElementById("name-error");
 	const lastNameError = document.getElementById("lastName-error");
