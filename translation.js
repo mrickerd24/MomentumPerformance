@@ -27,6 +27,7 @@ export const translations = {
     createAccount: "Créer un compte",
 	WelcomeToAccount: "Bienvenue sur votre compte",
 	accountType: "Type de compte",
+	coach: "Entraîneur",
 	skaterParent: "Patineur ou parent",
 	name: "Prénom",
 	lastName: "Nom de famille",
