@@ -6,7 +6,7 @@ export const translations = {
     createAccount: "Create account",
 	WelcomeToAccount: "Welcome to your account",
 	accountType: "Account type",
-	coach: "Entraîneur",
+	coach: "Coach",
 	skaterParent: "Skater or parent",
 	name: "Name",
 	lastName: "Last name",
