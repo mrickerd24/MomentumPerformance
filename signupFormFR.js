@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getAuth, createUserWithEmailAndPassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 	const firebaseConfig = {
@@ -123,9 +123,16 @@ document.addEventListener("DOMContentLoaded", () => {
       alert("Compte créé avec succès!");
       window.location.href = "index.html";
     })
-    .catch((error) => {
-      emailAddressError.innerText = error.message;
-    });
+    .catch(async (error) => {
+		console.error(error);
+
+		if (auth.currentUser) {
+			await deleteUser(auth.currentUser);
+		}
+
+			alert("Échec de la création du compte. veuillex réessayer.");
+		});
+	});
 });
 	
 });
