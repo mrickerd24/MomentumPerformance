@@ -113,8 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
         lastName: lastName.value,
         email: emailAddress.value,
         phoneNumber: phoneNumber.value,
-        skateCanadaNumber: skateCanadaNumber.value
-		role: role.value
+        skateCanadaNumber: skateCanadaNumber.value,
+		role: role.value,
 		parentName: parentname.value
       });
     })
