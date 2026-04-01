@@ -90,9 +90,8 @@ document.getElementById("lang-toggle").addEventListener("click", () => {
 		}
 		console.log(userCredential.user);
 	}
-		
+  )
 
-    })
     .catch((error) => {
       emailError.innerText = error.message;
     });
