@@ -144,9 +144,17 @@ document.getElementById("lang-toggle").addEventListener("click", () => {
 		parentName: parentName.value
       });
     })
+
+
     .then(() => {
       alert("Account creation successful!");
+
+
+	  if (role === "coach") {
+		window.location.href = "coachAccount.html"
+	  } else {
       window.location.href = "index.html";
+	  }
     })
     .catch(async (error) => {
 		console.error(error);
