@@ -1,16 +1,36 @@
+import { translations } from "./translations.js";
+
+function setLanguage(lang) {
+  // Text content
+  document.querySelectorAll("[data-key]").forEach(el => {
+    const key = el.getAttribute("data-key");
+    el.textContent = translations[lang][key];
+  });
+
+  // Placeholders
+  document.querySelectorAll("[data-key-placeholder]").forEach(el => {
+    const key = el.getAttribute("data-key-placeholder");
+    el.placeholder = translations[lang][key];
+  });
+}
+
+let currentLang = "fr";
+
+
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 	const firebaseConfig = {
-	apiKey: "AIzaSyA-17uYmpblsb3b-NlB5_RK7ci7ZvUkH4Q",
-	authDomain: "momentum-performance.firebaseapp.com",
-	projectId: "momentum-performance",
-	storageBucket: "momentum-performance.firebasestorage.app",
-	messagingSenderId: "571184327943",
-	appId: "1:571184327943:web:a5df6568228ca686faa9a2",
-	measurementId: "G-4996PSTP69"
-};
+		apiKey: "AIzaSyA-17uYmpblsb3b-NlB5_RK7ci7ZvUkH4Q",
+		authDomain: "momentum-performance.firebaseapp.com",
+		projectId: "momentum-performance",
+		storageBucket: "momentum-performance.firebasestorage.app",
+		messagingSenderId: "571184327943",
+		appId: "1:571184327943:web:a5df6568228ca686faa9a2",
+		measurementId: "G-4996PSTP69"
+	};
 
 // Initialize Firebase
 	const app = initializeApp(firebaseConfig);
@@ -18,7 +38,12 @@ import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10
 	const db = getFirestore(app);
 
 document.addEventListener("DOMContentLoaded", () => {
-
+	setLanguage(currentLang);
+	
+document.getElementById("lang-toggle").addEventListener("click", () => {
+  currentLang = currentLang === "fr" ? "en" : "fr";
+  setLanguage(currentLang);
+});
 	
 	const name = document.getElementById("name");
 	const lastName = document.getElementById("lastName");
