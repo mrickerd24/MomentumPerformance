@@ -258,6 +258,34 @@ button:active {
   align-items: center;
 }
 
+.navbar {
+  background: #111;
+  padding: 10px;
+}
+
+.hamburger-menu {
+  font-size: 30px;
+  cursor: pointer;
+  color: white;
+}
+
+.menu {
+  display: none;
+  position: absolute;
+  top: 50px;
+  right: 10px;
+  background: #222;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.menu a {
+  display: block;
+  color: white;
+  text-decoration: none;
+  margin: 10px 0;
+}
+
 
 /* Mobile polish */
 @media (max-width: 480px) {
