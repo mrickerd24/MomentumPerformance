@@ -86,7 +86,7 @@ body {
   text-decoration: none;
   cursor: pointer;
   overflow: hidden;
-  border: 2px solid blue; /* debug */
+  border: 2px solid #0C66E4; /* debug */
 }
 
 .bottom-nav .nav-item span {
