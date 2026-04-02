@@ -1,6 +1,5 @@
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
-import { getAuth, signOut } from "firebase/auth";
 import { setLanguage } from "./translations.js";
 
 const auth = getAuth();
@@ -44,7 +43,7 @@ document.getElementById("lang-toggle").addEventListener("click", () => {
 });
 
 // target logout button (bottom nav)
-const logoutBtn = document.querySelector('[data-key="logout"]');
+const logoutBtn = document.getElementById("logout-btn");
 
 if (logoutBtn) {
   logoutBtn.addEventListener("click", () => {
