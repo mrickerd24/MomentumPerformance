@@ -185,10 +185,6 @@ button:hover {
   text-align: center;
 }
 
-img {
-  max-width: 100%;
-}
-
 .input-error {
   border-color: var(--color-danger);
 }
