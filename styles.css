@@ -39,8 +39,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  padding: 20px;
+  padding: 16px 16px 8px;
 }
 
 .app-main {
@@ -224,6 +223,12 @@ img {
   background: #CBD7F7;
 }
 
+.lang-box {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 8px;
+}
 
 
 /* HOVER (desktop only) */
@@ -246,6 +251,8 @@ img {
   max-width: 100%;
   height: auto;
   max-height: 300px; /* ajuste si tu veux plus grand */
+  max-height: 120px;
+  margin-bottom: 4px;
 }
 
 .menu {
