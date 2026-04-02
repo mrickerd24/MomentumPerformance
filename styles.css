@@ -158,6 +158,35 @@ button:active {
   background: #CBD7F7;
 }
 
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+
+  background: white;
+  border-top: 1px solid #E0E0E0;
+
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 0;
+}
+
+.nav-item {
+  text-decoration: none;
+  color: #5E6C84;
+  font-size: 11px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-item i {
+  width: 20px;
+  height: 20px;
+}
 
 .form-box {
 	width: 320px;
