@@ -48,7 +48,7 @@
 
 body {
   margin: 0;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Trebuchet MS', sans-serif;
   background: var(--color-bg);
   color: var(--color-text);
 
@@ -134,7 +134,67 @@ body {
   border: 2px solid var(--color-brand); /* blue outline */
   border-radius: var(--radius-lg);
 
-  box-shadow: var(--shadow-card);
+  box-shadow: 0 8px 8px rgba(0,0,0,0.1); /* soft shadow */
+}
+
+.boxbluesmall {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  max-width: 420px;
+  margin-right: auto;
+  background: var(--color-surface);
+  border: 1px solid #0C66E4; /* blue outline */
+  
+  border-radius: var(--radius-lg); /* rounded corners */
+
+  box-shadow: 0 8px 8px rgba(0,0,0,0.1); /* soft shadow */
+}
+
+.boxgreensmall {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  max-width: 420px;
+  margin-right: auto;
+  background: var(--color-surface);
+  border: 1px solid #39eb47; 
+  
+  border-radius: var(--radius-lg); /* rounded corners */
+
+  box-shadow: 0 8px 8px rgba(0,0,0,0.1); /* soft shadow */
+}
+
+.boxredsmall {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  max-width: 420px;
+  margin-right: auto;
+  background: var(--color-surface);
+  border: 1px solid #f83131; 
+  
+  border-radius: var(--radius-lg); /* rounded corners */
+
+  box-shadow: 0 8px 8px rgba(0,0,0,0.1); /* soft shadow */
+}
+
+.boxpurplesmall {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px;
+  max-width: 420px;
+  margin-right: auto;
+  background: var(--color-surface);
+  border: 1px solid #852dcc; 
+  
+  border-radius: var(--radius-lg); /* rounded corners */
+
+  box-shadow: 0 8px 8px rgba(0,0,0,0.1); /* soft shadow */
 }
 
 .box input {
@@ -169,6 +229,8 @@ button:hover {
   background: #F4F5F7;
   padding-top: 20px; /* controls gap under header */
 }
+
+
 
 .field-error {
   margin-top: 6px;
@@ -290,4 +352,10 @@ button:hover {
 
 .text-link:hover {
   text-decoration: underline;
+}
+
+
+.row {
+  display: flex;
+  gap: 10px; /* spacing between boxes */
 }

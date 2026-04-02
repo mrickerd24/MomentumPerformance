@@ -20,7 +20,11 @@ export const translations = {
 	calendar: "Calendar",
 	payments: "Payments and invoice",
 	settings: "Settings",
-	logout: "Logout"
+	logout: "Logout",
+	addhours: "Add hours",
+	viewSchedule: "Schedule",
+	students: "My students",
+	hoursCoached: "Total hours this week"
   },
   
   
@@ -46,6 +50,10 @@ export const translations = {
 	calendar: "Calendrier",
 	payments: "Paiements et facturation",
 	settings: "Paramètres",
-	logout: "Déconnexion"	
+	logout: "Déconnexion",
+	addhours: "Ajouter des heures",
+	viewSchedule: "Horaire",
+	students: "Mes élèves",
+	hoursCoached: "Heures totales cette semaine"	
   }
 };
