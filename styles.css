@@ -100,6 +100,7 @@ body {
 .bottom-nav .nav-item span {
   font-size: 10px;
   margin-top: 2px;
+  color: inherit;
 }
 
 .bottom-nav .icon {
