@@ -72,12 +72,12 @@ body {
 }
 
 .bottom-nav .nav-item {
-  padding: 4px 6px;
+  padding: 0.5px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 72px;
+  min-width: 22px;
   border-radius: 999px;
   color: #5E6C84;
   font-size: 11px;
@@ -85,8 +85,7 @@ body {
   text-decoration: none;
   cursor: pointer;
   overflow: hidden;
-  min-width: 80px;
-  height: 80px;
+  height: 70px;
 }
 
 .bottom-nav .nav-item span {
@@ -96,7 +95,7 @@ body {
 
 .bottom-nav .icon {
   display: block;
-  width: 100px;
+  width: 80px;
   height: 50px;
   object-fit: contain;
   flex-shrink: 0;
