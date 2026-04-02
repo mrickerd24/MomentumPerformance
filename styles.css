@@ -1,16 +1,20 @@
 :root {
-  /* Brand / Jira-like */
+  /* Brand */
   --color-brand: #0C66E4;
   --color-brand-hover: #0055CC;
   --color-brand-soft: #E9F2FF;
 
-  /* Neutrals */
+  /* Background & surfaces */
   --color-bg: #F7F8F9;
   --color-surface: #FFFFFF;
-  --color-border: #D0D4DB;
-  --color-border-focus: #0C66E4;
+
+  /* Text */
   --color-text: #172B4D;
   --color-text-muted: #5E6C84;
+
+  /* Borders */
+  --color-border: #D0D4DB;
+  --color-border-focus: #0C66E4;
 
   /* States */
   --color-danger: #C9372C;
@@ -21,20 +25,26 @@
   --shadow-card: 0 8px 24px rgba(9, 30, 66, 0.08);
   --shadow-focus: 0 0 0 3px rgba(12, 102, 228, 0.18);
 
+  /* Radius */
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
-
 }
-
 
 * {
   box-sizing: border-box;
 }
-.logo {
-  max-width: 100%;
-  height: auto;
-  max-height: 100px; /* ajuste si tu veux plus grand */
+
+.app-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+}
+
+.app-main {
+  flex: 1;
 }
 
 body {
@@ -46,81 +56,6 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-}
-
-.app-main {
-  flex: 1;
-}
-
-
-.input::placeholder {
-  color: #8993A4;
-}
-
-.input:focus {
-  border-color: var(--color-border-focus);
-  box-shadow: var(--shadow-focus);
-}
-
-.input-error {
-  border-color: var(--color-danger);
-}
-
-.input-error:focus {
-  border-color: var(--color-danger);
-  box-shadow: 0 0 0 3px rgba(201, 55, 44, 0.16);
-}
-
-.field-error {
-  margin-top: 6px;
-  font-size: 13px;
-  color: var(--color-danger);
-}
-
-
-.text-link:hover {
-  text-decoration: underline;
-}
-
-button {
-  background-color: #0C66E4; /* bleu Jira */
-  color: white;
-  border: none;
-  padding: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  width: 100%;
-  font-weight: 600;
-}
-
-button:hover {
-  background-color: #0052CC;
-}
-
-button:active {
-  transform: scale(0.98);
-}
-
-
-.container {
-  min-height: 50vh;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start; /* instead of center */
-  background: #F4F5F7;
-  padding-top: 20px; /* controls gap under header */
-}
-
-.app-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  padding: 20px;
-}
-
-.header-box {
-  text-align: center;
 }
 
 .box {
@@ -143,6 +78,76 @@ button:active {
   max-width: 260px; /* pour garder propre */
 }
 
+button {
+  background-color: #0C66E4; /* bleu Jira */
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  width: 100%;
+  font-weight: 600;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button:hover {
+  background-color: #0052CC;
+}
+
+.container {
+  min-height: 50vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* instead of center */
+  background: #F4F5F7;
+  padding-top: 20px; /* controls gap under header */
+}
+
+.field-error {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--color-danger);
+}
+
+.form-box {
+	width: 320px;
+	padding: 24px;
+	background: white;
+	border: 1px solid #DFE1E6;
+	border-radius: 16px;
+	box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+.hamburger-menu {
+  font-size: 30px;
+  cursor: pointer;
+  color: white;
+}
+
+.header-box {
+  text-align: center;
+}
+
+.input-error {
+  border-color: var(--color-danger);
+}
+
+.input-error:focus {
+  border-color: var(--color-danger);
+  box-shadow: 0 0 0 3px rgba(201, 55, 44, 0.16);
+}
+
+.input:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+.input::placeholder {
+  color: #8993A4;
+}
 
 .lang-btn {
   background: transparent;
@@ -172,41 +177,10 @@ button:active {
   padding: 10px 0;
 }
 
-.nav-item {
-  text-decoration: none;
-  color: #5E6C84;
-  font-size: 11px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.nav-item i {
-  width: 20px;
-  height: 20px;
-}
-
-.form-box {
-	width: 320px;
-	padding: 24px;
-	background: white;
-	border: 1px solid #DFE1E6;
-	border-radius: 16px;
-	box-shadow: 0 8px 24px rgba(0,0,0,0.08);
-}
-
-
-.navbar {
-  background: #111;
-  padding: 10px;
-}
-
-.hamburger-menu {
-  font-size: 30px;
-  cursor: pointer;
-  color: white;
+.logo {
+  max-width: 100%;
+  height: auto;
+  max-height: 150px; /* ajuste si tu veux plus grand */
 }
 
 .menu {
@@ -226,5 +200,27 @@ button:active {
   margin: 10px 0;
 }
 
+.navbar {
+  background: #111;
+  padding: 10px;
+}
 
+.nav-item {
+  text-decoration: none;
+  color: #5E6C84;
+  font-size: 11px;
 
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.nav-item i {
+  width: 20px;
+  height: 20px;
+}
+
+.text-link:hover {
+  text-decoration: underline;
+}
