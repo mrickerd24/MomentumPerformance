@@ -6,7 +6,7 @@ onAuthStateChanged(auth, (user) => {
   if (user) {
     const name = user.displayName || "Coach";
 
-    const title = document.querySelector('[data-key-placeholder="WelcomeToAccount"]');
+    const title = document.querySelector('[data-key-placeholder="WelcomeToDashboard"]');
     title.textContent = `Welcome to your dashboard, ${name}`;
   }
 });
