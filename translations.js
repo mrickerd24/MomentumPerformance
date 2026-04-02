@@ -15,7 +15,10 @@ export const translations = {
 	skateCan: "Skate Canada number",
 	createpw: "Create a password",
 	confirmpw: "Confirm password",
-	toLogin: "login"
+	toLogin: "login",
+	dashboard: "Dashboard",
+	calendar: "Calendar",
+	payments: "Payments and invoice"
 
   },
   
@@ -37,7 +40,10 @@ export const translations = {
 	skateCan: "Numéro Patinage Canada",
 	createpw: "Créer un mot de passe",
 	confirmpw: "Confirmation du mot de passe",
-	toLogin: "Se connecter "
+	toLogin: "Se connecter ",
+	dashboard: "Tableau de bord",
+	calendar: "Calendrier",
+	payments: "Paiements et facturation"
 	
   }
 };

@@ -7,7 +7,6 @@
   <title>Momentum Performance</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 
 
@@ -23,9 +22,6 @@
       <button id="lang-toggle" class="lang-btn">EN / FR</button> 
     </div>
   </div>
-
-
-
 </header>
 
 
@@ -35,32 +31,31 @@
 		<div class="container">
 			<div class="box">
         <h3  data-key-placeholder="WelcomeToDashboard">Welcome to your dashboard</h3>
-
-    
 			</div>
 		</div>
   
 
 
 
-  <nav class="bottom-nav">
-    <a href="index.html" class="nav-item">
-      <i data-lucide="home"></i>
-       <small>Home</small>
-    </a>
-    <a href="calendar.html" class="nav-item">
-        <i data-lucide="calendar"></i>
-    <small>Calendar</small>
-     </a>
-     <a href="accountInfo.html" class="nav-item">
-        <i data-lucide="user"></i>
-        <small>Account</small>
-    </a>
-  </nav>
+      <nav class="bottom-nav">
+        <div class="nav-item active">
+          <img src="dashboardIcon.png" class="icon" />
+           <span data-key="dashboard">Dashboard</span>
+        </div>
 
-<script>
-  lucide.createIcons();
-</script>
+        <div class="nav-item">
+          <img src="calendarIcon.png" class="icon" />
+            <span data-key="calendar">Calendar</span>
+        </div>
+
+        <div class="nav-item">
+          <img src="paymentIcon.png" class="icon" />
+            <span data-key="payment">Payment</span>
+        </div>
+
+</nav>
+
+
   </main>
 
 

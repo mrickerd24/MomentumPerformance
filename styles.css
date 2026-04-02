@@ -165,22 +165,79 @@ button:hover {
 
 .bottom-nav {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-
-  background: white;
-  border-top: 1px solid #E0E0E0;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
 
   display: flex;
-  justify-content: space-around;
-  padding: 10px 0;
+  gap: 8px;
+  padding: 8px;
+
+  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+
+  border-radius: 999px;
+  box-shadow: 0 8px 24px rgba(9, 30, 66, 0.12);
+
+  z-index: 1000;
+}
+
+.bottom-nav .nav-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 8px 14px;
+  border-radius: 999px;
+
+  font-size: 11px;
+  font-weight: 500;
+
+  color: #5E6C84;
+  cursor: pointer;
+
+  transition: all 0.2s ease;
+}
+
+.bottom-nav .icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+
+  opacity: 0.6;
+  transition: all 0.2s ease;
+}
+
+/* ACTIVE */
+.bottom-nav .nav-item.active {
+  background: #E9F2FF;
+  color: #0C66E4;
+}
+
+.bottom-nav .nav-item.active .icon {
+  opacity: 1;
+  filter: brightness(0) saturate(100%) invert(32%) sepia(98%) saturate(1600%) hue-rotate(200deg) brightness(95%) contrast(95%);
+}
+
+/* HOVER (desktop only) */
+@media (hover: hover) {
+  .bottom-nav .nav-item:hover {
+    background: #F1F2F4;
+  }
+}
+
+/* iPhone safe area */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .bottom-nav {
+    bottom: calc(20px + env(safe-area-inset-bottom));
+  }
 }
 
 .logo {
   max-width: 100%;
   height: auto;
-  max-height: 150px; /* ajuste si tu veux plus grand */
+  max-height: 300px; /* ajuste si tu veux plus grand */
 }
 
 .menu {
