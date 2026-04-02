@@ -18,8 +18,9 @@ export const translations = {
 	toLogin: "login",
 	dashboard: "Dashboard",
 	calendar: "Calendar",
-	payments: "Payments and invoice"
-
+	payments: "Payments and invoice",
+	settings: "Settings",
+	logout: "Logout"
   },
   
   
@@ -43,7 +44,8 @@ export const translations = {
 	toLogin: "Se connecter ",
 	dashboard: "Tableau de bord",
 	calendar: "Calendrier",
-	payments: "Paiements et facturation"
-	
+	payments: "Paiements et facturation",
+	settings: "Paramètres",
+	logout: "Déconnexion"	
   }
 };
