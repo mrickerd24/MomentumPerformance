@@ -24,7 +24,12 @@ export const translations = {
 	addhours: "Add hours",
 	viewSchedule: "Schedule",
 	students: "My students",
-	hoursCoached: "Total hours this week"
+	hoursCoached: "Total hours this week",
+	accountSettings: "Account settings",
+	langselect: "Preferred language",
+	english: "English",
+	french: "French",
+	saveChanges: "Save changes"
   },
   
   
@@ -54,7 +59,12 @@ export const translations = {
 	addhours: "Ajouter des heures",
 	viewSchedule: "Horaire",
 	students: "Mes élèves",
-	hoursCoached: "Heures totales cette semaine"	
+	hoursCoached: "Heures totales cette semaine",
+	accountSettings: "Account settings",
+	langselect: "Langue préférée",
+	english: "Anglais",
+	french: "Français",
+	saveChanges: "Sauvegarder les changements"	
   } 
 };
 
