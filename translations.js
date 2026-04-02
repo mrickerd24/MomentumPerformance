@@ -34,7 +34,7 @@ export const translations = {
     email: "Courriel",
     password: "Mot de passe",
     createAccount: "Créer un compte",
-	WelcomeToAccount: "Bienvenue sur votre tableau de bord",
+	WelcomeDashboardt: "Bienvenue sur votre tableau de bord",
 	accountType: "Type de compte",
 	coach: "Entraîneur",
 	skaterParent: "Patineur ou parent",
@@ -55,5 +55,21 @@ export const translations = {
 	viewSchedule: "Horaire",
 	students: "Mes élèves",
 	hoursCoached: "Heures totales cette semaine"	
-  }
+  } 
 };
+
+export function setLanguage(lang) {
+  document.querySelectorAll("[data-key]").forEach(el => {
+    const key = el.getAttribute("data-key");
+    if (translations[lang][key]) {
+      el.textContent = translations[lang][key];
+    }
+  });
+
+  document.querySelectorAll("[data-key-placeholder]").forEach(el => {
+    const key = el.getAttribute("data-key-placeholder");
+    if (translations[lang][key]) {
+      el.textContent = translations[lang][key];
+    }
+  });
+}

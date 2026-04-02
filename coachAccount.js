@@ -1,6 +1,7 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { getAuth, signOut } from "firebase/auth";
+import { setLanguage } from "./translations.js";
 
 const auth = getAuth();
 const db = getFirestore();
