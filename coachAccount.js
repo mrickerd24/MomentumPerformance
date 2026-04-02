@@ -1,20 +1,34 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getFirestore, doc, getDoc } from "firebase/firestore";
 
 const auth = getAuth();
+const db = getFirestore();
 
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
   if (user) {
-    // Get name (fallback if missing)
-    const name = user.displayName || "Coach";
+    try {
+      // Get Firestore document using UID
+      const userRef = doc(db, "users", user.uid); // adjust "users" if your collection name is different
+      const userSnap = await getDoc(userRef);
 
-    // Target your title element
-    const title = document.querySelector('[data-key-placeholder="WelcomeToDashboard"]');
+      let name = "Coach";
 
-    if (title) {
-      title.textContent = `Welcome to your dashboard, ${name}`;
+      if (userSnap.exists()) {
+        const data = userSnap.data();
+        name = data.firstName || "Coach";
+      }
+
+      const title = document.querySelector('[data-key-placeholder="WelcomeToDashboard"]');
+
+      if (title) {
+        title.textContent = `Welcome to your dashboard, ${name}`;
+      }
+
+    } catch (error) {
+      console.error("Error fetching user:", error);
     }
+
   } else {
-    // Optional: redirect if not logged in
     window.location.href = "login.html";
   }
 });
