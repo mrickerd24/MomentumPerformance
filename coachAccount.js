@@ -34,13 +34,7 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
-// Language toggle (kept from your file)
-let currentLang = "en";
 
-document.getElementById("lang-toggle").addEventListener("click", () => {
-  currentLang = currentLang === "fr" ? "en" : "fr";
-  setLanguage(currentLang);
-});
 
 // target logout button (bottom nav)
 const logoutBtn = document.getElementById("logout-btn");
