@@ -25,7 +25,6 @@
   --radius-md: 12px;
   --radius-lg: 16px;
 
-  --font: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
 
@@ -54,74 +53,6 @@ body {
 }
 
 
-
-.login-page {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-}
-
-.login-card {
-  width: 100%;
-  max-width: 420px;
-  background: var(--color-surface);
-  border: 1px solid rgba(9, 30, 66, 0.08);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-card);
-  padding: 24px 20px;
-}
-
-.login-badge {
-  display: inline-block;
-  background: var(--color-brand-soft);
-  color: var(--color-brand);
-  font-size: 12px;
-  font-weight: 700;
-  padding: 6px 10px;
-  border-radius: 999px;
-  margin-bottom: 14px;
-}
-
-.login-title {
-  margin: 0 0 6px;
-  font-size: 28px;
-  line-height: 1.2;
-  font-weight: 700;
-}
-
-.login-subtitle {
-  margin: 0 0 24px;
-  font-size: 14px;
-  color: var(--color-text-muted);
-}
-
-.form-group {
-  margin-bottom: 16px;
-}
-
-.form-label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text);
-}
-
-.input {
-  width: 100%;
-  height: 48px;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: 0 14px;
-  font-size: 16px;
-  color: var(--color-text);
-  background: #fff;
-  outline: none;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
-}
-
 .input::placeholder {
   color: #8993A4;
 }
@@ -146,18 +77,6 @@ body {
   color: var(--color-danger);
 }
 
-.login-row {
-  display: flex;
-  justify-content: flex-end;
-  margin: 4px 0 18px;
-}
-
-.text-link {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--color-brand);
-  text-decoration: none;
-}
 
 .text-link:hover {
   text-decoration: underline;
@@ -182,12 +101,6 @@ button:active {
   transform: scale(0.98);
 }
 
-.login-footer {
-  margin-top: 18px;
-  text-align: center;
-  font-size: 13px;
-  color: var(--color-text-muted);
-}
 
 .container {
   min-height: 50vh;
@@ -230,12 +143,6 @@ button:active {
   max-width: 260px; /* pour garder propre */
 }
 
-.lang-switch {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 16px;
-}
 
 .lang-btn {
   background: transparent;
@@ -251,11 +158,6 @@ button:active {
   background: #CBD7F7;
 }
 
-.field-error {
-  color: #C9372C;
-  font-size: 13px;
-  margin-top: 4px;
-}
 
 .form-box {
 	width: 320px;
@@ -266,9 +168,6 @@ button:active {
 	box-shadow: 0 8px 24px rgba(0,0,0,0.08);
 }
 
-.h1 {
-  align-items: center;
-}
 
 .navbar {
   background: #111;
@@ -299,21 +198,4 @@ button:active {
 }
 
 
-/* Mobile polish */
-@media (max-width: 480px) {
-  .login-page {
-    padding: 16px;
-    align-items: flex-start;
-    padding-top: 48px;
-  }
-
-  .login-card {
-    padding: 22px 16px;
-    border-radius: 14px;
-  }
-
-  .login-title {
-    font-size: 24px;
-  }
-}
 
