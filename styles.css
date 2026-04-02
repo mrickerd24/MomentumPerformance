@@ -96,7 +96,7 @@ body {
 
 .bottom-nav .icon {
   display: block;
-  width: 50px;
+  width: 100px;
   height: 50px;
   object-fit: contain;
   flex-shrink: 0;
