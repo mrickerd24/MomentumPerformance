@@ -28,13 +28,14 @@
   --font: "Inter", "Segoe UI", Arial, sans-serif;
 }
 
+
 * {
   box-sizing: border-box;
 }
 .logo {
   max-width: 100%;
   height: auto;
-  max-height: 80px; /* ajuste si tu veux plus grand */
+  max-height: 100px; /* ajuste si tu veux plus grand */
 }
 
 body {
@@ -52,9 +53,7 @@ body {
   flex: 1;
 }
 
-* {
-  font-family: 'Inter', sans-serif;
-}
+
 
 .login-page {
   min-height: 100vh;
