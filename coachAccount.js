@@ -15,3 +15,8 @@ function toggleMenu() {
   const menu = document.getElementById("menu");
   menu.style.display = menu.style.display === "block" ? "none" : "block";
 }
+
+document.getElementById("lang-toggle").addEventListener("click", () => {
+  currentLang = currentLang === "fr" ? "en" : "fr";
+  setLanguage(currentLang);
+});
