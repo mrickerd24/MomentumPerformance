@@ -4,19 +4,27 @@ const auth = getAuth();
 
 onAuthStateChanged(auth, (user) => {
   if (user) {
+    // Get name (fallback if missing)
     const name = user.displayName || "Coach";
 
+    // Target your title element
     const title = document.querySelector('[data-key-placeholder="WelcomeToDashboard"]');
-    title.textContent = `Welcome to your dashboard, ${name}`;
+
+    if (title) {
+      title.textContent = `Welcome to your dashboard, ${name}`;
+    }
+  } else {
+    // Optional: redirect if not logged in
+    window.location.href = "login.html";
   }
 });
 
-function toggleMenu() {
-  const menu = document.getElementById("menu");
-  menu.style.display = menu.style.display === "block" ? "none" : "block";
-}
+// Language toggle (kept from your file)
+let currentLang = "en";
 
 document.getElementById("lang-toggle").addEventListener("click", () => {
   currentLang = currentLang === "fr" ? "en" : "fr";
   setLanguage(currentLang);
 });
+
+window.toggleMenu = toggleMenu;
