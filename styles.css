@@ -91,6 +91,8 @@ body {
   font-weight: 500;
   text-decoration: none;
   cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
 
   overflow: visible; /* CRITICAL - prevents text clipping */
 }
