@@ -1,5 +1,6 @@
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { getAuth, signOut } from "firebase/auth";
 
 const auth = getAuth();
 const db = getFirestore();
@@ -40,5 +41,21 @@ document.getElementById("lang-toggle").addEventListener("click", () => {
   currentLang = currentLang === "fr" ? "en" : "fr";
   setLanguage(currentLang);
 });
+
+// target logout button (bottom nav)
+const logoutBtn = document.querySelector('[data-key="logout"]');
+
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    signOut(auth)
+      .then(() => {
+        // redirect after logout
+        window.location.href = "login.html";
+      })
+      .catch((error) => {
+        console.error("Logout error:", error);
+      });
+  });
+}
 
 window.toggleMenu = toggleMenu;

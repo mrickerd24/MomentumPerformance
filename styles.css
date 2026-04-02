@@ -80,13 +80,13 @@ body {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
+  border: none;
   padding: 6px 2px;
   height: 70px; /* restore enough vertical space */
   min-width: 0;
-
+  background: transparent;
   border-radius: 999px;
-  color: #5E6C84;
+  color: #434d61;
   font-size: 11px;
   font-weight: 500;
   text-decoration: none;
@@ -106,7 +106,7 @@ body {
   height: 50px;
   object-fit: contain;
   flex-shrink: 0;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 .bottom-nav .nav-item.active {
@@ -202,8 +202,8 @@ body {
   max-width: 260px; /* pour garder propre */
 }
 
-button {
-  background-color: #0C66E4; /* bleu Jira */
+button:not(.nav-item) {
+  background-color: #0C66E4;
   color: white;
   border: none;
   padding: 12px;
@@ -213,11 +213,11 @@ button {
   font-weight: 600;
 }
 
-button:active {
+button:not(.nav-item):active {
   transform: scale(0.98);
 }
 
-button:hover {
+button:not(.nav-item):hover {
   background-color: #0052CC;
 }
 
