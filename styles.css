@@ -131,6 +131,10 @@ button:hover {
   text-align: center;
 }
 
+img {
+  max-width: 100%;
+}
+
 .input-error {
   border-color: var(--color-danger);
 }
@@ -168,17 +172,12 @@ button:hover {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
-
   display: flex;
   gap: 8px;
   padding: 8px;
-
-  background: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-
+  background: rgba(255, 255, 255, 0.95);
   border-radius: 999px;
   box-shadow: 0 8px 24px rgba(9, 30, 66, 0.12);
-
   z-index: 1000;
 }
 
@@ -187,29 +186,33 @@ button:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  padding: 8px 14px;
+  min-width: 72px;
+  padding: 8px 12px;
   border-radius: 999px;
-
+  color: #5E6C84;
   font-size: 11px;
   font-weight: 500;
-
-  color: #5E6C84;
+  text-decoration: none;
   cursor: pointer;
+  overflow: hidden;
+}
 
-  transition: all 0.2s ease;
+.bottom-nav .nav-item span {
+  margin-top: 4px;
+  line-height: 1;
 }
 
 .bottom-nav .icon {
+  display: block;
   width: 20px;
   height: 20px;
+  max-width: 20px;
+  max-height: 20px;
   object-fit: contain;
-
-  opacity: 0.6;
-  transition: all 0.2s ease;
+  flex-shrink: 0;
+  opacity: 0.65;
 }
 
-/* ACTIVE */
 .bottom-nav .nav-item.active {
   background: #E9F2FF;
   color: #0C66E4;
@@ -226,6 +229,8 @@ button:hover {
     background: #F1F2F4;
   }
 }
+
+
 
 /* iPhone safe area */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
@@ -262,21 +267,6 @@ button:hover {
   padding: 10px;
 }
 
-.nav-item {
-  text-decoration: none;
-  color: #5E6C84;
-  font-size: 11px;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-}
-
-.nav-item i {
-  width: 20px;
-  height: 20px;
-}
 
 .text-link:hover {
   text-decoration: underline;
