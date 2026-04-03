@@ -40,33 +40,33 @@
 	
 <div class="row">
   <div>
-    <label autocomplete="name" for="name" data-key="name">Name</label><br>
-    <input type="text" id="name" placeholder="Name" />
+    <label for="name" data-key="name">Name</label><br>
+    <input type="text" id="name" placeholder="Name" autocomplete="given-name" />
     <div id="name-error" class="field-error"></div>
   </div>
 
   <div>
-    <label autocomplete="lastName" for="lastName" data-key="lastName">Last Name</label><br>
-    <input type="text" id="lastName" placeholder="Last name" />
+    <label for="lastName" data-key="lastName">Last Name</label><br>
+    <input type="text" id="lastName" placeholder="Last name" autocomplete="family-name" />
     <div id="lastName-error" class="field-error"></div>
   </div>
 </div>
 
-	<label autocomplete="parentName" for="parentName" data-key="parentName">Parent name (optional)</label><br>	
-	<input type="text" placeholder="Parent name" id="parentName" />
+	<label for="parentName" data-key="parentName">Parent name (optional)</label><br>	
+	<input type="text" placeholder="Parent name" id="parentName" autocomplete="additional-name" />
     <br>
 	<br>
 	
   <div class="row">
     <div>
-	    <label autocomplete="email" for="emailAddress" data-key="email">Email</label><br>
-	    <input type="email" id="emailAddress" placeholder="Email address" />
+	    <label for="emailAddress" data-key="email">Email</label><br>
+	    <input type="email" id="emailAddress" placeholder="Email address" autocomplete="email"  />
 	      <div id="emailAddress-error" class="field-error"></div>
 	  </div><br>
     
     <div>
-	    <label autocomplete="phoneNumber" for="phoneNumber" data-key="phoneNumber">Phone number</label><br>
-	    <input type="tel" id="phoneNumber" placeholder="XXX-XXX-XXXX" />
+	    <label for="phoneNumber" data-key="phoneNumber">Phone number</label><br>
+	    <input type="tel" id="phoneNumber" placeholder="XXX-XXX-XXXX" autocomplete="tel"/>
 	      <div id="phoneNumber-error" class="field-error"></div>
 	      <br>
     </div>
@@ -80,12 +80,12 @@
   <div class="row">
     <div>
 	<label for="changepassword" data-key="changepw">Change password</label><br>
-	<input type="password" id="changepassword" placeholder="changepassword" />
+	<input type="password" id="changepassword" placeholder="changepassword" autocomplete="new-password" />
 	<div id="password-error" class="field-error"></div>
 	</div>
   <div>
 	<label for="passwordConfirmation" data-key="confirmNewpw">Confirm new password</label><br>
-	<input type="password" id="passwordConfirmation" placeholder="Password confirmation" />
+	<input type="password" id="passwordConfirmation" placeholder="Password confirmation" autocomplete="new-password" />
 	<div id="passwordConfirmation-error" class="field-error"></div>
   </div>
     </div>
