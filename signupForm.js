@@ -28,12 +28,16 @@ import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10
 document.addEventListener("DOMContentLoaded", () => {
 	setLanguage(currentLang);
 	
-document.getElementById("lang-toggle").addEventListener("click", () => {
-  currentLang = currentLang === "fr" ? "en" : "fr";
+const langToggle = document.getElementById("lang-toggle");
 
-  localStorage.setItem("language", currentLang);
-  setLanguage(currentLang);
-});
+if (langToggle) {
+  langToggle.addEventListener("click", () => {
+    currentLang = currentLang === "fr" ? "en" : "fr";
+
+    localStorage.setItem("language", currentLang);
+    setLanguage(currentLang);
+  });
+}
 	
 	const name = document.getElementById("name");
 	const lastName = document.getElementById("lastName");
