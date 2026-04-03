@@ -266,7 +266,7 @@ button:not(.nav-item):hover {
 	border-radius: 16px;
 	box-shadow: 0 9px 24px rgba(0,0,0,0.08);
   margin-bottom: 40px;
-  margin-top: -60px;
+  margin-top: -50px;
 }
 
 h1, h2, h3, h4, h5, h6 {
