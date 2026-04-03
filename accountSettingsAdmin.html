@@ -26,27 +26,27 @@
 	<form id="accountSettings">
 
   <h2 data-key="accountSettings">Account settings</h2>
-	<label for="Prefered language" data-key="langselect">Preferred language</label><br><br>
+	<label for="Prefered language" data-key="langselect" id="Prefered language">Preferred language</label><br><br>
 	
 <div class="language-option">
-  <input type="radio" name="language" value="en" id="english-language" required>
+  <input autocomplete="language" type="radio" name="language" value="en" id="english-language" required>
   <label for="english-language" data-key="english">English</label>
 </div><br>
 
 <div class="language-option">
-  <input type="radio" name="language" value="fr" id="french-language" required>
+  <input autocomplete="language" type="radio" name="language" value="fr" id="french-language" required>
   <label for="french-language" data-key="french">French</label>
 </div><br><br>
 	
 <div class="row">
   <div>
-    <label for="name" data-key="name">Name</label><br>
+    <label autocomplete="name" for="name" data-key="name">Name</label><br>
     <input type="text" id="name" placeholder="Name" />
     <div id="name-error" class="field-error"></div>
   </div>
 
   <div>
-    <label for="lastName" data-key="lastName">Last Name</label><br>
+    <label autocomplete="lastName" for="lastName" data-key="lastName">Last Name</label><br>
     <input type="text" id="lastName" placeholder="Last name" />
     <div id="lastName-error" class="field-error"></div>
   </div>
@@ -55,7 +55,7 @@
 	
   <div class="row">
     <div>
-	    <label for="emailAddress" data-key="email">Email</label><br>
+	    <label autocomplete="email" for="emailAddress" data-key="email">Email</label><br>
 	    <input type="email" id="emailAddress" placeholder="Email address" />
 	      <div id="emailAddress-error" class="field-error"></div>
 	  </div><br>
