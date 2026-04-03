@@ -40,7 +40,8 @@ export const translations = {
 	clubCoaches: "Coaches",
 	clubStudents: "Students",
 	clubSchedule: "Club schedule",
-	iceHours: "Total ice hours this week"
+	iceHours: "Total ice hours this week",
+	accountCreationError: "Account creation failed. Please try again."
   },
   
   
@@ -86,7 +87,9 @@ export const translations = {
 	clubCoaches: "Entraîneurs",
 	clubStudents: "Élèves",
 	clubSchedule: "Horaire du club",
-	iceHours: "Heures de glace cette semaine"
+	iceHours: "Heures de glace cette semaine",
+	accountCreationError: "La création du compte a échoué. Veuillez réessayer."
+
 } 
 };
 

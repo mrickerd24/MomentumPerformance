@@ -42,6 +42,9 @@ document.addEventListener("DOMContentLoaded", () => {
 	
 document.getElementById("lang-toggle").addEventListener("click", () => {
   currentLang = currentLang === "fr" ? "en" : "fr";
+
+  localStorage.setItem("language", currentLang);  // ← ADD THIS
+
   setLanguage(currentLang);
 });
 	
@@ -71,10 +74,18 @@ document.getElementById("lang-toggle").addEventListener("click", () => {
 	form.addEventListener("submit", (e) => {
 	e.preventDefault();
 	
-	const role = document.querySelector('input[name="role"]:checked');
+	let valid = true;
 
+	const roleElement = document.querySelector('input[name="role"]:checked');
+	
+		if (!roleElement) {
+  			alert("Please select account type");
+  				valid = false;
+		}
 
-    let valid = true;
+	const role = roleElement ? roleElement.value : "";		
+
+    
 
     nameError.innerText = "";
     lastNameError.innerText = "";
@@ -128,43 +139,57 @@ document.getElementById("lang-toggle").addEventListener("click", () => {
 	passwordConfirmationError.innerText = "Passwords do not match";
 	valid = false;
 	}
+
+	
 	
 	if (!valid) return;
-	  createUserWithEmailAndPassword(auth, emailAddress.value, password.value)
-    .then((userCredential) => {
-      const user = userCredential.user;
 
-      return setDoc(doc(db, "users", user.uid), {
-        firstName: name.value,
-        lastName: lastName.value,
-        email: emailAddress.value,
-        phoneNumber: phoneNumber.value,
-        skateCanadaNumber: skateCanadaNumber.value,
-		role: role.value,
-		parentName: parentName.value
-      });
-    })
+	let createdUser = null;
+	  createUserWithEmailAndPassword(auth, emailAddress.value, password.value)
+  .then((userCredential) => {
+    createdUser = userCredential.user;
+
+    return setDoc(doc(db, "users", createdUser.uid), {
+      firstName: name.value,
+      lastName: lastName.value,
+      email: emailAddress.value,
+      phoneNumber: phoneNumber.value,
+      skateCanadaNumber: skateCanadaNumber.value,
+      role: role,
+      parentName: parentName.value
+    });
+  })
 
 
     .then(() => {
       alert("Account creation successful!");
 
 
-	  if (role === "coach") {
-		window.location.href = "coachAccount.html"
-	  } else {
-      window.location.href = "index.html";
-	  }
-    })
+	if (role === "coach") {
+  		window.location.href = "coachAccount.html";
+	} else if (role === "skater_parent") {
+  		window.location.href = "skaterAccount.html";
+	} else if (role === "admin") {
+  		window.location.href = "adminAccount.html";
+	} else {
+ 		 window.location.href = "index.html";
+	}})
+
+
+
     .catch(async (error) => {
-		console.error(error);
+  console.error(error);
 
-		if (auth.currentUser) {
-			await deleteUser(auth.currentUser);
-		}
+  if (createdUser) {
+    try {
+      await deleteUser(createdUser);
+    } catch (deleteError) {
+      console.error("Delete failed", deleteError);
+    }
+  }
 
-			alert("Account creation failed. Please try again.");
-		});
+  alert(translations[currentLang].accountCreationError);
+});
 	});
 	
 });
