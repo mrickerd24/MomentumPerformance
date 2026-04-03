@@ -34,7 +34,13 @@ export const translations = {
 	upcomingClasses: "Upcoming classes",
 	hoursTrained: "Total hours this week",
 	changepw: "Change password",
-	confirmNewpw: "Confirm new password"
+	confirmNewpw: "Confirm new password",
+	admin: "Administrator",
+	skateCanClubNumber: "Skate Canada club number",
+	clubCoaches: "Coaches",
+	clubStudents: "Students",
+	clubSchedule: "Club schedule",
+	iceHours: "Total ice hours this week"
   },
   
   
@@ -74,7 +80,13 @@ export const translations = {
 	upcomingClasses: "Prochains cours",
 	hoursTrained: "Heures totales cette semaine",	
 	changepw: "Nouveau mot de passe",
-	confirmNewpw: "Confirmation du nouveau mot de passe"
+	confirmNewpw: "Confirmation du nouveau mot de passe",
+	admin: "Administrateur",
+	skateCanClubNumber: "Numéro de club Patinage Canada",
+	clubCoaches: "Entraîneurs",
+	clubStudents: "Élèves",
+	clubSchedule: "Horaire du club",
+	iceHours: "Heures de glace cette semaine"
 } 
 };
 
