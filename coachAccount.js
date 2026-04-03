@@ -2,16 +2,19 @@ import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { setLanguage } from "./translations.js";
 
+// ---------------- AUTH ----------------
 const auth = getAuth();
 const db = getFirestore();
 
+// ---------------- LANGUAGE LOAD ----------------
+const savedLang = localStorage.getItem("language") || "en";
+setLanguage(savedLang);
 
-// ----------------------------------AUTHENTICATION LOGIC WITH FIREBASE ------------------
+// ---------------- AUTHENTICATION ----------------
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     try {
-      // Get Firestore document using UID
-      const userRef = doc(db, "users", user.uid); // adjust "users" if your collection name is different
+      const userRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userRef);
 
       let name = "Coach";
@@ -35,29 +38,8 @@ onAuthStateChanged(auth, async (user) => {
     window.location.href = "login.html";
   }
 });
-// -----------------------------------------END OF AUTH----------------------------------------------
 
-
-// ----------------------------LOGOUT BUTTON----------------------------------------------
-const logoutBtn = document.getElementById("logout-btn");
-
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", () => {
-    signOut(auth)
-      .then(() => {
-        // redirect after logout
-        window.location.href = "login.html";
-      })
-      .catch((error) => {
-        console.error("Logout error:", error);
-      });
-  });
-}
-
-window.toggleMenu = toggleMenu;
-// --------------------------------END OF LOGOUT BUTTON------------------------
-
-// -------------------------------NAV BAR LOGIC----------------------------
+// ---------------- NAVIGATION ----------------
 const routes = {
   "dashboard-btn": "coachAccount.html",
   "calendar-btn": "calendar.html",
@@ -65,7 +47,7 @@ const routes = {
   "settings-btn": "accountSettings.html"
 };
 
-// Handle navigation clicks
+// Navigation (all except logout)
 Object.keys(routes).forEach(id => {
   const btn = document.getElementById(id);
 
@@ -76,7 +58,22 @@ Object.keys(routes).forEach(id => {
   }
 });
 
-// Handle active state
+// Logout (separate)
+const logoutBtn = document.getElementById("logout-btn");
+
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    signOut(auth)
+      .then(() => {
+        window.location.href = "login.html";
+      })
+      .catch((error) => {
+        console.error("Logout error:", error);
+      });
+  });
+}
+
+// ---------------- ACTIVE STATE ----------------
 const currentPage = window.location.pathname;
 
 Object.keys(routes).forEach(id => {
@@ -88,5 +85,3 @@ Object.keys(routes).forEach(id => {
     btn.classList.remove("active");
   }
 });
-
-// -----------------------------------END OF NAV BAR LOGIC---------------------------

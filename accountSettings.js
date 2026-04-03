@@ -2,11 +2,15 @@ import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { getFirestore, doc, getDoc } from "firebase/firestore";
 import { setLanguage } from "./translations.js";
 
+// ---------------- AUTH ----------------
+const auth = getAuth();
+const db = getFirestore();
 
+// ---------------- LANGUAGE LOAD ----------------
 const savedLang = localStorage.getItem("language") || "en";
 setLanguage(savedLang);
 
-// ---------------------------LANGUAGE LOGIC PERSISTANCE-------------------------------------
+// ---------------- LANGUAGE PERSISTENCE ----------------
 const languageRadios = document.querySelectorAll('input[name="language"]');
 
 // Pre-select saved language
@@ -25,8 +29,7 @@ languageRadios.forEach(radio => {
   });
 });
 
-// -------------------------------NAV BAR LOGIC----------------------------
-
+// ---------------- NAVIGATION ----------------
 const routes = {
   "dashboard-btn": "coachAccount.html",
   "calendar-btn": "calendar.html",
@@ -34,7 +37,7 @@ const routes = {
   "settings-btn": "accountSettings.html"
 };
 
-// Handle navigation clicks
+// Navigation (all except logout)
 Object.keys(routes).forEach(id => {
   const btn = document.getElementById(id);
 
@@ -45,7 +48,22 @@ Object.keys(routes).forEach(id => {
   }
 });
 
-// Handle active state
+// Logout (separate)
+const logoutBtn = document.getElementById("logout-btn");
+
+if (logoutBtn) {
+  logoutBtn.addEventListener("click", () => {
+    signOut(auth)
+      .then(() => {
+        window.location.href = "login.html";
+      })
+      .catch((error) => {
+        console.error("Logout error:", error);
+      });
+  });
+}
+
+// Active state
 const currentPage = window.location.pathname;
 
 Object.keys(routes).forEach(id => {
@@ -57,5 +75,3 @@ Object.keys(routes).forEach(id => {
     btn.classList.remove("active");
   }
 });
-// -----------------------------------END OF NAV BAR LOGIC---------------------------
-
