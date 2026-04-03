@@ -47,7 +47,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 
   } else {
-    window.location.href = "login.html";
+    window.location.href = "index.html";
   }
 });
 
@@ -77,7 +77,7 @@ if (logoutBtn) {
   logoutBtn.addEventListener("click", () => {
     signOut(auth)
       .then(() => {
-        window.location.href = "login.html";
+        window.location.href = "index.html";
       })
       .catch((error) => {
         console.error("Logout error:", error);
