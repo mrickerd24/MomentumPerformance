@@ -71,6 +71,7 @@ document.getElementById("lang-toggle").addEventListener("click", () => {
 		if (docSnap.exists()) {
 			const userData = docSnap.data();
 
+      // MP-5 ROLE BASED REDIRECT LOGIC-------------------------
 		if (userData.role === "coach") {
       window.location.href = "coachAccount.html";
     } else if (userData.role === "Skater_parent") {
