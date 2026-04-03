@@ -26,25 +26,25 @@
 		<div class="container">
     
 			<div class="box">
-        <h3  data-key-placeholder="WelcomeToDashboard">Welcome to your dashboard</h3>
+        <h3 data-key-placeholder="WelcomeToDashboard">Welcome to your dashboard</h3>
         <br>      
         <div class="row">
           <div class="boxbluesmall"> 
-            <p  data-key-placeholder="coaches">My coaches</p>         
+            <p data-key-placeholder="coaches">My coaches</p>         
           </div>
         <br>        
           <div class="boxgreensmall"> 
-            <p  data-key-placeholder="viewSchedule">Schedule</p>         
+            <p data-key-placeholder="viewSchedule">Schedule</p>         
           </div>
         </div>
         <br><br>
         <div class="row">
           <div class="boxredsmall"> 
-            <p  data-key-placeholder="upcomingClasses">Upcoming classes</p>         
+            <p data-key-placeholder="upcomingClasses">Upcoming classes</p>         
           </div>
         <br>
           <div class="boxpurplesmall"> 
-            <p  data-key-placeholder="hoursTrained">Total hours this week</p>         
+            <p data-key-placeholder="hoursTrained">Total hours this week</p>         
           </div>          
         </div>
         <br><br>
@@ -52,8 +52,9 @@
 </div>
 
 
+<!-- NAVIGATION BAR — onclick removed; navigation handled entirely by skaterAccount.js -->
 <nav class="bottom-nav">
-        <button class="nav-item" id="dashboard-btn" onclick="window.location.href='skaterAccount.html'">
+        <button class="nav-item" id="dashboard-btn">
           <img src="dashboardIcon.png" class="icon" />
            <span data-key="dashboard">Dashboard</span>
         </button>
@@ -68,7 +69,7 @@
             <span data-key="payment">Payment</span>
         </button>
 
-        <button class="nav-item" id="settings-btn" onclick="window.location.href='accountSettings.html'">
+        <button class="nav-item" id="settings-btn">
           <img src="settings.png" class="icon" />
             <span data-key="settings">Settings</span>
         </button>
@@ -82,14 +83,14 @@
 
 
   </main>
-	<script type="module" src="skaterAccount.js"></script>
 
   <footer class="app-footer">
     <br><br>
     <div class="footer-content">
       <span>© 2026 Momentum Performance</span>
     </div>
-
   </footer>
+
+<script type="module" src="skaterAccount.js"></script>
 </body>
 </html>

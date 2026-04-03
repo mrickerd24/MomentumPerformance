@@ -79,7 +79,7 @@
   <div class="row">
     <div>
 	<label for="changepassword" data-key="changepw">Change password</label><br>
-	<input type="password" id="changepassword" placeholder="changepassword" autocomplete="new-password" />
+	<input type="password" id="changepassword" placeholder="New password" autocomplete="new-password" />
 	<div id="password-error" class="field-error"></div>
 	</div>
   <div>
@@ -100,9 +100,9 @@
 	</div>
  
 
- <!-- NAVIGATION BAR----------------------------------------------------------------- -->
+<!-- NAVIGATION BAR — onclick removed; navigation handled entirely by accountSettings.js -->
 <nav class="bottom-nav">
-        <button class="nav-item" id="dashboard-btn" onclick="window.location.href='coachAccount.html'">
+        <button class="nav-item" id="dashboard-btn">
           <img src="dashboardIcon.png" class="icon" />
            <span data-key="dashboard">Dashboard</span>
         </button>
@@ -117,7 +117,7 @@
             <span data-key="payment">Payment</span>
         </button>
 
-        <button class="nav-item" id="settings-btn" onclick="window.location.href='accountSettings.html'">
+        <button class="nav-item" id="settings-btn">
           <img src="settings.png" class="icon" />
             <span data-key="settings">Settings</span>
         </button>

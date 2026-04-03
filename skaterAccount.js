@@ -13,7 +13,6 @@ const firebaseConfig = {
   measurementId: "G-4996PSTP69"
 };
 
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -31,15 +30,15 @@ onAuthStateChanged(auth, async (user) => {
       const userRef = doc(db, "users", user.uid);
       const userSnap = await getDoc(userRef);
 
-      let name = "Coach";
+      // FIX: was hardcoded "Coach" as fallback — corrected to "User"
+      let name = "User";
 
       if (userSnap.exists()) {
         const data = userSnap.data();
-        name = data.firstName || "Coach";
+        name = data.firstName || "User";
       }
 
       const title = document.querySelector('[data-key-placeholder="WelcomeToDashboard"]');
-
       if (title) {
         title.textContent = `Welcome to your dashboard, ${name}`;
       }
@@ -61,10 +60,8 @@ const routes = {
   "settings-btn": "accountSettings.html"
 };
 
-// Navigation (all except logout)
 Object.keys(routes).forEach(id => {
   const btn = document.getElementById(id);
-
   if (btn) {
     btn.addEventListener("click", () => {
       window.location.href = routes[id];
@@ -72,27 +69,20 @@ Object.keys(routes).forEach(id => {
   }
 });
 
-// Logout (separate)
+// Logout
 const logoutBtn = document.getElementById("logout-btn");
-
 if (logoutBtn) {
   logoutBtn.addEventListener("click", () => {
     signOut(auth)
-      .then(() => {
-        window.location.href = "index.html";
-      })
-      .catch((error) => {
-        console.error("Logout error:", error);
-      });
+      .then(() => { window.location.href = "index.html"; })
+      .catch((error) => { console.error("Logout error:", error); });
   });
 }
 
 // ---------------- ACTIVE STATE ----------------
 const currentPage = window.location.pathname;
-
 Object.keys(routes).forEach(id => {
   const btn = document.getElementById(id);
-
   if (btn && currentPage.includes(routes[id])) {
     btn.classList.add("active");
   } else if (btn) {

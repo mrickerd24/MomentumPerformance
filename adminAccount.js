@@ -35,6 +35,8 @@ onAuthStateChanged(auth, async (user) => {
     const userSnap = await getDoc(userRef);
 
     if (!userSnap.exists()) {
+      // Sign out before redirecting to avoid ghost auth session
+      await signOut(auth);
       window.location.href = "index.html";
       return;
     }
@@ -42,12 +44,13 @@ onAuthStateChanged(auth, async (user) => {
     const data = userSnap.data();
 
     if (data.role !== "admin") {
+      // Sign out before redirecting — wrong role should not stay authenticated here
+      await signOut(auth);
       window.location.href = "index.html";
       return;
     }
 
     const title = document.querySelector('[data-key-placeholder="WelcomeToDashboard"]');
-
     if (title) {
       const name = data.firstName || "Admin";
       title.textContent = `Welcome to your dashboard, ${name}`;
@@ -68,7 +71,6 @@ const routes = {
 
 Object.keys(routes).forEach(id => {
   const btn = document.getElementById(id);
-
   if (btn) {
     btn.addEventListener("click", () => {
       window.location.href = routes[id];
@@ -78,25 +80,18 @@ Object.keys(routes).forEach(id => {
 
 // LOGOUT
 const logoutBtn = document.getElementById("logout-btn");
-
 if (logoutBtn) {
   logoutBtn.addEventListener("click", () => {
     signOut(auth)
-      .then(() => {
-        window.location.href = "index.html";
-      })
-      .catch((error) => {
-        console.error("Logout error:", error);
-      });
+      .then(() => { window.location.href = "index.html"; })
+      .catch((error) => { console.error("Logout error:", error); });
   });
 }
 
 // ACTIVE STATE
 const currentPage = window.location.pathname;
-
 Object.keys(routes).forEach(id => {
   const btn = document.getElementById(id);
-
   if (btn && currentPage.includes(routes[id])) {
     btn.classList.add("active");
   } else if (btn) {
