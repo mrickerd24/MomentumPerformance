@@ -3,8 +3,6 @@ import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/fir
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { setLanguage } from "./translations.js";
 
-// ---------------- AUTH ----------------
-
 const firebaseConfig = {
   apiKey: "AIzaSyA-17uYmpblsb3b-NlB5_RK7ci7ZvUkH4Q",
   authDomain: "momentum-performance.firebaseapp.com",
@@ -15,8 +13,10 @@ const firebaseConfig = {
   measurementId: "G-4996PSTP69"
 };
 
-const auth = getAuth();
-const db = getFirestore();
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
 // ---------------- LANGUAGE LOAD ----------------
 const savedLang = localStorage.getItem("language") || "en";
