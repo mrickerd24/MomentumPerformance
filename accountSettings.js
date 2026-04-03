@@ -6,6 +6,25 @@ import { setLanguage } from "./translations.js";
 const savedLang = localStorage.getItem("language") || "en";
 setLanguage(savedLang);
 
+// ---------------------------LANGUAGE LOGIC PERSISTANCE-------------------------------------
+const languageRadios = document.querySelectorAll('input[name="language"]');
+
+// Pre-select saved language
+const savedLangRadio = document.querySelector(`input[value="${savedLang}"]`);
+if (savedLangRadio) {
+  savedLangRadio.checked = true;
+}
+
+// Save + apply when changed
+languageRadios.forEach(radio => {
+  radio.addEventListener("change", (e) => {
+    const selectedLang = e.target.value;
+
+    localStorage.setItem("language", selectedLang);
+    setLanguage(selectedLang);
+  });
+});
+
 // -------------------------------NAV BAR LOGIC----------------------------
 
 const routes = {
