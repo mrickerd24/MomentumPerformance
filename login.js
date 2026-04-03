@@ -1,4 +1,4 @@
-import { translations } from "./translations.js";
+import { translations, setLanguage } from "./translations.js";
 
 
 
