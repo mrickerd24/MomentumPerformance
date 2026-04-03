@@ -25,7 +25,7 @@
 	
 	<form id="accountSettings">
 
-  <h3 data-key="accountSettings">Account settings</h3><br>
+  <h2 data-key="accountSettings">Account settings</h2>
 	<label for="Prefered language" data-key="langselect">Preferred language</label><br><br>
 	
 	<div class="language-option">
@@ -38,44 +38,58 @@
     <label data-key="french">French</label>
   </div><br><br>
 	
-	
-	<label for="name" data-key="name">Name</label><br>
-	<input type="text" id="name" placeholder="Name" />
-	<div id="name-error" class="field-error"></div>
-	
-	<label for="lastName" data-key="lastName">Last Name</label><br>
+<div class="row">
+  <div>
+    <label for="name" data-key="name">Name</label><br>
+    <input type="text" id="name" placeholder="Name" />
+    <div id="name-error" class="field-error"></div>
+  </div>
+
+  <div>
+    <label for="lastName" data-key="lastName">Last Name</label><br>
     <input type="text" id="lastName" placeholder="Last name" />
-	<div id="lastName-error" class="field-error"></div>
-	
+    <div id="lastName-error" class="field-error"></div>
+  </div>
+</div>
+
 	<label for="parentName" data-key="parentName">Parent name (optional)</label><br>	
 	<input type="text" placeholder="Parent name" id="parentName" />
     <br>
 	<br>
 	
-	<label for="emailAddress" data-key="email">Email</label><br>
-	<input type="email" id="emailAddress" placeholder="Email address" />
-	<div id="emailAddress-error" class="field-error"></div>
-	<br>
-	
-	<label for="phoneNumber" data-key="phoneNumber">Phone number</label><br>
-	<input type="tel" id="phoneNumber" placeholder="XXX-XXX-XXXX" />
-	<div id="phoneNumber-error" class="field-error"></div>
-	<br>
-	
+  <div class="row">
+    <div>
+	    <label for="emailAddress" data-key="email">Email</label><br>
+	    <input type="email" id="emailAddress" placeholder="Email address" />
+	      <div id="emailAddress-error" class="field-error"></div>
+	  </div><br>
+    
+    <div>
+	    <label for="phoneNumber" data-key="phoneNumber">Phone number</label><br>
+	    <input type="tel" id="phoneNumber" placeholder="XXX-XXX-XXXX" />
+	      <div id="phoneNumber-error" class="field-error"></div>
+	      <br>
+    </div>
+	</div>
+
 	<label for="skateCanadaNumber" data-key="skateCan">Skate Canada number</label><br>
 	<input type="text" id="skateCanadaNumber" placeholder="XXXXXXXXXXX" />
 	<div id="skateCanadaNumber-error" class="field-error"></div>
 	<br>
 	
-	<label for="password" data-key="createpw">Create a password</label><br>
-	<input type="password" id="password" placeholder="Password" />
+  <div class="row">
+    <div>
+	<label for="password" data-key="changepw">Change password</label><br>
+	<input type="password" id="changepassword" placeholder="changepassword" />
 	<div id="password-error" class="field-error"></div>
-	
+	</div>
+  <div>
 	<label for="passwordConfirmation" data-key="confirmpw">Password confirmation</label><br>
 	<input type="password" id="passwordConfirmation" placeholder="Password confirmation" />
 	<div id="passwordConfirmation-error" class="field-error"></div>
-	<br><br>
-
+  </div>
+    </div>
+    <br>
     <button type="submit" id="createAccount" data-key="saveChanges">Save changes</button>
 	<br><br>	
 

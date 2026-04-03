@@ -247,6 +247,7 @@ button:not(.nav-item):hover {
   justify-content: center;
   align-items: flex-start; /* instead of center */
   background: #F4F5F7;
+  margin-top: -52px;
 }
 
 
@@ -258,12 +259,14 @@ button:not(.nav-item):hover {
 }
  
 .form-box {
-	width: 360px;
-	padding: 25px;
+	width: 420px;
+	padding: 15px;
 	background: white;
 	border: 1px solid #DFE1E6;
 	border-radius: 16px;
-	box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+	box-shadow: 0 9px 24px rgba(0,0,0,0.08);
+  margin-bottom: 40px;
+  margin-top: -60px;
 }
 
 h1, h2, h3, h4, h5, h6 {
