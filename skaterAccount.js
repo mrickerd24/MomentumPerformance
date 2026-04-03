@@ -1,8 +1,20 @@
-import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { getFirestore, doc, getDoc } from "firebase/firestore";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { setLanguage } from "./translations.js";
 
 // ---------------- AUTH ----------------
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA-17uYmpblsb3b-NlB5_RK7ci7ZvUkH4Q",
+  authDomain: "momentum-performance.firebaseapp.com",
+  projectId: "momentum-performance",
+  storageBucket: "momentum-performance.firebasestorage.app",
+  messagingSenderId: "571184327943",
+  appId: "1:571184327943:web:a5df6568228ca686faa9a2",
+  measurementId: "G-4996PSTP69"
+};
+
 const auth = getAuth();
 const db = getFirestore();
 
