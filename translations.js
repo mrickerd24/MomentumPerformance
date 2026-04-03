@@ -29,7 +29,12 @@ export const translations = {
 	langselect: "Preferred language",
 	english: "English",
 	french: "French",
-	saveChanges: "Save changes"
+	saveChanges: "Save changes",
+	coaches: "My coaches",
+	upcomingClasses: "Upcoming classes",
+	hoursTrained: "Total hours this week",
+	changepw: "Change password",
+	confirmNewpw: "Confirm new password"
   },
   
   
@@ -64,8 +69,13 @@ export const translations = {
 	langselect: "Langue préférée",
 	english: "Anglais",
 	french: "Français",
-	saveChanges: "Sauvegarder les changements"	
-  } 
+	saveChanges: "Sauvegarder les changements",
+	coaches: "Mes entraîneurs",
+	upcomingClasses: "Prochains cours",
+	hoursTrained: "Heures totales cette semaine",	
+	changepw: "Nouveau mot de passe",
+	confirmNewpw: "Confirmation du nouveau mot de passe"
+} 
 };
 
 export function setLanguage(lang) {
