@@ -1,4 +1,4 @@
-import { translations, setLanguage } from "./translations.js";
+import { translations } from "./translations.js";
 
 
 
@@ -25,17 +25,15 @@ import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10
 	const auth = getAuth(app);
 	const db = getFirestore(app);
 
-document.addEventListener("DOMContentLoaded", () => {
-	setLanguage(currentLang);
-	
-const langToggle = document.getElementById("lang-toggle");
+function setLanguage(lang) {
+  document.querySelectorAll("[data-key]").forEach(el => {
+    const key = el.getAttribute("data-key");
+    el.textContent = translations[lang][key] || key;
+  });
 
-if (langToggle) {
-  langToggle.addEventListener("click", () => {
-    currentLang = currentLang === "fr" ? "en" : "fr";
-
-    localStorage.setItem("language", currentLang);
-    setLanguage(currentLang);
+  document.querySelectorAll("[data-key-placeholder]").forEach(el => {
+    const key = el.getAttribute("data-key-placeholder");
+    el.placeholder = translations[lang][key] || "";
   });
 }
 	
