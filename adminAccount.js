@@ -13,55 +13,59 @@ const firebaseConfig = {
   measurementId: "G-4996PSTP69"
 };
 
-
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-// ---------------- LANGUAGE LOAD ----------------
+// LANGUAGE
 document.addEventListener("DOMContentLoaded", () => {
   const savedLang = localStorage.getItem("language") || "en";
   setLanguage(savedLang);
 });
 
-// ---------------- AUTHENTICATION ----------------
+// AUTH CHECK
 onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    try {
-      const userRef = doc(db, "users", user.uid);
-      const userSnap = await getDoc(userRef);
+  if (!user) {
+    window.location.href = "index.html";
+    return;
+  }
 
-      let name = "Coach";
+  try {
+    const userRef = doc(db, "users", user.uid);
+    const userSnap = await getDoc(userRef);
 
-      if (userSnap.exists()) {
-        const data = userSnap.data();
-        name = data.firstName || "Coach";
-      }
-
-      const title = document.querySelector('[data-key-placeholder="WelcomeToDashboard"]');
-
-      if (title) {
-        title.textContent = `Welcome to your dashboard, ${name}`;
-      }
-
-    } catch (error) {
-      console.error("Error fetching user:", error);
+    if (!userSnap.exists()) {
+      window.location.href = "index.html";
+      return;
     }
 
-  } else {
-    window.location.href = "index.html";
+    const data = userSnap.data();
+
+    if (data.role !== "admin") {
+      window.location.href = "index.html";
+      return;
+    }
+
+    const title = document.querySelector('[data-key-placeholder="WelcomeToDashboard"]');
+
+    if (title) {
+      const name = data.firstName || "Admin";
+      title.textContent = `Welcome to your dashboard, ${name}`;
+    }
+
+  } catch (error) {
+    console.error("Admin load error:", error);
   }
 });
 
-// ---------------- NAVIGATION ----------------
+// NAVIGATION
 const routes = {
-  "dashboard-btn": "skaterAccount.html",
+  "dashboard-btn": "adminAccount.html",
   "calendar-btn": "calendar.html",
   "payment-btn": "payment.html",
-  "settings-btn": "accountSettings.html"
+  "settings-btn": "accountSettingsAdmin.html"
 };
 
-// Navigation (all except logout)
 Object.keys(routes).forEach(id => {
   const btn = document.getElementById(id);
 
@@ -72,7 +76,7 @@ Object.keys(routes).forEach(id => {
   }
 });
 
-// Logout (separate)
+// LOGOUT
 const logoutBtn = document.getElementById("logout-btn");
 
 if (logoutBtn) {
@@ -87,7 +91,7 @@ if (logoutBtn) {
   });
 }
 
-// ---------------- ACTIVE STATE ----------------
+// ACTIVE STATE
 const currentPage = window.location.pathname;
 
 Object.keys(routes).forEach(id => {

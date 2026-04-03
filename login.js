@@ -1,26 +1,14 @@
 import { translations } from "./translations.js";
 
-function setLanguage(lang) {
-  // Text content
-  document.querySelectorAll("[data-key]").forEach(el => {
-    const key = el.getAttribute("data-key");
-    el.textContent = translations[lang][key] || key;
-  });
 
-  // Placeholders
-  document.querySelectorAll("[data-key-placeholder]").forEach(el => {
-    const key = el.getAttribute("data-key-placeholder");
-    el.placeholder = translations[lang][key];
-  });
-}
 
 let currentLang = "fr";
 
 
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
+import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
 
 	const firebaseConfig = {
 		apiKey: "AIzaSyA-17uYmpblsb3b-NlB5_RK7ci7ZvUkH4Q",
@@ -42,6 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
 	
 document.getElementById("lang-toggle").addEventListener("click", () => {
   currentLang = currentLang === "fr" ? "en" : "fr";
+
+  localStorage.setItem("language", currentLang);
   setLanguage(currentLang);
 });
 
@@ -82,10 +72,15 @@ document.getElementById("lang-toggle").addEventListener("click", () => {
 			const userData = docSnap.data();
 
 		if (userData.role === "coach") {
-			window.location.href = "coachAccount.html";
-		} else {
-			window.location.href = "skaterAccount.html";
-		}
+      window.location.href = "coachAccount.html";
+    } else if (userData.role === "Skater_parent") {
+      window.location.href = "skaterAccount.html";
+    } else if (userData.role === "admin") {
+      window.location.href = "adminAccount.html";
+    } else {
+      window.location.href = "index.html";
+    }
+
 		} else {
 			alert("User data not found");
 		}

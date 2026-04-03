@@ -1,26 +1,14 @@
 import { translations } from "./translations.js";
 
-function setLanguage(lang) {
-  // Text content
-  document.querySelectorAll("[data-key]").forEach(el => {
-    const key = el.getAttribute("data-key");
-    el.textContent = translations[lang][key] || key;
-  });
 
-  // Placeholders
-  document.querySelectorAll("[data-key-placeholder]").forEach(el => {
-    const key = el.getAttribute("data-key-placeholder");
-    el.placeholder = translations[lang][key];
-  });
-}
 
 let currentLang = "fr";
 
 
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
+import { getAuth, createUserWithEmailAndPassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"
 
 	const firebaseConfig = {
 		apiKey: "AIzaSyA-17uYmpblsb3b-NlB5_RK7ci7ZvUkH4Q",
@@ -43,8 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
 document.getElementById("lang-toggle").addEventListener("click", () => {
   currentLang = currentLang === "fr" ? "en" : "fr";
 
-  localStorage.setItem("language", currentLang);  // ← ADD THIS
-
+  localStorage.setItem("language", currentLang);
   setLanguage(currentLang);
 });
 	
@@ -66,6 +53,11 @@ document.getElementById("lang-toggle").addEventListener("click", () => {
 	const passwordConfirmationError = document.getElementById("passwordConfirmation-error");
 
 	const form = document.getElementById("signupForm");
+
+		if (!form) {
+  		console.error("signupForm not found in DOM");
+  		return;
+		}
 		
 	name.addEventListener("input", () => {
 	nameError.innerText = "";
@@ -166,13 +158,13 @@ document.getElementById("lang-toggle").addEventListener("click", () => {
 
 
 	if (role === "coach") {
-  		window.location.href = "coachAccount.html";
-	} else if (role === "skater_parent") {
-  		window.location.href = "skaterAccount.html";
+ 		window.location.href = "coachAccount.html";
+	} else if (role === "Skater_parent") {
+ 		window.location.href = "skaterAccount.html";
 	} else if (role === "admin") {
-  		window.location.href = "adminAccount.html";
+ 		window.location.href = "adminAccount.html";
 	} else {
- 		 window.location.href = "index.html";
+		window.location.href = "index.html";
 	}})
 
 

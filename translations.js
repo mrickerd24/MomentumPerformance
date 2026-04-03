@@ -51,7 +51,7 @@ export const translations = {
     email: "Courriel",
     password: "Mot de passe",
     createAccount: "Créer un compte",
-	WelcomeDashboardt: "Bienvenue sur votre tableau de bord",
+	WelcomeDashboard: "Bienvenue sur votre tableau de bord",
 	accountType: "Type de compte",
 	coach: "Entraîneur",
 	skaterParent: "Patineur ou parent",
@@ -101,10 +101,14 @@ export function setLanguage(lang) {
     }
   });
 
-  document.querySelectorAll("[data-key-placeholder]").forEach(el => {
-    const key = el.getAttribute("data-key-placeholder");
-    if (translations[lang][key]) {
+document.querySelectorAll("[data-key-placeholder]").forEach(el => {
+  const key = el.getAttribute("data-key-placeholder");
+  if (translations[lang][key]) {
+    if ("placeholder" in el) {
+      el.placeholder = translations[lang][key];
+    } else {
       el.textContent = translations[lang][key];
     }
-  });
+  }
+});
 }

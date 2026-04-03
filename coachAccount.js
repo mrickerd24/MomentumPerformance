@@ -19,8 +19,10 @@ const auth = getAuth(app);
 const db = getFirestore(app);
 
 // ---------------- LANGUAGE LOAD ----------------
-const savedLang = localStorage.getItem("language") || "en";
-setLanguage(savedLang);
+document.addEventListener("DOMContentLoaded", () => {
+  const savedLang = localStorage.getItem("language") || "en";
+  setLanguage(savedLang);
+});
 
 // ---------------- AUTHENTICATION ----------------
 onAuthStateChanged(auth, async (user) => {
