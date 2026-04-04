@@ -337,6 +337,11 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
 }
 
+.links-gap {
+    display: flex;
+    gap: 16px; /* adjust to taste */
+}
+
 
 /* HOVER (desktop only) */
 @media (hover: hover) {
