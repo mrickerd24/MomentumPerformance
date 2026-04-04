@@ -68,14 +68,14 @@ function emptyMsg(text) {
 
 // ── Send request ─────────────────────────────────────────────────────────────
 
-async function sendRequest(myUid, myData, target, myRoles) {
+async function sendRequest(myUid, myData, target) {
   await addDoc(collection(db, "connections"), {
     participants: [myUid, target.uid],
     requestedBy:  myUid,
     requestedTo:  target.uid,
     status:       "pending",
     createdAt:    serverTimestamp(),
-    names:  { [myUid]: fullName(myData),  [target.uid]: fullName(target)  },
+    names:  { [myUid]: fullName(myData),   [target.uid]: fullName(target)   },
     emails: { [myUid]: myData.email || "", [target.uid]: target.email || "" },
   });
 }
@@ -91,9 +91,9 @@ async function loadConnections(myUid) {
 
   snap.forEach(d => {
     const data = { id: d.id, ...d.data() };
-    if (data.status === "accepted")                    connected.push(data);
-    else if (data.requestedTo === myUid)               pending.push(data);
-    else                                               sent.push(data);
+    if (data.status === "accepted")      connected.push(data);
+    else if (data.requestedTo === myUid) pending.push(data);
+    else                                 sent.push(data);
   });
 
   renderSent(sent, myUid);
@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Set page title and labels
     const titleEl = document.getElementById("page-title");
     if (urlMode === "skater" || myTarget === "skater_parent") {
-      titleEl.textContent = t("addSkater");
+      titleEl.textContent = t("addStudent");
     } else if (urlMode === "coach" || myTarget === "coach") {
       titleEl.textContent = t("addCoach");
     } else {
@@ -250,7 +250,7 @@ document.addEventListener("DOMContentLoaded", () => {
           : [{
               label: t("sendRequest"), color: "#0C66E4",
               onClick: async () => {
-                await sendRequest(currentUser.uid, userData, candidate, myRoles);
+                await sendRequest(currentUser.uid, userData, candidate);
                 resultsDiv.innerHTML = "";
                 resultsDiv.appendChild(Object.assign(document.createElement("p"), {
                   textContent: t("requestSent"),
