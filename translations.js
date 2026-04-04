@@ -60,7 +60,6 @@ export const translations = {
     email: "Courriel",
     password: "Mot de passe",
     createAccount: "Créer un compte",
-    // FIX: was "WelcomeDashboard" (missing "To"), must match data-key-placeholder="WelcomeToDashboard"
     WelcomeToDashboard: "Bienvenue sur votre tableau de bord",
     accountType: "Type de compte",
     coach: "Entraîneur",
