@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-
+import { translations, setLanguage } from "./translations.js";
 
 document.getElementById("reset").addEventListener("click", () => {
     const email = document.getElementById("emailAddress").value;
@@ -10,7 +10,7 @@ document.getElementById("reset").addEventListener("click", () => {
         return;
     }
 
-    sendPasswordResetEmail(AuthenticatorAssertionResponse, email)
+    sendPasswordResetEmail(Auth, email)
     .then(() => {
         alert(translations[currentLang].resetLinkSent);
     })
