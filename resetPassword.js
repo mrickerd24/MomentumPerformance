@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { translations, setLanguage } from "./translations.js";
+import { translations, setLanguage, getCurrentLang } from "./translations.js";
 
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -18,7 +18,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-
+    const currentLang = localStorage.getItem("lang") || "fr";
+    setLanguage(currentLang);
 
 
 
@@ -26,13 +27,13 @@ document.getElementById("reset").addEventListener("click", () => {
     const email = document.getElementById("emailAddress").value;
 
     if(!email) {
-        alert(translations[currentLang].enterEmail);
+        alert(translations[Lang].enterEmail);
         return;
     }
 
     sendPasswordResetEmail(auth, email)
     .then(() => {
-        alert(translations[currentLang].resetLinkSent);
+        alert(translations[Lang].resetLinkSent);
     })
 
     .catch((error) => {
