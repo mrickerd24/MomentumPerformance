@@ -15,7 +15,7 @@ export const translations = {
     skateCan: "Skate Canada number",
     createpw: "Create a password",
     confirmpw: "Confirm password",
-    toLogin: "login",
+    toLogin: "Back to login",
     dashboard: "Dashboard",
     calendar: "Calendar",
     payment: "Payments and invoice",
@@ -51,8 +51,8 @@ export const translations = {
     userNotFound: "User data not found",
     enterEmail: "Enter your email",
     resetLinkSent: "Reset link has been sent to your email address",
-    backToLogin: "Back to login"
-
+    backToLogin: "Back to login",
+    roles: "Roles"
   },
 
   fr: {
@@ -71,7 +71,7 @@ export const translations = {
     skateCan: "Numéro Patinage Canada",
     createpw: "Créer un mot de passe",
     confirmpw: "Confirmation du mot de passe",
-    toLogin: "Se connecter",
+    toLogin: "Retour à la connexion",
     dashboard: "Tableau de bord",
     calendar: "Calendrier",
     payment: "Paiements et facturation",
@@ -103,30 +103,31 @@ export const translations = {
     reset: "Réinitialisez",
     changesSaved: "Modifications enregistrées avec succès",
     forSecurity: "Pour des raisons de sécurité, veuillez vous déconnecter puis vous reconnecter avant de modifier votre mot de passe",
-    changeError: "Erreur lors de l’enregistrement des modifications. Veuillez réessayer",
+    changeError: "Erreur lors de l'enregistrement des modifications. Veuillez réessayer",
     userNotFound: "Utilisateur introuvable",
     enterEmail: "Entrez votre courriel",
     resetLinkSent: "Un lien de réinitialisation a été envoyé à votre adresse courriel",
-    backToLogin: "Retour à la connexion"
-
+    backToLogin: "Retour à la connexion",
+    roles: "Rôles"
   }
 };
 
 export function setLanguage(lang) {
+  const t = translations[lang];
+  if (!t) return;
+
   document.querySelectorAll("[data-key]").forEach(el => {
     const key = el.getAttribute("data-key");
-    if (translations[lang][key]) {
-      el.textContent = translations[lang][key];
-    }
+    if (t[key]) el.textContent = t[key];
   });
 
   document.querySelectorAll("[data-key-placeholder]").forEach(el => {
     const key = el.getAttribute("data-key-placeholder");
-    if (translations[lang][key]) {
+    if (t[key]) {
       if ("placeholder" in el) {
-        el.placeholder = translations[lang][key];
+        el.placeholder = t[key];
       } else {
-        el.textContent = translations[lang][key];
+        el.textContent = t[key];
       }
     }
   });

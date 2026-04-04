@@ -13,7 +13,6 @@ const firebaseConfig = {
   measurementId: "G-4996PSTP69"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -31,137 +30,63 @@ if (langToggle) {
   });
 }
 
-// ---------------- FORM FIELDS ----------------
-const name = document.getElementById("name");
-const lastName = document.getElementById("lastName");
-const emailAddress = document.getElementById("emailAddress");
-const phoneNumber = document.getElementById("phoneNumber");
-const skateCanadaNumber = document.getElementById("skateCanadaNumber");
-const password = document.getElementById("password");
-const passwordConfirmation = document.getElementById("passwordConfirmation");
-const parentName = document.getElementById("parentName");
-
-const nameError = document.getElementById("name-error");
-const lastNameError = document.getElementById("lastName-error");
-const emailAddressError = document.getElementById("emailAddress-error");
-const phoneNumberError = document.getElementById("phoneNumber-error");
-const skateCanadaNumberError = document.getElementById("skateCanadaNumber-error");
-const passwordError = document.getElementById("password-error");
-const passwordConfirmationError = document.getElementById("passwordConfirmation-error");
-
+// ---------------- FORM ----------------
 const form = document.getElementById("signupForm");
-
-if (!form) {
-  console.error("signupForm not found in DOM");
-}
-
-name.addEventListener("input", () => {
-  nameError.innerText = "";
-});
 
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
+  // Collect ALL checked roles (multi-select checkboxes)
+  const checkedRoles = Array.from(document.querySelectorAll('input[name="role"]:checked')).map(el => el.value);
+
+  const nameVal     = document.getElementById("name").value.trim();
+  const lastNameVal = document.getElementById("lastName").value.trim();
+  const emailVal    = document.getElementById("emailAddress").value.trim();
+  const phoneVal    = document.getElementById("phoneNumber").value.trim();
+  const skateNum    = document.getElementById("skateCanadaNumber").value.trim();
+  const parentName  = document.getElementById("parentName").value.trim();
+  const password    = document.getElementById("password").value;
+  const confirmPw   = document.getElementById("passwordConfirmation").value;
+
+  // Clear errors
+  ["name", "lastName", "emailAddress", "phoneNumber", "password", "passwordConfirmation"].forEach(id => {
+    const el = document.getElementById(`${id}-error`);
+    if (el) el.innerText = "";
+  });
+
   let valid = true;
-
-  const roleElement = document.querySelector('input[name="role"]:checked');
-
-  nameError.innerText = "";
-  lastNameError.innerText = "";
-  emailAddressError.innerText = "";
-  phoneNumberError.innerText = "";
-  skateCanadaNumberError.innerText = "";
-  passwordError.innerText = "";
-  passwordConfirmationError.innerText = "";
-
-  if (!roleElement) {
-    alert("Please select account type");
-    valid = false;
-  }
-
-  const role = roleElement ? roleElement.value : "";
-
-  if (!name.value) {
-    nameError.innerText = "First name is required";
-    valid = false;
-  }
-
-  if (!lastName.value) {
-    lastNameError.innerText = "Last name is required";
-    valid = false;
-  }
-
-  if (!emailAddress.value) {
-    emailAddressError.innerText = "Email required";
-    valid = false;
-  } else if (!emailAddress.value.includes("@")) {
-    emailAddressError.innerText = "Invalid email";
-    valid = false;
-  }
-
-  if (!phoneNumber.value) {
-    phoneNumberError.innerText = "Phone number is required";
-    valid = false;
-  }
-
-  if (!password.value) {
-    passwordError.innerText = "Password is required";
-    valid = false;
-  }
-
-  if (!passwordConfirmation.value) {
-    passwordConfirmationError.innerText = "Password confirmation is required";
-    valid = false;
-  }
-
-  if (password.value !== passwordConfirmation.value) {
-    passwordConfirmationError.innerText = "Passwords do not match";
-    valid = false;
-  }
-
+  if (checkedRoles.length === 0)            { alert("Please select at least one role"); valid = false; }
+  if (!nameVal)                             { document.getElementById("name-error").innerText = "First name is required"; valid = false; }
+  if (!lastNameVal)                         { document.getElementById("lastName-error").innerText = "Last name is required"; valid = false; }
+  if (!emailVal || !emailVal.includes("@")) { document.getElementById("emailAddress-error").innerText = "Invalid email"; valid = false; }
+  if (!phoneVal)                            { document.getElementById("phoneNumber-error").innerText = "Phone number is required"; valid = false; }
+  if (!password)                            { document.getElementById("password-error").innerText = "Password is required"; valid = false; }
+  if (password !== confirmPw)               { document.getElementById("passwordConfirmation-error").innerText = "Passwords do not match"; valid = false; }
   if (!valid) return;
 
   let createdUser = null;
 
-  createUserWithEmailAndPassword(auth, emailAddress.value, password.value)
+  createUserWithEmailAndPassword(auth, emailVal, password)
     .then((userCredential) => {
       createdUser = userCredential.user;
-
       return setDoc(doc(db, "users", createdUser.uid), {
-        firstName: name.value,
-        lastName: lastName.value,
-        email: emailAddress.value,
-        phoneNumber: phoneNumber.value,
-        skateCanadaNumber: skateCanadaNumber.value,
-        role: role,
-        parentName: parentName.value
+        firstName:        nameVal,
+        lastName:         lastNameVal,
+        email:            emailVal,
+        phoneNumber:      phoneVal,
+        skateCanadaNumber: skateNum,
+        parentName:       parentName,
+        roles:            checkedRoles,   // ← array, not single string
       });
     })
     .then(() => {
-      alert("Account creation successful!");
-
-      // Role values match what's stored: "coach", "skater_parent", "admin"
-      if (role === "coach") {
-        window.location.href = "coachAccount.html";
-      } else if (role === "skater_parent") {
-        window.location.href = "skaterAccount.html";
-      } else if (role === "admin") {
-        window.location.href = "adminAccount.html";
-      } else {
-        window.location.href = "index.html";
-      }
+      window.location.href = "dashboard.html";
     })
     .catch(async (error) => {
       console.error(error);
-
       if (createdUser) {
-        try {
-          await deleteUser(createdUser);
-        } catch (deleteError) {
-          console.error("Delete failed", deleteError);
-        }
+        try { await deleteUser(createdUser); } catch (e) { console.error("Delete failed", e); }
       }
-
       alert(translations[currentLang].accountCreationError);
     });
 });

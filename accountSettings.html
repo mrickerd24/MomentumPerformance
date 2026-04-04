@@ -1,136 +1,134 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Momentum Performance</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
-
 <body>
 
 <header class="app-header">
   <div class="header-box">
     <img src="logo.png" alt="Momentum Performance" class="logo" />
   </div>
-
 </header>
-  <main class="app-main">
-  
-	<div class="container">
-   <div class="form-box">
-	
-	<form id="accountSettings">
 
-  <h2 data-key="accountSettings">Account settings</h2>
-    <legend data-key="langselect">Preferred language</legend><br><br>
-<div class="language-option">
-  <input autocomplete="language" type="radio" name="language" value="en" id="english-language" required>
-  <label for="english-language" data-key="english">English</label>
-</div><br>
+<main class="app-main">
+  <div class="container">
+    <div class="form-box">
 
-<div class="language-option">
-  <input autocomplete="language" type="radio" name="language" value="fr" id="french-language" required>
-  <label for="french-language" data-key="french">French</label>
-</div><br><br>
-	
-<div class="row">
-  <div>
-    <label for="name" data-key="name">Name</label><br>
-    <input type="text" id="name" placeholder="Name" autocomplete="name" />
-    <div id="name-error" class="field-error"></div>
-  </div>
+      <form id="accountSettingsForm">
 
-  <div>
-    <label for="lastName" data-key="lastName">Last Name</label><br>
-    <input type="text" id="lastName" placeholder="Last name" autocomplete="family-name" />
-    <div id="lastName-error" class="field-error"></div>
-  </div>
-</div>
+        <h2 data-key="accountSettings">Account settings</h2>
 
-	<label for="parentName" data-key="parentName">Parent name (optional)</label><br>	
-	<input type="text" placeholder="Parent name" id="parentName" autocomplete="additional-name" />
-    <br>
-	<br>
-	
-  <div class="row">
-    <div>
-	    <label for="emailAddress" data-key="email">Email</label><br>
-	    <input type="email" id="emailAddress" placeholder="Email address" autocomplete="email"  />
-	      <div id="emailAddress-error" class="field-error"></div>
-	  </div><br>
-    
-    <div>
-	    <label for="phoneNumber" data-key="phoneNumber">Phone number</label><br>
-	    <input type="tel" id="phoneNumber" placeholder="XXX-XXX-XXXX" autocomplete="tel"/>
-	      <div id="phoneNumber-error" class="field-error"></div>
-	      <br>
+        <!-- Language -->
+        <legend data-key="langselect">Preferred language</legend><br><br>
+        <div class="language-option">
+          <input type="radio" name="language" value="en" id="english-language" />
+          <label for="english-language" data-key="english">English</label>
+        </div><br>
+        <div class="language-option">
+          <input type="radio" name="language" value="fr" id="french-language" />
+          <label for="french-language" data-key="french">French</label>
+        </div><br><br>
+
+        <!-- Name row -->
+        <div class="row">
+          <div>
+            <label for="name" data-key="name">Name</label><br>
+            <input type="text" id="name" placeholder="Name" autocomplete="name" />
+            <div id="name-error" class="field-error"></div>
+          </div>
+          <div>
+            <label for="lastName" data-key="lastName">Last Name</label><br>
+            <input type="text" id="lastName" placeholder="Last name" autocomplete="family-name" />
+            <div id="lastName-error" class="field-error"></div>
+          </div>
+        </div><br>
+
+        <!-- Parent name — shown for skater_parent only -->
+        <div id="parentName-row">
+          <label for="parentName" data-key="parentName">Parent name (optional)</label><br>
+          <input type="text" id="parentName" placeholder="Parent name" autocomplete="additional-name" />
+          <br><br>
+        </div>
+
+        <!-- Email + Phone -->
+        <div class="row">
+          <div>
+            <label for="emailAddress" data-key="email">Email</label><br>
+            <input type="email" id="emailAddress" placeholder="Email address" autocomplete="email" />
+            <div id="emailAddress-error" class="field-error"></div>
+          </div>
+          <div>
+            <label for="phoneNumber" data-key="phoneNumber">Phone number</label><br>
+            <input type="tel" id="phoneNumber" placeholder="XXX-XXX-XXXX" autocomplete="tel" />
+            <div id="phoneNumber-error" class="field-error"></div>
+          </div>
+        </div><br>
+
+        <!-- Skate Canada number — shown for coach + skater_parent -->
+        <div id="skateCan-row">
+          <label for="skateCanadaNumber" data-key="skateCan">Skate Canada number</label><br>
+          <input type="text" id="skateCanadaNumber" placeholder="XXXXXXXXXXX" />
+          <div id="skateCanadaNumber-error" class="field-error"></div>
+          <br>
+        </div>
+
+        <!-- Club number — shown for admin only -->
+        <div id="clubNum-row">
+          <label for="skateCanClubNumber" data-key="skateCanClubNumber">Skate Canada club number</label><br>
+          <input type="text" id="skateCanClubNumber" placeholder="XXXXXXXXXXX" />
+          <div id="skateCanClubNumber-error" class="field-error"></div>
+          <br>
+        </div>
+
+        <!-- Password -->
+        <div class="row">
+          <div>
+            <label for="changepassword" data-key="changepw">Change password</label><br>
+            <input type="password" id="changepassword" placeholder="New password" autocomplete="new-password" />
+            <div id="password-error" class="field-error"></div>
+          </div>
+          <div>
+            <label for="passwordConfirmation" data-key="confirmNewpw">Confirm new password</label><br>
+            <input type="password" id="passwordConfirmation" placeholder="Confirm password" autocomplete="new-password" />
+            <div id="passwordConfirmation-error" class="field-error"></div>
+          </div>
+        </div><br>
+
+        <button type="submit" id="saveChanges" data-key="saveChanges">Save changes</button>
+        <br><br>
+
+      </form>
     </div>
-	</div>
-
-	<label for="skateCanadaNumber" data-key="skateCan">Skate Canada number</label><br>
-	<input type="text" id="skateCanadaNumber" placeholder="XXXXXXXXXXX" />
-	<div id="skateCanadaNumber-error" class="field-error"></div>
-	<br>
-	
-  <div class="row">
-    <div>
-	<label for="changepassword" data-key="changepw">Change password</label><br>
-	<input type="password" id="changepassword" placeholder="New password" autocomplete="new-password" />
-	<div id="password-error" class="field-error"></div>
-	</div>
-  <div>
-	<label for="passwordConfirmation" data-key="confirmNewpw">Confirm new password</label><br>
-	<input type="password" id="passwordConfirmation" placeholder="Password confirmation" autocomplete="new-password" />
-	<div id="passwordConfirmation-error" class="field-error"></div>
   </div>
-    </div>
-    <br>
-    <button type="submit" id="saveChanges" data-key="saveChanges">Save changes</button>
-	<br><br>	
+</main>
 
-	</form>
-	
-
-    </div>
-
-	</div>
- 
-
-<!-- NAVIGATION BAR — onclick removed; navigation handled entirely by accountSettings.js -->
 <nav class="bottom-nav">
-        <button class="nav-item" id="dashboard-btn">
-          <img src="dashboardIcon.png" class="icon" />
-           <span data-key="dashboard">Dashboard</span>
-        </button>
-
-        <button class="nav-item" id="calendar-btn">
-          <img src="calendarIcon.png" class="icon" />
-            <span data-key="calendar">Calendar</span>
-        </button>
-
-        <button class="nav-item" id="payment-btn">
-          <img src="paymentIcon.png" class="icon" />
-            <span data-key="payment">Payment</span>
-        </button>
-
-        <button class="nav-item" id="settings-btn">
-          <img src="settings.png" class="icon" />
-            <span data-key="settings">Settings</span>
-        </button>
-
-      <button class="nav-item" id="logout-btn">
-        <img src="logout.png" class="icon" />
-          <span data-key="logout">Logout</span>
-      </button>
+  <button class="nav-item" id="dashboard-btn">
+    <img src="dashboardIcon.png" class="icon" />
+    <span data-key="dashboard">Dashboard</span>
+  </button>
+  <button class="nav-item" id="calendar-btn">
+    <img src="calendarIcon.png" class="icon" />
+    <span data-key="calendar">Calendar</span>
+  </button>
+  <button class="nav-item" id="payment-btn">
+    <img src="paymentIcon.png" class="icon" />
+    <span data-key="payment">Payment</span>
+  </button>
+  <button class="nav-item" id="settings-btn">
+    <img src="settings.png" class="icon" />
+    <span data-key="settings">Settings</span>
+  </button>
+  <button class="nav-item" id="logout-btn">
+    <img src="logout.png" class="icon" />
+    <span data-key="logout">Logout</span>
+  </button>
 </nav>
-
-
-  </main>
-
 
 <footer class="app-footer">
   <br><br>

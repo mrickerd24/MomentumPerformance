@@ -13,7 +13,6 @@ const firebaseConfig = {
   measurementId: "G-4996PSTP69"
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
@@ -32,55 +31,29 @@ if (langToggle) {
 }
 
 // ---------------- LOGIN ----------------
-const emailInput = document.getElementById("email");
+const emailInput    = document.getElementById("email");
 const passwordInput = document.getElementById("password");
-const button = document.getElementById("login-btn");
-
-const emailError = document.getElementById("email-error");
+const button        = document.getElementById("login-btn");
+const emailError    = document.getElementById("email-error");
 const passwordError = document.getElementById("password-error");
 
 button.addEventListener("click", (e) => {
   e.preventDefault();
-
-  let valid = true;
-
-  emailError.innerText = "";
+  emailError.innerText    = "";
   passwordError.innerText = "";
 
-  if (!emailInput.value) {
-    emailError.innerText = "Email required";
-    valid = false;
-  }
-
-  if (!passwordInput.value) {
-    passwordError.innerText = "Password required";
-    valid = false;
-  }
-
+  let valid = true;
+  if (!emailInput.value)    { emailError.innerText = "Email required"; valid = false; }
+  if (!passwordInput.value) { passwordError.innerText = "Password required"; valid = false; }
   if (!valid) return;
 
   signInWithEmailAndPassword(auth, emailInput.value, passwordInput.value)
     .then(async (userCredential) => {
-      const user = userCredential.user;
-
-      const docRef = doc(db, "users", user.uid);
-      const docSnap = await getDoc(docRef);
-
+      const docSnap = await getDoc(doc(db, "users", userCredential.user.uid));
       if (docSnap.exists()) {
-        const userData = docSnap.data();
-
-        if (userData.role === "coach") {
-          window.location.href = "coachAccount.html";
-        } else if (userData.role === "skater_parent") {
-          window.location.href = "skaterAccount.html";
-        } else if (userData.role === "admin") {
-          window.location.href = "adminAccount.html";
-        } else {
-          window.location.href = "index.html";
-        }
+        window.location.href = "dashboard.html";
       } else {
         alert(translations[currentLang].userNotFound);
-        
       }
     })
     .catch((error) => {
