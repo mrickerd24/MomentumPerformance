@@ -50,7 +50,8 @@ export const translations = {
     changeError: "Error saving changes. Please try again.",
     userNotFound: "User data not found",
     enterEmail: "Enter your email",
-    resetLinkSent: "Reset link has been sent to your email address"
+    resetLinkSent: "Reset link has been sent to your email address",
+    backToLogin: "Back to login"
 
   },
 
@@ -106,7 +107,8 @@ export const translations = {
     changeError: "Erreur lors de l’enregistrement des modifications. Veuillez réessayer",
     userNotFound: "Utilisateur introuvable",
     enterEmail: "Entrez votre courriel",
-    resetLinkSent: "Un lien de réinitialisation a été envoyé à votre adresse courriel"
+    resetLinkSent: "Un lien de réinitialisation a été envoyé à votre adresse courriel",
+    backToLogin: "Retour à la connexion"
 
   }
 };
