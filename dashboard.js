@@ -20,16 +20,16 @@ const TILE_DEFINITIONS = {
   iceHours:      { labelKey: "iceHours",      color: "#852dcc", href: "#" },
 
   // Adding connections 
-  addSkater:  { labelKey: "addSkater",       color: "#0C66E4", href: "addConnection.html?mode=skater" },
+  addStuent:  { labelKey: "addStuent",       color: "#0C66E4", href: "addConnection.html?mode=skater" },
   addCoach:   { labelKey: "addCoach",        color: "#1F845A", href: "addConnection.html?mode=coach"  },
   myRequests: { labelKey: "pendingRequests", color: "#C9372C", href: "addConnection.html"             },
 
 };
 
 const ROLE_PERMISSIONS = {
-  coach:         ["students", "viewSchedule", "addhours", "hoursCoached", "addSkater"],
+  coach:         ["students", "viewSchedule", "addhours", "hoursCoached", "addStuent"],
   skater_parent: ["coaches", "upcomingClasses", "viewSchedule", "hoursTrained", "addCoach"],
-  admin:         ["clubCoaches", "clubStudents", "clubSchedule", "iceHours", "addSkater", "addCoach"],
+  admin:         ["clubCoaches", "clubStudents", "clubSchedule", "iceHours", "addStuent", "addCoach"],
 
 
 
