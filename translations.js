@@ -69,6 +69,8 @@ export const translations = {
     decline: "Decline",
     cancel: "Cancel",
     removeConnection: "Remove",
+    skaterSection: "Skater section",
+    hoursWithCoach: "Hours with coach"
   },
 
   fr: {
@@ -141,6 +143,8 @@ export const translations = {
     decline: "Refuser",
     cancel: "Annuler",
     removeConnection: "Retirer",
+    skaterSection: "Section patineur",
+    hoursWithCoach: "Heures avec entraîneur"
   }
 };
 
