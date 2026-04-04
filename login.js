@@ -79,7 +79,8 @@ button.addEventListener("click", (e) => {
           window.location.href = "index.html";
         }
       } else {
-        alert("User data not found");
+        alert(translations[currentLang].userNotFound);
+        
       }
     })
     .catch((error) => {

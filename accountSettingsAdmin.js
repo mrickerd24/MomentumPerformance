@@ -135,13 +135,14 @@ form.addEventListener("submit", async (e) => {
       document.getElementById("passwordConfirmation").value = "";
     }
 
-    alert("Changes saved successfully!");
+    alert(translations[currentLang].changesSaved);
   } catch (error) {
     console.error("Save error:", error);
+    // If password update fails due to stale session, prompt re-auth
     if (error.code === "auth/requires-recent-login") {
-      alert("For security, please log out and log back in before changing your password.");
+      alert(translations[currentLang].forSecurity);
     } else {
-      alert("Error saving changes. Please try again.");
+      alert(translations[currentLang].forSecurity);
     }
   }
 });

@@ -41,7 +41,17 @@ export const translations = {
     clubStudents: "Students",
     clubSchedule: "Club schedule",
     iceHours: "Total ice hours this week",
-    accountCreationError: "Account creation failed. Please try again."
+    accountCreationError: "Account creation failed. Please try again.",
+    resetPassword: "Reset password",
+    resetYourPassword: "Reset your password",
+    reset: "Reset",
+    changesSaved: "Changes saved successfully!",
+    forSecurity: "For security, please log out and log back in before changing your password.",
+    changeError: "Error saving changes. Please try again.",
+    userNotFound: "User data not found",
+    enterEmail: "Enter your email",
+    resetLinkSent: "Reset link has been sent to your email address"
+
   },
 
   fr: {
@@ -87,7 +97,17 @@ export const translations = {
     clubStudents: "Élèves",
     clubSchedule: "Horaire du club",
     iceHours: "Heures de glace cette semaine",
-    accountCreationError: "La création du compte a échoué. Veuillez réessayer."
+    accountCreationError: "La création du compte a échoué. Veuillez réessayer.",
+    resetPassword: "Réinitialiser mot de passe",
+    resetYourPassword: "Réinitialisez votre mot de passe",
+    reset: "Réinitialisez",
+    changesSaved: "Modifications enregistrées avec succès",
+    forSecurity: "Pour des raisons de sécurité, veuillez vous déconnecter puis vous reconnecter avant de modifier votre mot de passe",
+    changeError: "Erreur lors de l’enregistrement des modifications. Veuillez réessayer",
+    userNotFound: "Utilisateur introuvable",
+    enterEmail: "Entrez votre courriel",
+    resetLinkSent: "Un lien de réinitialisation a été envoyé à votre adresse courriel"
+
   }
 };
 
