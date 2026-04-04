@@ -30,7 +30,7 @@ document.getElementById("reset").addEventListener("click", () => {
         return;
     }
 
-    sendPasswordResetEmail(Auth, email)
+    sendPasswordResetEmail(auth, email)
     .then(() => {
         alert(translations[currentLang].resetLinkSent);
     })
