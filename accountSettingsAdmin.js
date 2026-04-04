@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signOut, onAuthStateChanged, updatePassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { setLanguage } from "./translations.js";
+import { translations, setLanguage } from "./translations.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA-17uYmpblsb3b-NlB5_RK7ci7ZvUkH4Q",
@@ -135,14 +135,15 @@ form.addEventListener("submit", async (e) => {
       document.getElementById("passwordConfirmation").value = "";
     }
 
-    alert(translations[currentLang].changesSaved);
+    const lang = localStorage.getItem("language") || "en";
+    alert(translations[lang].changesSaved);
   } catch (error) {
     console.error("Save error:", error);
-    // If password update fails due to stale session, prompt re-auth
+    const lang = localStorage.getItem("language") || "en";
     if (error.code === "auth/requires-recent-login") {
-      alert(translations[currentLang].forSecurity);
+      alert(translations[lang].forSecurity);
     } else {
-      alert(translations[currentLang].forSecurity);
+      alert(translations[lang].forSecurity);
     }
   }
 });

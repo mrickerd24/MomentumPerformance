@@ -18,22 +18,21 @@ document.addEventListener("DOMContentLoaded", () => {
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    const currentLang = localStorage.getItem("lang") || "fr";
+    const currentLang = localStorage.getItem("language") || "fr";
     setLanguage(currentLang);
 
-
-
 document.getElementById("reset").addEventListener("click", () => {
-    const email = document.getElementById("emailAddress").value;
+    const lang = localStorage.getItem("language") || "fr";
+    const email = document.getElementById("emailAddress").value.trim();
 
     if(!email) {
-        alert(translations[Lang].enterEmail);
+        alert(translations[lang].enterEmail);
         return;
     }
 
     sendPasswordResetEmail(auth, email)
     .then(() => {
-        alert(translations[Lang].resetLinkSent);
+        alert(translations[lang].resetLinkSent);
     })
 
     .catch((error) => {
