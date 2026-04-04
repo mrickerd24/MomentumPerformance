@@ -1,7 +1,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { setLanguage } from "./translations.js";
+import { translations, setLanguage } from "./translations.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA-17uYmpblsb3b-NlB5_RK7ci7ZvUkH4Q",
@@ -50,10 +50,13 @@ onAuthStateChanged(auth, async (user) => {
       return;
     }
 
-    const title = document.querySelector('[data-key-placeholder="WelcomeToDashboard"]');
+    const name = data.firstName || "Admin";
+
+    const title = document.querySelector('[data-key="WelcomeToDashboard"]');
     if (title) {
-      const name = data.firstName || "Admin";
-      title.textContent = `Welcome to your dashboard, ${name}`;
+      const lang = localStorage.getItem("language") || "en";
+      const welcomeText = translations[lang]["WelcomeToDashboard"] || "Welcome to your dashboard";
+      title.textContent = `${welcomeText}, ${name}`;
     }
 
   } catch (error) {
