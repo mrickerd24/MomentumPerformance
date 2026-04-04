@@ -4,7 +4,7 @@ import { auth, db, getLang, applyLanguage, authGuard, initNav, translations } fr
 const TILE_DEFINITIONS = {
   // Coach tiles
   students:      { labelKey: "students",      color: "#0C66E4", href: "#" },
-  addStuent:  { labelKey: "addStuent",       color: "#0C66E4", href: "addConnection.html?mode=skater" },
+  addStudent:  { labelKey: "addStudent",       color: "#0C66E4", href: "addConnection.html?mode=skater" },
   viewSchedule:  { labelKey: "viewSchedule",  color: "#1F845A", href: "#" },
   addhours:      { labelKey: "addhours",      color: "#C9372C", href: "#" },
   hoursCoached:  { labelKey: "hoursCoached",  color: "#852dcc", href: "#" },
