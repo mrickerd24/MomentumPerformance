@@ -14,12 +14,15 @@ function fullName(u) {
   return `${u.firstName || ""} ${u.lastName || ""}`.trim();
 }
 
-function targetRole(myRoles, urlMode) {
-  if (urlMode === "skater") return "skater_parent";
-  if (urlMode === "coach")  return "coach";
-  if (myRoles.includes("coach"))         return "skater_parent";
-  if (myRoles.includes("skater_parent")) return "coach";
-  return null; // admin: search both
+function targetRoles(myRoles, urlMode) {
+  // URL mode overrides
+  if (urlMode === "skater") return ["skater", "parent"]; // coaches add skaters OR parents
+  if (urlMode === "coach")  return ["coach"];
+
+  // Infer from own roles
+  if (myRoles.includes("coach"))                                    return ["skater", "parent"];
+  if (myRoles.includes("skater") || myRoles.includes("parent"))     return ["coach"];
+  return ["coach", "skater", "parent"]; // admin: search all
 }
 
 // ── Card builder ─────────────────────────────────────────────────────────────
@@ -181,22 +184,22 @@ document.addEventListener("DOMContentLoaded", () => {
   const urlMode = new URLSearchParams(window.location.search).get("mode");
 
   authGuard([], async (currentUser, userData) => {
-    const myRoles  = userData.rolesArray;
-    const myTarget = targetRole(myRoles, urlMode);
+    const myRoles    = userData.rolesArray;
+    const rolesToSearch = targetRoles(myRoles, urlMode);
 
-    // Set page title and labels
+    // Set page title
     const titleEl = document.getElementById("page-title");
-    if (urlMode === "skater" || myTarget === "skater_parent") {
+    if (urlMode === "skater" || (!urlMode && myRoles.includes("coach"))) {
       titleEl.textContent = t("addStudent");
-    } else if (urlMode === "coach" || myTarget === "coach") {
+    } else if (urlMode === "coach" || (!urlMode && (myRoles.includes("skater") || myRoles.includes("parent")))) {
       titleEl.textContent = t("addCoach");
     } else {
       titleEl.textContent = t("addConnection");
     }
+
     document.getElementById("search-label").textContent = t("searchByName");
     document.getElementById("searchBtn").textContent    = t("search");
 
-    // Load existing connections on page open
     await loadConnections(currentUser.uid);
 
     // Search
@@ -206,7 +209,6 @@ document.addEventListener("DOMContentLoaded", () => {
       resultsDiv.innerHTML = "";
       if (!raw) return;
 
-      const rolesToSearch = myTarget ? [myTarget] : ["coach", "skater_parent"];
       let candidates = [];
 
       for (const role of rolesToSearch) {
@@ -233,7 +235,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
-      // Get existing connections to flag already-connected users
+      // Flag already-connected users
       const existingSnap = await getDocs(
         query(collection(db, "connections"), where("participants", "array-contains", currentUser.uid))
       );

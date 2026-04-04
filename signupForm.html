@@ -24,15 +24,19 @@
 
       <form id="signupForm">
 
-        <!-- Roles — checkboxes so users can select multiple -->
+        <!-- Roles -->
         <label data-key="accountType">Account type</label><br><br>
         <div class="role-option">
           <input type="checkbox" name="role" value="coach" id="roleCoach" />
           <label for="roleCoach" data-key="coach">Coach</label>
         </div><br>
         <div class="role-option">
-          <input type="checkbox" name="role" value="skater_parent" id="roleSkater" />
-          <label for="roleSkater" data-key="skaterParent">Skater or parent</label>
+          <input type="checkbox" name="role" value="skater" id="roleSkater" />
+          <label for="roleSkater" data-key="skater">Skater</label>
+        </div><br>
+        <div class="role-option">
+          <input type="checkbox" name="role" value="parent" id="roleParent" />
+          <label for="roleParent" data-key="parent">Parent</label>
         </div><br>
         <div class="role-option">
           <input type="checkbox" name="role" value="admin" id="roleAdmin" />
@@ -46,10 +50,6 @@
         <label for="lastName" data-key="lastName">Last Name</label><br>
         <input type="text" id="lastName" placeholder="Last name" />
         <div id="lastName-error" class="field-error"></div>
-
-        <label for="parentName" data-key="parentName">Parent name (optional)</label><br>
-        <input type="text" id="parentName" placeholder="Parent name" />
-        <br><br>
 
         <label for="emailAddress" data-key="email">Email</label><br>
         <input type="email" id="emailAddress" placeholder="Email address" />

@@ -14,6 +14,11 @@ const TILE_DEFINITIONS = {
   addCoach:       { labelKey: "addCoach",        color: "#1F845A", href: "addConnection.html?mode=coach" },
   hoursWithCoach: { labelKey: "hoursWithCoach",  color: "#852dcc", href: "#" },
 
+  // Parent tiles
+  myChildren:     { labelKey: "myChildren",      color: "#0C66E4", href: "#" },
+  childSchedule:  { labelKey: "childSchedule",   color: "#1F845A", href: "#" },
+  childHours:     { labelKey: "childHours",       color: "#852dcc", href: "#" },
+
   // Shared
   myRequests:     { labelKey: "pendingRequests", color: "#C9372C", href: "addConnection.html" },
 
@@ -30,9 +35,13 @@ const ROLE_SECTIONS = {
     labelKey: "coachSection",
     tiles: ["students", "addStudent", "viewSchedule", "addhours", "hoursCoached", "myRequests"]
   },
-  skater_parent: {
+  skater: {
     labelKey: "skaterSection",
     tiles: ["coaches", "addCoach", "viewSchedule", "hoursWithCoach", "myRequests"]
+  },
+  parent: {
+    labelKey: "parentSection",
+    tiles: ["myChildren", "addCoach", "childSchedule", "childHours", "myRequests"]
   },
   admin: {
     labelKey: "adminSection",

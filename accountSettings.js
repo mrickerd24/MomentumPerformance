@@ -19,7 +19,6 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   authGuard([], (user, userData) => {
-    // Populate fields
     document.getElementById("name").value         = userData.firstName   || "";
     document.getElementById("lastName").value     = userData.lastName    || "";
     document.getElementById("emailAddress").value = userData.email       || "";
@@ -27,10 +26,10 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const roles = userData.rolesArray;
 
-    // Show skate Canada number for coaches and skaters
+    // Show Skate Canada number for coaches, skaters and parents
     const skateCanRow = document.getElementById("skateCan-row");
     if (skateCanRow) {
-      const show = roles.includes("coach") || roles.includes("skater_parent");
+      const show = roles.includes("coach") || roles.includes("skater") || roles.includes("parent");
       skateCanRow.style.display = show ? "" : "none";
       if (show) document.getElementById("skateCanadaNumber").value = userData.skateCanadaNumber || "";
     }
@@ -43,13 +42,9 @@ document.addEventListener("DOMContentLoaded", () => {
       if (show) document.getElementById("skateCanClubNumber").value = userData.skateCanClubNumber || "";
     }
 
-    // Show parent name for skaters
+    // Hide parent name row entirely — no longer used
     const parentRow = document.getElementById("parentName-row");
-    if (parentRow) {
-      const show = roles.includes("skater_parent");
-      parentRow.style.display = show ? "" : "none";
-      if (show) document.getElementById("parentName").value = userData.parentName || "";
-    }
+    if (parentRow) parentRow.style.display = "none";
 
     // Save
     const form = document.getElementById("accountSettingsForm");
@@ -82,14 +77,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const updateData = { firstName: nameVal, lastName: lastNameVal, email: emailVal, phoneNumber: phoneVal };
 
-      if (roles.includes("coach") || roles.includes("skater_parent")) {
+      if (roles.includes("coach") || roles.includes("skater") || roles.includes("parent")) {
         updateData.skateCanadaNumber = document.getElementById("skateCanadaNumber")?.value.trim() || "";
       }
       if (roles.includes("admin")) {
         updateData.skateCanClubNumber = document.getElementById("skateCanClubNumber")?.value.trim() || "";
-      }
-      if (roles.includes("skater_parent")) {
-        updateData.parentName = document.getElementById("parentName")?.value.trim() || "";
       }
 
       try {

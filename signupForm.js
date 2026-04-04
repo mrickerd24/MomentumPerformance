@@ -36,7 +36,6 @@ const form = document.getElementById("signupForm");
 form.addEventListener("submit", (e) => {
   e.preventDefault();
 
-  // Collect ALL checked roles (multi-select checkboxes)
   const checkedRoles = Array.from(document.querySelectorAll('input[name="role"]:checked')).map(el => el.value);
 
   const nameVal     = document.getElementById("name").value.trim();
@@ -44,7 +43,6 @@ form.addEventListener("submit", (e) => {
   const emailVal    = document.getElementById("emailAddress").value.trim();
   const phoneVal    = document.getElementById("phoneNumber").value.trim();
   const skateNum    = document.getElementById("skateCanadaNumber").value.trim();
-  const parentName  = document.getElementById("parentName").value.trim();
   const password    = document.getElementById("password").value;
   const confirmPw   = document.getElementById("passwordConfirmation").value;
 
@@ -55,13 +53,13 @@ form.addEventListener("submit", (e) => {
   });
 
   let valid = true;
-  if (checkedRoles.length === 0)            { alert("Please select at least one role"); valid = false; }
-  if (!nameVal)                             { document.getElementById("name-error").innerText = "First name is required"; valid = false; }
-  if (!lastNameVal)                         { document.getElementById("lastName-error").innerText = "Last name is required"; valid = false; }
-  if (!emailVal || !emailVal.includes("@")) { document.getElementById("emailAddress-error").innerText = "Invalid email"; valid = false; }
-  if (!phoneVal)                            { document.getElementById("phoneNumber-error").innerText = "Phone number is required"; valid = false; }
-  if (!password)                            { document.getElementById("password-error").innerText = "Password is required"; valid = false; }
-  if (password !== confirmPw)               { document.getElementById("passwordConfirmation-error").innerText = "Passwords do not match"; valid = false; }
+  if (checkedRoles.length === 0)            { alert(translations[currentLang].selectRole); valid = false; }
+  if (!nameVal)                             { document.getElementById("name-error").innerText = translations[currentLang].firstNameRequired; valid = false; }
+  if (!lastNameVal)                         { document.getElementById("lastName-error").innerText = translations[currentLang].lastNameRequired; valid = false; }
+  if (!emailVal || !emailVal.includes("@")) { document.getElementById("emailAddress-error").innerText = translations[currentLang].invalidEmail; valid = false; }
+  if (!phoneVal)                            { document.getElementById("phoneNumber-error").innerText = translations[currentLang].phoneRequired; valid = false; }
+  if (!password)                            { document.getElementById("password-error").innerText = translations[currentLang].passwordRequired; valid = false; }
+  if (password !== confirmPw)               { document.getElementById("passwordConfirmation-error").innerText = translations[currentLang].passwordMismatch; valid = false; }
   if (!valid) return;
 
   let createdUser = null;
@@ -70,13 +68,12 @@ form.addEventListener("submit", (e) => {
     .then((userCredential) => {
       createdUser = userCredential.user;
       return setDoc(doc(db, "users", createdUser.uid), {
-        firstName:        nameVal,
-        lastName:         lastNameVal,
-        email:            emailVal,
-        phoneNumber:      phoneVal,
+        firstName:         nameVal,
+        lastName:          lastNameVal,
+        email:             emailVal,
+        phoneNumber:       phoneVal,
         skateCanadaNumber: skateNum,
-        parentName:       parentName,
-        roles:            checkedRoles,   // ← array, not single string
+        roles:             checkedRoles,
       });
     })
     .then(() => {
