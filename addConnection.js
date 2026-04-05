@@ -184,8 +184,79 @@ function renderConnected(connected, myUid) {
       onClick: async () => {
         await deleteDoc(doc(db, "connections", conn.id));
         await loadConnections(myUid);
+        // Re-run the last search so the removed person appears as searchable again
+        document.getElementById("searchBtn").click();
       }
     }]));
+  });
+}
+
+// ── Search ────────────────────────────────────────────────────────────────────
+
+async function runSearch(currentUser, userData, rolesToSearch) {
+  const raw        = document.getElementById("searchInput").value.trim().toLowerCase();
+  const resultsDiv = document.getElementById("search-results");
+  resultsDiv.innerHTML = "";
+  if (!raw) return;
+
+  let candidates = [];
+
+  for (const role of rolesToSearch) {
+    const snap = await getDocs(
+      query(collection(db, "users"), where("roles", "array-contains", role))
+    );
+    snap.forEach(d => {
+      if (d.id !== currentUser.uid) candidates.push({ uid: d.id, ...d.data() });
+    });
+  }
+
+  // Deduplicate
+  const seen = new Set();
+  candidates = candidates.filter(c => !seen.has(c.uid) && seen.add(c.uid));
+
+  // Filter by search string
+  const matches = candidates.filter(c =>
+    fullName(c).toLowerCase().includes(raw) ||
+    (c.email || "").toLowerCase().includes(raw)
+  );
+
+  if (!matches.length) {
+    resultsDiv.appendChild(emptyMsg(t("noResults")));
+    return;
+  }
+
+  // Fetch current live connection state (fresh query — not cached)
+  const existingSnap = await getDocs(
+    query(collection(db, "connections"), where("participants", "array-contains", currentUser.uid))
+  );
+  // Track accepted and pending separately
+  const acceptedUids = new Set();
+  const pendingUids  = new Set();
+  existingSnap.forEach(d => {
+    const data  = d.data();
+    const other = data.participants.find(id => id !== currentUser.uid);
+    if (!other) return;
+    if (data.status === "accepted") acceptedUids.add(other);
+    else                            pendingUids.add(other);
+  });
+
+  matches.forEach(candidate => {
+    let actions;
+    if (acceptedUids.has(candidate.uid)) {
+      actions = [{ label: t("connected"), color: "#1F845A", onClick: () => {} }];
+    } else if (pendingUids.has(candidate.uid)) {
+      actions = [{ label: t("requestSent"), color: "#5E6C84", onClick: () => {} }];
+    } else {
+      actions = [{
+        label: t("sendRequest"), color: "#0C66E4",
+        onClick: async () => {
+          await sendRequest(currentUser.uid, userData, candidate);
+          await loadConnections(currentUser.uid);
+          await runSearch(currentUser, userData, rolesToSearch);
+        }
+      }];
+    }
+    resultsDiv.appendChild(userCard(candidate, actions));
   });
 }
 
@@ -215,67 +286,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     await loadConnections(currentUser.uid);
 
-    // Search
-    document.getElementById("searchBtn").addEventListener("click", async () => {
-      const raw        = document.getElementById("searchInput").value.trim().toLowerCase();
-      const resultsDiv = document.getElementById("search-results");
-      resultsDiv.innerHTML = "";
-      if (!raw) return;
-
-      let candidates = [];
-
-      for (const role of rolesToSearch) {
-        const snap = await getDocs(
-          query(collection(db, "users"), where("roles", "array-contains", role))
-        );
-        snap.forEach(d => {
-          if (d.id !== currentUser.uid) candidates.push({ uid: d.id, ...d.data() });
-        });
-      }
-
-      // Deduplicate
-      const seen = new Set();
-      candidates = candidates.filter(c => !seen.has(c.uid) && seen.add(c.uid));
-
-      // Filter by search string
-      const matches = candidates.filter(c =>
-        fullName(c).toLowerCase().includes(raw) ||
-        (c.email || "").toLowerCase().includes(raw)
-      );
-
-      if (!matches.length) {
-        resultsDiv.appendChild(emptyMsg(t("noResults")));
-        return;
-      }
-
-      // Flag already-connected users
-      const existingSnap = await getDocs(
-        query(collection(db, "connections"), where("participants", "array-contains", currentUser.uid))
-      );
-      const linkedUids = new Set();
-      existingSnap.forEach(d => {
-        const other = d.data().participants.find(id => id !== currentUser.uid);
-        if (other) linkedUids.add(other);
-      });
-
-      matches.forEach(candidate => {
-        const alreadyLinked = linkedUids.has(candidate.uid);
-        resultsDiv.appendChild(userCard(candidate, alreadyLinked
-          ? [{ label: t("connected"), color: "#1F845A", onClick: () => {} }]
-          : [{
-              label: t("sendRequest"), color: "#0C66E4",
-              onClick: async () => {
-                await sendRequest(currentUser.uid, userData, candidate);
-                resultsDiv.innerHTML = "";
-                resultsDiv.appendChild(Object.assign(document.createElement("p"), {
-                  textContent: t("requestSent"),
-                  style: "color:#1F845A;font-weight:600;"
-                }));
-                await loadConnections(currentUser.uid);
-              }
-            }]
-        ));
-      });
+    document.getElementById("searchBtn").addEventListener("click", () => {
+      runSearch(currentUser, userData, rolesToSearch);
     });
 
     initNav("addConnection.html");
