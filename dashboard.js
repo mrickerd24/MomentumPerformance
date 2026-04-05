@@ -56,6 +56,7 @@ function renderDashboard(userData) {
   const roles = userData.rolesArray;
   const container = document.getElementById("tiles-container");
   container.innerHTML = "";
+  container.style.width = "100%"; // Fix: ensure rows fill the box
 
   roles.forEach(role => {
     const section = ROLE_SECTIONS[role];
@@ -74,7 +75,13 @@ function renderDashboard(userData) {
       row.className = "row";
 
       [tileKeys[i], tileKeys[i + 1]].forEach(key => {
-        if (!key) return;
+        if (!key) {
+          // Fix: invisible placeholder so lone last tile doesn't stretch full-width
+          const placeholder = document.createElement("div");
+          placeholder.style.flex = "1";
+          row.appendChild(placeholder);
+          return;
+        }
         const def = TILE_DEFINITIONS[key];
         if (!def) return;
         const tile = document.createElement("div");
