@@ -1,12 +1,12 @@
 import { auth, db, getLang, applyLanguage, authGuard, initNav, translations } from "./app.js";
-import { updatePassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { updatePassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { setLanguage } from "./translations.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   applyLanguage();
 
-  // Language radio buttons
+  // ── Language ────────────────────────────────────────────────────────────────
   const savedLang = getLang();
   const savedLangRadio = document.querySelector(`input[value="${savedLang}"]`);
   if (savedLangRadio) savedLangRadio.checked = true;
@@ -18,6 +18,28 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
+  // ── Modal helpers ───────────────────────────────────────────────────────────
+  const modal = document.getElementById("deleteModal");
+
+  function openModal() {
+    document.getElementById("deleteConfirmInput").value = "";
+    document.getElementById("deleteConfirm-error").innerText = "";
+    modal.classList.add("open");
+  }
+
+  function closeModal() {
+    modal.classList.remove("open");
+  }
+
+  document.getElementById("openDeleteModal").addEventListener("click", openModal);
+  document.getElementById("cancelDeleteBtn").addEventListener("click", closeModal);
+
+  // Close on backdrop click
+  modal.addEventListener("click", (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  // ── Auth guard ──────────────────────────────────────────────────────────────
   authGuard([], (user, userData) => {
     document.getElementById("name").value         = userData.firstName   || "";
     document.getElementById("lastName").value     = userData.lastName    || "";
@@ -26,7 +48,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const roles = userData.rolesArray;
 
-    // Show Skate Canada number for coaches, skaters and parents
     const skateCanRow = document.getElementById("skateCan-row");
     if (skateCanRow) {
       const show = roles.includes("coach") || roles.includes("skater") || roles.includes("parent");
@@ -34,7 +55,6 @@ document.addEventListener("DOMContentLoaded", () => {
       if (show) document.getElementById("skateCanadaNumber").value = userData.skateCanadaNumber || "";
     }
 
-    // Show club number for admins
     const clubRow = document.getElementById("clubNum-row");
     if (clubRow) {
       const show = roles.includes("admin");
@@ -42,13 +62,11 @@ document.addEventListener("DOMContentLoaded", () => {
       if (show) document.getElementById("skateCanClubNumber").value = userData.skateCanClubNumber || "";
     }
 
-    // Hide parent name row entirely — no longer used
     const parentRow = document.getElementById("parentName-row");
     if (parentRow) parentRow.style.display = "none";
 
-    // Save
-    const form = document.getElementById("accountSettingsForm");
-    form.addEventListener("submit", async (e) => {
+    // ── Save changes ──────────────────────────────────────────────────────────
+    document.getElementById("accountSettingsForm").addEventListener("submit", async (e) => {
       e.preventDefault();
 
       const lang = getLang();
@@ -67,11 +85,11 @@ document.addEventListener("DOMContentLoaded", () => {
       const confirmPw   = document.getElementById("passwordConfirmation").value;
 
       let valid = true;
-      if (!nameVal)                             { document.getElementById("name-error").innerText = "First name is required"; valid = false; }
-      if (!lastNameVal)                         { document.getElementById("lastName-error").innerText = "Last name is required"; valid = false; }
-      if (!emailVal || !emailVal.includes("@")) { document.getElementById("emailAddress-error").innerText = "Valid email is required"; valid = false; }
-      if (!phoneVal)                            { document.getElementById("phoneNumber-error").innerText = "Phone number is required"; valid = false; }
-      if (newPassword && newPassword.length < 6){ document.getElementById("password-error").innerText = "Min 6 characters"; valid = false; }
+      if (!nameVal)                                { document.getElementById("name-error").innerText = "First name is required"; valid = false; }
+      if (!lastNameVal)                            { document.getElementById("lastName-error").innerText = "Last name is required"; valid = false; }
+      if (!emailVal || !emailVal.includes("@"))    { document.getElementById("emailAddress-error").innerText = "Valid email is required"; valid = false; }
+      if (!phoneVal)                               { document.getElementById("phoneNumber-error").innerText = "Phone number is required"; valid = false; }
+      if (newPassword && newPassword.length < 6)   { document.getElementById("password-error").innerText = "Min 6 characters"; valid = false; }
       if (newPassword && newPassword !== confirmPw) { document.getElementById("passwordConfirmation-error").innerText = "Passwords do not match"; valid = false; }
       if (!valid) return;
 
@@ -96,6 +114,35 @@ document.addEventListener("DOMContentLoaded", () => {
         console.error("Save error:", error);
         alert(error.code === "auth/requires-recent-login" ? t.forSecurity : t.changeError);
       }
+    });
+
+    // ── Confirm delete ────────────────────────────────────────────────────────
+	const confirmDeleteBtn = document.getElementById("confirmDeleteBtn");
+		if (confirmDeleteBtn) confirmDeleteBtn.addEventListener("click", async () => {
+      const lang = getLang();
+      const t = translations[lang];
+      const confirmInput = document.getElementById("deleteConfirmInput").value.trim().toLowerCase();
+      const errorEl = document.getElementById("deleteConfirm-error");
+      errorEl.innerText = "";
+
+      const expectedWord = lang === "fr" ? "supprimer" : "delete";
+
+      if (confirmInput !== expectedWord) {
+        errorEl.innerText = t.deleteConfirmError;
+        return;
+      }
+ 
+      try {
+        await deleteDoc(doc(db, "users", user.uid));
+        await deleteUser(user);
+        window.location.href = "index.html?message=deleted";
+      } catch (error) {
+        console.error("Delete error:", error);
+        closeModal();
+        alert(error.code === "auth/requires-recent-login" ? t.forSecurity : t.changeError);
+      }
+		
+		
     });
 
     initNav("accountSettings.html");

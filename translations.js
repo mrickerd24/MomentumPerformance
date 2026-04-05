@@ -82,6 +82,11 @@ export const translations = {
     phoneRequired: "Phone number is required",
     passwordRequired: "Password is required",
     passwordMismatch: "Passwords do not match",
+    deleteAccount: "Delete account",
+    deleteAccountWarning: 'This action is permanent and cannot be undone. Type "delete" to confirm.',
+    deleteConfirmPlaceholder: 'Type "delete" to confirm',
+    deleteAccountBtn: "Confirm deletion",
+    deleteConfirmError: 'Please type "delete" to confirm.',
   },
 
   fr: {
@@ -121,7 +126,7 @@ export const translations = {
     childSchedule: "Horaire de mon enfant",
     childHours: "Heures de mon enfant cette semaine",
     changepw: "Nouveau mot de passe",
-    confirmNewpw: "Confirmation du nouveau mot de passe",
+    confirmNewpw: "Confirmation du mot de passe",
     admin: "Administrateur",
     skateCanClubNumber: "Numéro de club Patinage Canada",
     clubCoaches: "Entraîneurs",
@@ -167,6 +172,11 @@ export const translations = {
     phoneRequired: "Le numéro de téléphone est requis",
     passwordRequired: "Le mot de passe est requis",
     passwordMismatch: "Les mots de passe ne correspondent pas",
+    deleteAccount: "Supprimer le compte",
+    deleteAccountWarning: 'Cette action est permanente et irréversible. Tapez "supprimer" pour confirmer.',
+    deleteConfirmPlaceholder: 'Tapez "supprimer" pour confirmer',
+    deleteAccountBtn: "Confirmer la suppression",
+    deleteConfirmError: 'Veuillez taper "supprimer" pour confirmer.',
   }
 };
 

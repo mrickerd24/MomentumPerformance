@@ -6,6 +6,50 @@
   <title>Momentum Performance</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    #deleteModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+    }
+    #deleteModal.open {
+      display: flex;
+    }
+    .delete-modal-card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 28px 24px;
+      width: calc(100% - 48px);
+      max-width: 380px;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    }
+    .delete-modal-card h3 {
+      color: #C9372C;
+      margin: 0 0 10px 0;
+    }
+    .delete-modal-card p {
+      font-size: 13px;
+      color: #5E6C84;
+      margin: 0 0 16px 0;
+    }
+    .delete-modal-card input {
+      width: 100%;
+      margin-bottom: 8px;
+    }
+    .modal-btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 14px;
+    }
+    .modal-btn-row button {
+      flex: 1;
+    }
+  </style>
 </head>
 <body>
 
@@ -103,9 +147,35 @@
         <br><br>
 
       </form>
+
+      <!-- Delete account trigger — type="button" prevents any form interaction -->
+      <hr style="border: none; border-top: 1px solid #DFE1E6; margin: 8px 0 20px 0;">
+      <button type="button" id="openDeleteModal" data-key="deleteAccount" style="background-color: #C9372C;">Delete account</button>
+      <br><br>
+
     </div>
   </div>
 </main>
+
+<!-- Delete account modal — toggled via .open class -->
+<div id="deleteModal">
+  <div class="delete-modal-card">
+    <h3 data-key="deleteAccount">Delete account</h3>
+    <p data-key="deleteAccountWarning">This action is permanent and cannot be undone. Type <strong>delete</strong> to confirm.</p>
+    <input
+      type="text"
+      id="deleteConfirmInput"
+      autocomplete="off"
+      data-key-placeholder="deleteConfirmPlaceholder"
+      placeholder='Type "delete" to confirm'
+    />
+    <div id="deleteConfirm-error" class="field-error"></div>
+    <div class="modal-btn-row">
+      <button type="button" id="cancelDeleteBtn" data-key="cancel" style="background: #5E6C84;">Cancel</button>
+      <button type="button" id="confirmDeleteBtn" data-key="deleteAccountBtn" style="background: #C9372C;">Delete my account</button>
+    </div>
+  </div>
+</div>
 
 <nav class="bottom-nav">
   <button class="nav-item" id="dashboard-btn">

@@ -5,13 +5,13 @@ import { translations, setLanguage } from "./translations.js";
 
 // ---------------- FIREBASE ----------------
 const firebaseConfig = {
-  apiKey: "AIzaSyA-17uYmpblsb3b-NlB5_RK7ci7ZvUkH4Q",
-  authDomain: "momentum-performance.firebaseapp.com",
-  projectId: "momentum-performance",
-  storageBucket: "momentum-performance.firebasestorage.app",
-  messagingSenderId: "571184327943",
-  appId: "1:571184327943:web:a5df6568228ca686faa9a2",
-  measurementId: "G-4996PSTP69"
+  apiKey: "AIzaSyDN9m9khT74pXITmdDnJsQs4R8JhcpGQLs",
+  authDomain: "momentum-performance-staging.firebaseapp.com",
+  projectId: "momentum-performance-staging",
+  storageBucket: "momentum-performance-staging.firebasestorage.app",
+  messagingSenderId: "812122501954",
+  appId: "1:812122501954:web:3f629bda850d3ec56c0edb",
+  measurementId: "G-S2RKK30F6T"
 };
 
 export const app = initializeApp(firebaseConfig);
