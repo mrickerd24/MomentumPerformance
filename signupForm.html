@@ -24,7 +24,7 @@
 
       <form id="signupForm">
 
-        <!-- Roles -->
+        <!-- Roles (checkboxes — Admin is hidden, assigned via Firestore only) -->
         <label data-key="accountType">Account type</label><br><br>
         <div class="role-option">
           <input type="checkbox" name="role" value="coach" id="roleCoach" />
@@ -37,10 +37,6 @@
         <div class="role-option">
           <input type="checkbox" name="role" value="parent" id="roleParent" />
           <label for="roleParent" data-key="parent">Parent</label>
-        </div><br>
-        <div class="role-option">
-          <input type="checkbox" name="role" value="admin" id="roleAdmin" />
-          <label for="roleAdmin" data-key="admin">Administrator</label>
         </div><br><br>
 
         <label for="name" data-key="name">Name</label><br>

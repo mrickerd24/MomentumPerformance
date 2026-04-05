@@ -4,7 +4,7 @@ import { auth, db, getLang, applyLanguage, authGuard, initNav, translations } fr
 const TILE_DEFINITIONS = {
   // Coach tiles
   students:       { labelKey: "students",       color: "#0C66E4", href: "#" },
-  addStudent:     { labelKey: "addStudent",      color: "#0C66E4", href: "addConnection.html?mode=skater" },
+  addStudent:     { labelKey: "addStudent",      color: "#1F845A", href: "addConnection.html?mode=skater" },
   viewSchedule:   { labelKey: "viewSchedule",   color: "#1F845A", href: "#" },
   addhours:       { labelKey: "addhours",        color: "#C9372C", href: "#" },
   hoursCoached:   { labelKey: "hoursCoached",   color: "#852dcc", href: "#" },
@@ -27,9 +27,12 @@ const TILE_DEFINITIONS = {
   clubStudents:   { labelKey: "clubStudents",    color: "#1F845A", href: "#" },
   clubSchedule:   { labelKey: "clubSchedule",    color: "#C9372C", href: "#" },
   iceHours:       { labelKey: "iceHours",        color: "#852dcc", href: "#" },
+  adminAddCoach:  { labelKey: "addCoach",        color: "#0C66E4", href: "addConnection.html?mode=coach" },
+  adminAddStudent:{ labelKey: "addStudent",      color: "#1F845A", href: "addConnection.html?mode=skater" },
 };
 
 // ---------------- ROLE SECTIONS ----------------
+// Admin is intentionally not assignable via signup — set directly in Firestore.
 const ROLE_SECTIONS = {
   coach: {
     labelKey: "coachSection",
@@ -45,7 +48,7 @@ const ROLE_SECTIONS = {
   },
   admin: {
     labelKey: "adminSection",
-    tiles: ["clubCoaches", "clubStudents", "clubSchedule", "iceHours", "addCoach", "addStudent"]
+    tiles: ["clubCoaches", "clubStudents", "clubSchedule", "iceHours", "adminAddCoach", "adminAddStudent"]
   },
 };
 
@@ -56,17 +59,19 @@ function renderDashboard(userData) {
   const roles = userData.rolesArray;
   const container = document.getElementById("tiles-container");
   container.innerHTML = "";
-  container.style.width = "100%"; // Fix: ensure rows fill the box
+  container.style.width = "100%"; // ensure rows fill the box
 
   roles.forEach(role => {
     const section = ROLE_SECTIONS[role];
     if (!section) return;
 
-    // Section header
-    const header = document.createElement("div");
-    header.className = "section-header";
-    header.textContent = t[section.labelKey] || section.labelKey;
-    container.appendChild(header);
+    // Section header (only shown when user has multiple roles)
+    if (roles.length > 1) {
+      const header = document.createElement("div");
+      header.className = "section-header";
+      header.textContent = t[section.labelKey] || section.labelKey;
+      container.appendChild(header);
+    }
 
     // Render tiles in pairs
     const tileKeys = section.tiles;
@@ -76,7 +81,7 @@ function renderDashboard(userData) {
 
       [tileKeys[i], tileKeys[i + 1]].forEach(key => {
         if (!key) {
-          // Fix: invisible placeholder so lone last tile doesn't stretch full-width
+          // Invisible placeholder so lone last tile doesn't stretch full-width
           const placeholder = document.createElement("div");
           placeholder.style.flex = "1";
           row.appendChild(placeholder);
