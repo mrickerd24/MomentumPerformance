@@ -15,14 +15,11 @@ function fullName(u) {
 }
 
 function targetRoles(myRoles, urlMode) {
-  // URL mode overrides
-  if (urlMode === "skater") return ["skater", "parent"]; // coaches add skaters OR parents
+  if (urlMode === "skater") return ["skater", "parent"];
   if (urlMode === "coach")  return ["coach"];
-
-  // Infer from own roles
-  if (myRoles.includes("coach"))                                    return ["skater", "parent"];
-  if (myRoles.includes("skater") || myRoles.includes("parent"))     return ["coach"];
-  return ["coach", "skater", "parent"]; // admin: search all
+  if (myRoles.includes("coach"))                                return ["skater", "parent"];
+  if (myRoles.includes("skater") || myRoles.includes("parent")) return ["coach"];
+  return ["coach", "skater", "parent"]; // admin
 }
 
 // ── Card builder ─────────────────────────────────────────────────────────────
@@ -36,10 +33,13 @@ function userCard(userData, actions = []) {
     box-shadow:0 2px 6px rgba(0,0,0,0.05);
   `;
 
+  const roleLabels = (userData.roles || []).map(r => t(r) || r).join(", ");
+
   const info = document.createElement("div");
   info.innerHTML = `
     <strong style="font-size:14px">${fullName(userData)}</strong><br>
-    <span style="font-size:12px;color:#5E6C84">${userData.email || ""}</span>
+    <span style="font-size:12px;color:#5E6C84">${userData.email || ""}</span><br>
+    <span style="font-size:11px;color:#0C66E4;font-weight:600;">${roleLabels}</span>
   `;
 
   const btnGroup = document.createElement("div");
@@ -80,6 +80,7 @@ async function sendRequest(myUid, myData, target) {
     createdAt:    serverTimestamp(),
     names:  { [myUid]: fullName(myData),   [target.uid]: fullName(target)   },
     emails: { [myUid]: myData.email || "", [target.uid]: target.email || "" },
+    roles:  { [myUid]: myData.roles || [], [target.uid]: target.roles || [] },
   });
 }
 
@@ -114,7 +115,11 @@ function renderSent(sent, myUid) {
 
   sent.forEach(conn => {
     const otherUid  = conn.participants.find(id => id !== myUid);
-    const otherData = { firstName: conn.names[otherUid], email: conn.emails[otherUid] };
+    const otherData = {
+      firstName: conn.names[otherUid],
+      email:     conn.emails[otherUid],
+      roles:     conn.roles?.[otherUid] || [],
+    };
     list.appendChild(userCard(otherData, [{
       label: t("cancel"), color: "#C9372C",
       onClick: async () => {
@@ -135,7 +140,11 @@ function renderPending(pending, myUid) {
 
   pending.forEach(conn => {
     const otherUid  = conn.participants.find(id => id !== myUid);
-    const otherData = { firstName: conn.names[otherUid], email: conn.emails[otherUid] };
+    const otherData = {
+      firstName: conn.names[otherUid],
+      email:     conn.emails[otherUid],
+      roles:     conn.roles?.[otherUid] || [],
+    };
     list.appendChild(userCard(otherData, [
       {
         label: t("accept"), color: "#1F845A",
@@ -165,7 +174,11 @@ function renderConnected(connected, myUid) {
 
   connected.forEach(conn => {
     const otherUid  = conn.participants.find(id => id !== myUid);
-    const otherData = { firstName: conn.names[otherUid], email: conn.emails[otherUid] };
+    const otherData = {
+      firstName: conn.names[otherUid],
+      email:     conn.emails[otherUid],
+      roles:     conn.roles?.[otherUid] || [],
+    };
     list.appendChild(userCard(otherData, [{
       label: t("removeConnection"), color: "#5E6C84",
       onClick: async () => {
@@ -184,7 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
   const urlMode = new URLSearchParams(window.location.search).get("mode");
 
   authGuard([], async (currentUser, userData) => {
-    const myRoles    = userData.rolesArray;
+    const myRoles       = userData.rolesArray;
     const rolesToSearch = targetRoles(myRoles, urlMode);
 
     // Set page title
