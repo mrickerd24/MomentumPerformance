@@ -3,7 +3,7 @@ import { auth, db, getLang, applyLanguage, authGuard, initNav, translations } fr
 // ---------------- TILE DEFINITIONS ----------------
 const TILE_DEFINITIONS = {
   // Coach tiles
-  students:       { labelKey: "students",       color: "#0C66E4", href: "#" },
+  students:       { labelKey: "students",       color: "#0C66E4", href: "students.html" },
   addStudent:     { labelKey: "addStudent",      color: "#1F845A", href: "addConnection.html?mode=skater" },
   viewSchedule:   { labelKey: "viewSchedule",   color: "#1F845A", href: "#" },
   addhours:       { labelKey: "addhours",        color: "#C9372C", href: "#" },

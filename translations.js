@@ -1,6 +1,7 @@
 export const translations = {
   en: {
     login: "Login",
+    noStudentsFound: "No students found",
     email: "Email",
     password: "Password",
     createAccount: "Create account",
@@ -97,6 +98,7 @@ export const translations = {
     WelcomeToDashboard: "Bienvenue sur votre tableau de bord",
     accountType: "Type de compte",
     coach: "Entraîneur",
+    noStudentsFound: "Aucun élève trouvé",
     skater: "Patineur",
     parent: "Parent",
     name: "Prénom",
