@@ -1,21 +1,7 @@
-import { translations, setLanguage } from "./translations.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyDN9m9khT74pXITmdDnJsQs4R8JhcpGQLs",
-  authDomain: "momentum-performance-staging.firebaseapp.com",
-  projectId: "momentum-performance-staging",
-  storageBucket: "momentum-performance-staging.firebasestorage.app",
-  messagingSenderId: "812122501954",
-  appId: "1:812122501954:web:3f629bda850d3ec56c0edb",
-  measurementId: "G-S2RKK30F6T"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+import { auth, db, translations } from "./app.js";
+import { setLanguage } from "./translations.js";
+import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ---------------- LANGUAGE ----------------
 let currentLang = localStorage.getItem("language") || "fr";
@@ -60,7 +46,6 @@ button.addEventListener("click", (e) => {
       emailError.innerText = error.message;
     });
 });
-
 
 // ---------------- LOGIN FROM DELETED ACCOUNT ----------------
 const urlParams = new URLSearchParams(window.location.search);

@@ -5,7 +5,7 @@ const TILE_DEFINITIONS = {
   // Coach tiles
   students:       { labelKey: "students",       color: "#0C66E4", href: "students.html" },
   addStudent:     { labelKey: "addStudent",      color: "#1F845A", href: "addConnection.html?mode=skater" },
-  viewSchedule:   { labelKey: "viewSchedule",   color: "#1F845A", href: "#" },
+  viewSchedule:   { labelKey: "viewSchedule",   color: "#1F845A", href: "calendar.html" },
   addhours:       { labelKey: "addhours",        color: "#C9372C", href: "#" },
   hoursCoached:   { labelKey: "hoursCoached",   color: "#852dcc", href: "#" },
 
@@ -16,16 +16,16 @@ const TILE_DEFINITIONS = {
 
   // Parent tiles
   myChildren:     { labelKey: "myChildren",      color: "#0C66E4", href: "#" },
-  childSchedule:  { labelKey: "childSchedule",   color: "#1F845A", href: "#" },
+  childSchedule:  { labelKey: "childSchedule",   color: "#1F845A", href: "calendar.html" },
   childHours:     { labelKey: "childHours",       color: "#852dcc", href: "#" },
 
   // Shared
-  myRequests:     { labelKey: "pendingRequests", color: "#C9372C", href: "addConnection.html" },
+  myRequests:     { labelKey: "myConnections", color: "#C9372C", href: "addConnection.html" },
 
   // Admin tiles
   clubCoaches:    { labelKey: "clubCoaches",     color: "#0C66E4", href: "#" },
   clubStudents:   { labelKey: "clubStudents",    color: "#1F845A", href: "#" },
-  clubSchedule:   { labelKey: "clubSchedule",    color: "#C9372C", href: "#" },
+  clubSchedule:   { labelKey: "clubSchedule",    color: "#C9372C", href: "calendar.html" },
   iceHours:       { labelKey: "iceHours",        color: "#852dcc", href: "#" },
   adminAddCoach:  { labelKey: "addCoach",        color: "#0C66E4", href: "addConnection.html?mode=coach" },
   adminAddStudent:{ labelKey: "addStudent",      color: "#1F845A", href: "addConnection.html?mode=skater" },
@@ -91,10 +91,14 @@ function renderDashboard(userData) {
         if (!def) return;
         const tile = document.createElement("div");
         tile.className = "dashboard-tile";
+        tile.id = `tile-${key}`;
+        tile.dataset.href = def.href;
         tile.style.borderColor = def.color;
         tile.innerHTML = `<p>${t[def.labelKey] || def.labelKey}</p>`;
-        tile.addEventListener("click", () => {
-          if (def.href !== "#") window.location.href = def.href;
+        tile.addEventListener("click", (e) => {
+          
+          const href = e.currentTarget.dataset.href;
+          if (href && href !== "#") window.location.href = href;
         });
         row.appendChild(tile);
       });

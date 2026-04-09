@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Restore Users — Firestore</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: Inter, sans-serif; padding: 24px; background: #f4f5f7; color: #172B4D; max-width: 560px; margin: auto; }
+    h2 { margin-bottom: 4px; }
+    p.sub { color: #5E6C84; font-size: 13px; margin-bottom: 24px; }
+    label { font-size: 13px; font-weight: 600; display: block; margin-bottom: 4px; margin-top: 12px; }
+    input[type=text], input[type=email], input[type=password], input[type=tel] {
+      width: 100%; padding: 9px 12px; border: 1px solid #D0D4DB;
+      border-radius: 8px; font-size: 14px; outline: none;
+    }
+    input:focus { border-color: #0C66E4; }
+    .roles { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+    .roles label { font-weight: 500; display: flex; align-items: center; gap: 6px; margin-top: 0; }
+    .roles input { width: auto; }
+    button.primary {
+      margin-top: 20px; width: 100%; padding: 11px;
+      background: #0C66E4; color: #fff; border: none;
+      border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;
+    }
+    button.primary:disabled { background: #8993A4; cursor: not-allowed; }
+    .field-error { color: #C9372C; font-size: 12px; margin-top: 2px; min-height: 16px; }
+    #result { margin-top: 20px; padding: 14px; border-radius: 8px; font-size: 13px; display: none; }
+    #result.ok  { background: #DCFCE7; color: #1F845A; border: 1px solid #1F845A; }
+    #result.err { background: #FDECEA; color: #C9372C; border: 1px solid #C9372C; }
+    .divider { border: none; border-top: 1px solid #D0D4DB; margin: 28px 0; }
+    .note { background: #FFF8E6; border: 1px solid #F5A623; border-radius: 8px; padding: 12px 14px; font-size: 13px; color: #7A4F00; margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+
+<h2>👤 Restore Firestore User</h2>
+<p class="sub">Use this to recreate a user's Firestore document. The user must already exist in Firebase Authentication (i.e. they can still log in — they just get kicked out because their data is missing).</p>
+
+<div class="note">
+  ⚠️ You need the user's <strong>UID</strong> from Firebase Authentication console.<br>
+  Go to <strong>Firebase Console → Authentication → Users</strong>, find the person, and copy their UID.
+</div>
+
+<label for="uid">Firebase Auth UID *</label>
+<input type="text" id="uid" placeholder="e.g. abc123XYZ..." />
+<div class="field-error" id="uid-error"></div>
+
+<label for="firstName">First name *</label>
+<input type="text" id="firstName" placeholder="Marie" />
+<div class="field-error" id="firstName-error"></div>
+
+<label for="lastName">Last name *</label>
+<input type="text" id="lastName" placeholder="Tremblay" />
+<div class="field-error" id="lastName-error"></div>
+
+<label for="email">Email *</label>
+<input type="email" id="email" placeholder="marie@example.com" />
+<div class="field-error" id="email-error"></div>
+
+<label for="phone">Phone number</label>
+<input type="tel" id="phone" placeholder="514-555-1234" />
+
+<label for="skateNum">Skate Canada number</label>
+<input type="text" id="skateNum" placeholder="Optional" />
+
+<label>Role(s) *</label>
+<div class="roles">
+  <label><input type="checkbox" name="role" value="coach" /> Coach</label>
+  <label><input type="checkbox" name="role" value="skater" /> Skater</label>
+  <label><input type="checkbox" name="role" value="parent" /> Parent</label>
+  <label><input type="checkbox" name="role" value="admin" /> Admin</label>
+</div>
+<div class="field-error" id="role-error"></div>
+
+<button class="primary" id="saveBtn">Save User to Firestore</button>
+
+<div id="result"></div>
+
+<hr class="divider" />
+
+<h2 style="font-size:15px; margin-bottom:4px;">✅ Users restored this session</h2>
+<div id="saved-list" style="font-size:13px; color:#5E6C84; margin-top:8px;">None yet.</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDN9m9khT74pXITmdDnJsQs4R8JhcpGQLs",
+  authDomain: "momentum-performance-staging.firebaseapp.com",
+  projectId: "momentum-performance-staging",
+  storageBucket: "momentum-performance-staging.firebasestorage.app",
+  messagingSenderId: "812122501954",
+  appId: "1:812122501954:web:3f629bda850d3ec56c0edb",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const savedUsers = [];
+
+function showResult(msg, type) {
+  const el = document.getElementById("result");
+  el.textContent = msg;
+  el.className = type;
+  el.style.display = "block";
+  setTimeout(() => { el.style.display = "none"; }, 5000);
+}
+
+function clearErrors() {
+  ["uid", "firstName", "lastName", "email", "role"].forEach(id => {
+    document.getElementById(`${id}-error`).textContent = "";
+  });
+}
+
+function updateSavedList() {
+  const el = document.getElementById("saved-list");
+  if (!savedUsers.length) { el.textContent = "None yet."; return; }
+  el.innerHTML = savedUsers.map(u =>
+    `<div style="padding:6px 0; border-bottom:1px solid #eee;">
+      <strong>${u.firstName} ${u.lastName}</strong> — ${u.roles.join(", ")}
+      <span style="color:#8993A4; font-size:11px; margin-left:8px;">${u.uid}</span>
+    </div>`
+  ).join("");
+}
+
+document.getElementById("saveBtn").addEventListener("click", async () => {
+  clearErrors();
+
+  const uid       = document.getElementById("uid").value.trim();
+  const firstName = document.getElementById("firstName").value.trim();
+  const lastName  = document.getElementById("lastName").value.trim();
+  const email     = document.getElementById("email").value.trim();
+  const phone     = document.getElementById("phone").value.trim();
+  const skateNum  = document.getElementById("skateNum").value.trim();
+  const roles     = Array.from(document.querySelectorAll('input[name="role"]:checked')).map(el => el.value);
+
+  let valid = true;
+  if (!uid)                              { document.getElementById("uid-error").textContent = "UID is required"; valid = false; }
+  if (!firstName)                        { document.getElementById("firstName-error").textContent = "First name is required"; valid = false; }
+  if (!lastName)                         { document.getElementById("lastName-error").textContent = "Last name is required"; valid = false; }
+  if (!email || !email.includes("@"))    { document.getElementById("email-error").textContent = "Valid email is required"; valid = false; }
+  if (roles.length === 0)               { document.getElementById("role-error").textContent = "Select at least one role"; valid = false; }
+  if (!valid) return;
+
+  const btn = document.getElementById("saveBtn");
+  btn.disabled = true;
+  btn.textContent = "Saving...";
+
+  try {
+    await setDoc(doc(db, "users", uid), {
+      firstName,
+      lastName,
+      email,
+      phoneNumber: phone,
+      skateCanadaNumber: skateNum,
+      roles,
+      clubs: [],
+    });
+
+    savedUsers.push({ uid, firstName, lastName, roles });
+    updateSavedList();
+    showResult(`✓ ${firstName} ${lastName} saved successfully!`, "ok");
+
+    // Reset form
+    document.getElementById("uid").value = "";
+    document.getElementById("firstName").value = "";
+    document.getElementById("lastName").value = "";
+    document.getElementById("email").value = "";
+    document.getElementById("phone").value = "";
+    document.getElementById("skateNum").value = "";
+    document.querySelectorAll('input[name="role"]').forEach(cb => cb.checked = false);
+
+  } catch (err) {
+    console.error(err);
+    showResult(`✗ Error: ${err.message}`, "err");
+  }
+
+  btn.disabled = false;
+  btn.textContent = "Save User to Firestore";
+});
+</script>
+</body>
+</html>

@@ -27,8 +27,12 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    sendPasswordResetEmail(auth, email)
-      .then(() => { alert(translations[currentLang].resetLinkSent); })
-      .catch((error) => { alert(error.message); });
+sendPasswordResetEmail(auth, email)
+  .then(() => { 
+    alert(translations[currentLang].resetLinkSent)
+    window.location.href = 'index.html?message=resetSent'
+  })
+  .catch((error) => { alert(error.message) })
+  
   });
 });

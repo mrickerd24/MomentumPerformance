@@ -1,21 +1,81 @@
+import { auth, db } from "./app.js";
 import { translations, setLanguage } from "./translations.js";
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, createUserWithEmailAndPassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { createUserWithEmailAndPassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, setDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyDN9m9khT74pXITmdDnJsQs4R8JhcpGQLs",
-  authDomain: "momentum-performance-staging.firebaseapp.com",
-  projectId: "momentum-performance-staging",
-  storageBucket: "momentum-performance-staging.firebasestorage.app",
-  messagingSenderId: "812122501954",
-  appId: "1:812122501954:web:3f629bda850d3ec56c0edb",
-  measurementId: "G-S2RKK30F6T"
-};
+// ---------------- CLUBS ----------------
+let allClubs = [];
+let selectedClubs = [];
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+function normalize(str) {
+  return str.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+}
+
+async function loadClubs() {
+  const snap = await getDocs(query(collection(db, "clubs"), orderBy("name")));
+  snap.forEach(d => {
+    allClubs.push({ id: d.id, ...d.data() });
+  });
+}
+
+function renderSelectedClubs() {
+  const container = document.getElementById("selected-clubs");
+  container.innerHTML = "";
+
+  selectedClubs.forEach(club => {
+    const chip = document.createElement("span");
+    chip.style.cssText = `
+      display:inline-flex; align-items:center; gap:6px;
+      background:#E9F2FF; color:#0C66E4; border:1px solid #0C66E4;
+      border-radius:999px; padding:4px 10px; margin:4px 4px 4px 0;
+      font-size:12px; font-weight:600;
+    `;
+    chip.innerHTML = `${club.name} <span style="cursor:pointer;font-weight:700;">✕</span>`;
+    chip.querySelector("span").addEventListener("click", () => {
+      selectedClubs = selectedClubs.filter(s => s.id !== club.id);
+      renderSelectedClubs();
+      filterClubs(document.getElementById("clubSearch").value);
+    });
+    container.appendChild(chip);
+  });
+}
+
+function filterClubs(searchTerm) {
+  const raw = normalize(searchTerm.trim());
+  const resultsDiv = document.getElementById("club-results");
+  resultsDiv.innerHTML = "";
+  if (!raw) return;
+
+  const matches = allClubs.filter(c =>
+    normalize(c.name).includes(raw) ||
+    normalize(c.region).includes(raw)
+  );
+
+  if (!matches.length) {
+    resultsDiv.innerHTML = '<p style="color:#5E6C84;font-size:13px;">No results found</p>';
+    return;
+  }
+
+  matches.forEach(club => {
+    const alreadySelected = selectedClubs.some(s => s.id === club.id);
+    if (alreadySelected) return;
+
+    const card = document.createElement("div");
+    card.className = "student-card";
+    card.style.cursor = "pointer";
+    card.innerHTML = `
+      <strong style="font-size:14px">${club.name}</strong><br>
+      <span style="font-size:12px;color:#5E6C84">${club.region}</span>
+    `;
+    card.addEventListener("click", () => {
+      selectedClubs.push(club);
+      document.getElementById("clubSearch").value = "";
+      document.getElementById("club-results").innerHTML = "";
+      renderSelectedClubs();
+    });
+    resultsDiv.appendChild(card);
+  });
+}
 
 // ---------------- LANGUAGE ----------------
 let currentLang = localStorage.getItem("language") || "fr";
@@ -51,9 +111,11 @@ form.addEventListener("submit", (e) => {
     const el = document.getElementById(`${id}-error`);
     if (el) el.innerText = "";
   });
+  document.getElementById("clubSearch-error").innerText = "";
 
   let valid = true;
   if (checkedRoles.length === 0)            { alert(translations[currentLang].selectRole); valid = false; }
+  if (selectedClubs.length === 0)           { document.getElementById("clubSearch-error").innerText = translations[currentLang].selectClub || "Please select at least one club"; valid = false; }
   if (!nameVal)                             { document.getElementById("name-error").innerText = translations[currentLang].firstNameRequired; valid = false; }
   if (!lastNameVal)                         { document.getElementById("lastName-error").innerText = translations[currentLang].lastNameRequired; valid = false; }
   if (!emailVal || !emailVal.includes("@")) { document.getElementById("emailAddress-error").innerText = translations[currentLang].invalidEmail; valid = false; }
@@ -74,6 +136,7 @@ form.addEventListener("submit", (e) => {
         phoneNumber:       phoneVal,
         skateCanadaNumber: skateNum,
         roles:             checkedRoles,
+        clubs:             selectedClubs.map(c => c.id),
       });
     })
     .then(() => {
@@ -86,4 +149,12 @@ form.addEventListener("submit", (e) => {
       }
       alert(translations[currentLang].accountCreationError);
     });
+});
+
+// ---------------- INIT ----------------
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadClubs();
+  document.getElementById("clubSearch").addEventListener("input", (e) => {
+    filterClubs(e.target.value);
+  });
 });

@@ -1,4 +1,4 @@
-import { db, getLang, authGuard, initNav, translations } from "./app.js";
+import { db, getLang, applyLanguage, authGuard, initNav, translations } from "./app.js";
 import {
   collection, query, where, getDocs,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -73,6 +73,7 @@ async function loadStudents(myUid) {
 
 // ---------- INIT -----------------
 document.addEventListener("DOMContentLoaded", () => {
+  applyLanguage(); // ← was missing before
   authGuard([], (user, userData) => {
     const t = translations[getLang()];
     document.getElementById("page-title").textContent = t.students;

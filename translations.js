@@ -88,7 +88,10 @@ export const translations = {
     deleteConfirmPlaceholder: 'Type "delete" to confirm',
     deleteAccountBtn: "Confirm deletion",
     deleteConfirmError: 'Please type "delete" to confirm.',
-  },
+    monthView: "Month",
+    weekView: "Week",
+    dayView: "Day",
+      },
 
   fr: {
     login: "Connexion",
@@ -179,6 +182,9 @@ export const translations = {
     deleteConfirmPlaceholder: 'Tapez "supprimer" pour confirmer',
     deleteAccountBtn: "Confirmer la suppression",
     deleteConfirmError: 'Veuillez taper "supprimer" pour confirmer.',
+    monthView: "Mois",
+    weekView: "Semaine",
+    dayView: "Jour",    
   }
 };
 

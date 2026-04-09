@@ -364,11 +364,11 @@ h1, h2, h3, h4, h5, h6 {
   
 .logo {
   width: 100%;
-  max-width: 500px;
+  max-width: 400px;
   height: auto;
   display: block;
   margin: 0 auto;
-  margin-bottom: 0;
+  margin-bottom: 10;
   
 }
 
@@ -432,6 +432,7 @@ h1, h2, h3, h4, h5, h6 {
   font-size: 13px;
   font-weight: 500;
   color: var(--color-text);
+  pointer-events: none;
 }
 
 /* Role badges for multi-role users */
