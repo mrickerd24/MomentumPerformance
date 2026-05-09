@@ -3,10 +3,15 @@
   --color-brand: #0C66E4;
   --color-brand-hover: #0055CC;
   --color-brand-soft: #E9F2FF;
+  --color-accent: #6D30A6;
+  --color-accent-hover: #5A2589;
+  --color-accent-soft: #F4ECFF;
+  --color-accent-border: #D8C4F2;
 
   /* Background & surfaces */
   --color-bg: #F7F8F9;
   --color-surface: #FFFFFF;
+  --color-surface-subtle: #F4F5F7;
 
   /* Text */
   --color-text: #172B4D;
@@ -18,17 +23,20 @@
 
   /* States */
   --color-danger: #C9372C;
+  --color-danger-soft: #FFEBE9;
   --color-success: #1F845A;
+  --color-success-soft: #DCFFF1;
   --color-warning: #A54800;
 
   /* Effects */
   --shadow-card: 0 8px 24px rgba(9, 30, 66, 0.08);
+  --shadow-card-strong: 0 12px 32px rgba(9, 30, 66, 0.14);
   --shadow-focus: 0 0 0 3px rgba(12, 102, 228, 0.18);
 
   /* Radius */
   --radius-sm: 8px;
   --radius-md: 12px;
-  --radius-lg: 16px;
+  --radius-lg: 12px;
 }
 
 * {
@@ -50,7 +58,7 @@
 
 body {
   margin: 0;
-  font-family: 'Trebuchet MS', sans-serif;
+  font-family: 'Nunito', sans-serif;
   background: var(--color-bg);
   color: var(--color-text);
 
@@ -64,16 +72,18 @@ body {
   bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
+  z-index: 100;
 
   display: flex;
   gap: 0;
-  padding: 6px;
+  padding: 8px 6px 10px;
 
   width: calc(100% - 28px);
   max-width: 410px;
 
   background: rgba(255, 255, 255, 0.95);
   border-radius: 1000px;
+  box-shadow: var(--shadow-card-strong);
 }
 
 .bottom-nav .nav-item {
@@ -81,10 +91,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* anchor to top so icons align across items */
   border: none;
-  padding: 6px 2px;
-  height: 70px; /* restore enough vertical space */
+  padding: 8px 2px;
+  height: 96px;
   min-width: 0;
   background: transparent;
   border-radius: 999px;
@@ -101,15 +111,22 @@ body {
 
 .bottom-nav .nav-item span {
   font-size: 10px;
-  margin-top: 2px;
+  margin-top: 4px;
+  line-height: 1.15;
+  text-align: center;
   color: inherit;
   pointer-events: none;
+  /* Reserve 2 lines of space so single-line and wrapped labels align */
+  min-height: calc(1.15em * 2);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
 }
 
 .bottom-nav .icon {
   display: block;
-  width: 80px;
-  height: 50px;
+  width: 96px;
+  height: 56px;
   object-fit: contain;
   flex-shrink: 0;
   opacity: 0.9;
@@ -117,14 +134,13 @@ body {
 }
 
 .bottom-nav .nav-item.active {
-  background: #E9F2FF;
-  color: #0C66E4;
+  background: var(--color-brand-soft);
+  color: var(--color-brand);
 
 }
 
 .bottom-nav .nav-item.active .icon {
   opacity: 1;
-  filter: brightness(0) saturate(100%) invert(32%) sepia(98%) saturate(1600%) hue-rotate(200deg) brightness(95%) contrast(95%);
 }
 
 .box {
@@ -132,17 +148,18 @@ body {
   flex-direction: column;
   align-items: center;
 
-  width: calc(100% - 32px); /* same horizontal margin */
+  width: calc(100% - 32px);
   padding: 24px;
   max-width: 420px;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 0;
+  margin-top: 16px;
+  margin-bottom: 120px;   /* ← add this line */
   background: var(--color-surface);
-  border: 2px solid var(--color-brand); /* blue outline */
+  border: 1px solid #DFE1E6;
   border-radius: var(--radius-lg);
 
-  box-shadow: 0 8px 8px rgba(0,0,0,0.1); /* soft shadow */
+  box-shadow: var(--shadow-card);
 }
 
 .boxbluesmall {
@@ -153,11 +170,11 @@ body {
   max-width: 420px;
   margin-right: auto;
   background: var(--color-surface);
-  border: 1px solid #0C66E4; /* blue outline */
+  border: 1px solid var(--color-brand); /* blue outline */
   
   border-radius: var(--radius-lg); /* rounded corners */
 
-  box-shadow: 0 8px 8px rgba(0,0,0,0.1); /* soft shadow */
+  box-shadow: var(--shadow-card); /* soft shadow */
 }
 
 .boxbluesmall2 {
@@ -168,11 +185,11 @@ body {
   max-width: 420px;
   
   background: var(--color-surface);
-  border: 1px solid #0C66E4; /* blue outline */
+  border: 1px solid var(--color-brand); /* blue outline */
   
   border-radius: var(--radius-lg); /* rounded corners */
 
-  box-shadow: 0 8px 8px rgba(0,0,0,0.1); /* soft shadow */
+  box-shadow: var(--shadow-card); /* soft shadow */
 }
 
 .boxgreensmall {
@@ -183,11 +200,11 @@ body {
   max-width: 420px;
   margin-right: auto;
   background: var(--color-surface);
-  border: 1px solid #39eb47; 
+  border: 1px solid var(--color-success);
   
   border-radius: var(--radius-lg); /* rounded corners */
 
-  box-shadow: 0 8px 8px rgba(0,0,0,0.1); /* soft shadow */
+  box-shadow: var(--shadow-card); /* soft shadow */
 }
 
 .boxredsmall {
@@ -198,11 +215,11 @@ body {
   max-width: 420px;
   margin-right: auto;
   background: var(--color-surface);
-  border: 1px solid #f83131; 
+  border: 1px solid var(--color-danger);
   
   border-radius: var(--radius-lg); /* rounded corners */
 
-  box-shadow: 0 8px 8px rgba(0,0,0,0.1); /* soft shadow */
+  box-shadow: var(--shadow-card); /* soft shadow */
 }
 
 .boxpurplesmall {
@@ -213,11 +230,11 @@ body {
   max-width: 420px;
   margin-right: auto;
   background: var(--color-surface);
-  border: 1px solid #852dcc; 
+  border: 1px solid var(--color-accent);
   
   border-radius: var(--radius-lg); /* rounded corners */
 
-  box-shadow: 0 8px 8px rgba(0,0,0,0.1); /* soft shadow */
+  box-shadow: var(--shadow-card); /* soft shadow */
 }
 
 .box input {
@@ -225,23 +242,127 @@ body {
   max-width: 260px; /* pour garder propre */
 }
 
-button:not(.nav-item) {
-  background-color: #0C66E4;
-  color: white;
-  border: none;
+/* ============================================================
+   BUTTON CLASS SYSTEM
+   Use named classes instead of inline style="background:..." so
+   styling lives in one place and can be overridden cleanly.
+
+   - .btn-outlined-* : white bg, colored border + text (action buttons)
+   - .btn-cancel     : solid gray (Cancel, Close)
+   - .btn-danger     : solid red (Delete, Decline)
+   - .btn-success    : solid green (Save, Accept)
+   - .btn-primary-*  : solid brand colors (Save session/note, Save ice slot)
+   ============================================================ */
+
+/* Shared button base — every button class below inherits these defaults
+   (padding, width, radius, cursor). This replaces the old global
+   `button:not(.nav-item)` rule and keeps styling explicit & opt-in. */
+.btn-outlined-purple,
+.btn-outlined-blue,
+.btn-outlined-green,
+.btn-cancel,
+.btn-danger,
+.btn-success,
+.btn-primary-purple,
+.btn-primary-blue {
   padding: 12px;
   border-radius: 8px;
   cursor: pointer;
   width: 100%;
+  font-family: inherit;
   font-weight: 600;
 }
 
-button:not(.nav-item):active {
+.btn-outlined-purple:active,
+.btn-outlined-blue:active,
+.btn-outlined-green:active,
+.btn-cancel:active,
+.btn-danger:active,
+.btn-success:active,
+.btn-primary-purple:active,
+.btn-primary-blue:active {
   transform: scale(0.98);
 }
 
-button:not(.nav-item):hover {
-  background-color: #0052CC;
+/* Outlined — white bg, colored border + text. Used for "Add" actions. */
+.btn-outlined-purple,
+.btn-outlined-blue,
+.btn-outlined-green {
+  background: #fff;
+  border-style: solid;
+  border-width: 1.5px;
+}
+.btn-outlined-purple { color: var(--color-accent); border-color: var(--color-accent); }
+.btn-outlined-blue   { color: var(--color-brand); border-color: var(--color-brand); }
+.btn-outlined-green  { color: var(--color-success); border-color: var(--color-success); }
+
+.btn-outlined-purple:hover { background: var(--color-accent-soft); }
+.btn-outlined-blue:hover   { background: var(--color-brand-soft); }
+.btn-outlined-green:hover  { background: var(--color-success-soft); }
+
+/* Solid — modal/destructive/confirmation buttons. */
+.btn-cancel {
+  background: #5E6C84;
+  color: #fff;
+  border: none;
+}
+.btn-cancel:hover { background: #4A5567; }
+
+.btn-danger {
+  background: #C9372C;
+  color: #fff;
+  border: none;
+}
+.btn-danger:hover { background: #A82920; }
+
+.btn-success {
+  background: #1F845A;
+  color: #fff;
+  border: none;
+}
+.btn-success:hover { background: #166243; }
+
+.btn-primary-purple {
+  background: var(--color-accent);
+  color: #fff;
+  border: none;
+}
+.btn-primary-purple:hover { background: var(--color-accent-hover); }
+
+.btn-primary-blue {
+  background: var(--color-brand);
+  color: #fff;
+  border: none;
+}
+.btn-primary-blue:hover { background: var(--color-brand-hover); }
+
+/* Compact modifier — for buttons that sit in an inline row (e.g. inside a
+   modal footer with multiple buttons side-by-side). Overrides the global
+   button padding/width so they don't span the full container. */
+.btn-compact {
+  width: auto;
+  padding: 9px 14px;
+  font-size: 13px;
+}
+
+/* Action-row modifier — for grouped buttons that share a flex row and need
+   to fill available space evenly (e.g. Add student / Add coach toggles). */
+.btn-action {
+  flex: 1 1 auto;
+  min-width: 140px;
+  padding: 10px 14px;
+  font-size: 13px;
+  width: auto;
+}
+
+/* Selected state for grouped action buttons. Pair with any solid btn class
+   (e.g. .btn-primary-blue.btn-action.is-active). Inactive siblings dim. */
+.btn-action:not(.is-active) {
+  opacity: 0.7;
+}
+.btn-action.is-active {
+  opacity: 1;
+  outline: 2px solid #0055CC;
 }
 
 .container {
@@ -249,7 +370,7 @@ button:not(.nav-item):hover {
   display: flex;
   justify-content: center;
   align-items: flex-start; /* instead of center */
-  background: #F4F5F7;
+  background: var(--color-surface-subtle);
   padding: 0;
   margin-top: 0;
 }
@@ -264,14 +385,89 @@ button:not(.nav-item):hover {
  
 .form-box {
   width: calc(100% - 32px);
-	max-width: 420px;
-	padding: 15px;
-	background: white;
-	border: 1px solid #DFE1E6;
-	border-radius: 16px;
-	box-shadow: 0 9px 24px rgba(0,0,0,0.08);
-  margin-bottom: 40px;
-  margin-top: -20px;
+  max-width: 420px;
+  padding: 15px;
+  background: var(--color-surface);
+  border: 1px solid #DFE1E6;
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  margin-bottom: 120px;
+  margin-top: 16px;
+  overflow: visible; /* must be visible so touch events on child elements reach them on mobile */
+}
+
+/* Rounded form field styling shared across account and signup pages */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+input[type="number"],
+input[type="date"],
+input[type="time"],
+select,
+textarea {
+  width: 100%;
+  min-height: 44px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font: inherit;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+input[type="time"]:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: var(--shadow-focus);
+}
+
+select {
+  appearance: none;
+  background-image:
+    linear-gradient(45deg, transparent 50%, #5E6C84 50%),
+    linear-gradient(135deg, #5E6C84 50%, transparent 50%);
+  background-position:
+    calc(100% - 18px) 18px,
+    calc(100% - 12px) 18px;
+  background-size: 6px 6px, 6px 6px;
+  background-repeat: no-repeat;
+  padding-right: 40px;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.language-option,
+.role-option,
+.day-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+  margin-bottom: 8px;
+}
+
+.language-option input,
+.role-option input,
+.day-option input {
+  margin: 0;
+  flex-shrink: 0;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -364,11 +560,11 @@ h1, h2, h3, h4, h5, h6 {
   
 .logo {
   width: 100%;
-  max-width: 400px;
+  max-width: 350px;
   height: auto;
   display: block;
   margin: 0 auto;
-  margin-bottom: 10;
+  margin-bottom: 10px;
   
 }
 
@@ -414,9 +610,9 @@ h1, h2, h3, h4, h5, h6 {
   justify-content: center;
   padding: 16px 8px;
   background: var(--color-surface);
-  border: 1px solid #0C66E4;
+  border: 1px solid var(--color-brand);
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 8px rgba(0,0,0,0.1);
+  box-shadow: var(--shadow-card);
   cursor: pointer;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
   min-height: 70px;
@@ -478,4 +674,1289 @@ h1, h2, h3, h4, h5, h6 {
   border: 1px solid #D0D4DB;
   border-radius: 12px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* ---------------- CHILD CARDS ----------------
+   Jira-style status palette. Cards cycle through 6 hues by index in the
+   list (.child-card-c0 … .child-card-c5). The card surface stays white to
+   match the rest of the app; color is carried by the border and text. */
+.child-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  border-radius: 12px;
+  border: 1px solid #D0D4DB;
+  background: #fff;
+  cursor: pointer;
+  transition: transform 0.1s ease, box-shadow 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+.child-card:active {
+  transform: scale(0.99);
+}
+.child-card-info {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.child-card-name {
+  font-size: 14px;
+  font-weight: 700;
+}
+.child-card-meta {
+  font-size: 12px;
+  margin-top: 2px;
+}
+.child-card-club {
+  font-size: 11px;
+  margin-top: 2px;
+}
+.child-card-chevron {
+  font-size: 18px;
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+
+/* 6 color variants — cycle by index. */
+/* 0 — green */
+.child-card-c0 { background:#fff; border-color:#7CCBA8; }
+.child-card-c0 .child-card-name { color:#164B35; }
+.child-card-c0 .child-card-meta,
+.child-card-c0 .child-card-club,
+.child-card-c0 .child-card-chevron { color:#216E4E; }
+
+/* 1 — yellow */
+.child-card-c1 { background:#fff; border-color:#E0C56A; }
+.child-card-c1 .child-card-name { color:#533F04; }
+.child-card-c1 .child-card-meta,
+.child-card-c1 .child-card-club,
+.child-card-c1 .child-card-chevron { color:#7F5F01; }
+
+/* 2 — blue */
+.child-card-c2 { background:#fff; border-color:#8FB8F6; }
+.child-card-c2 .child-card-name { color:#09326C; }
+.child-card-c2 .child-card-meta,
+.child-card-c2 .child-card-club,
+.child-card-c2 .child-card-chevron { color:#0055CC; }
+
+/* 3 — purple */
+.child-card-c3 { background:#fff; border-color:#B9B0E8; }
+.child-card-c3 .child-card-name { color:#352C63; }
+.child-card-c3 .child-card-meta,
+.child-card-c3 .child-card-club,
+.child-card-c3 .child-card-chevron { color:#5E4DB2; }
+
+/* 4 — red */
+.child-card-c4 { background:#fff; border-color:#E5A19B; }
+.child-card-c4 .child-card-name { color:#5D1F1A; }
+.child-card-c4 .child-card-meta,
+.child-card-c4 .child-card-club,
+.child-card-c4 .child-card-chevron { color:#AE2A19; }
+
+/* 5 — pink */
+.child-card-c5 { background:#fff; border-color:#E2A1C8; }
+.child-card-c5 .child-card-name { color:#50253F; }
+.child-card-c5 .child-card-meta,
+.child-card-c5 .child-card-club,
+.child-card-c5 .child-card-chevron { color:#943D73; }
+
+/* ============================================================
+   CALENDAR — full mobile-first styles
+   ============================================================ */
+
+/* View toggle buttons */
+#view-toggle {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+  flex-wrap: nowrap;
+}
+
+.view-btn {
+  flex: 1;
+  padding: 7px 4px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1.5px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: #8993A4;
+  cursor: pointer;
+  width: auto;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.view-btn.active {
+  background: #fff;
+  color: var(--color-accent);
+  border: 1.5px solid var(--color-accent);
+}
+
+.view-btn:hover:not(.active) {
+  color: #172B4D;
+  background: var(--color-surface-subtle);
+}
+
+/* Period navigation */
+#period-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+
+#period-nav button {
+  width: auto;
+  padding: 6px 14px;
+  font-size: 16px;
+  background: #fff;
+  color: #172B4D;
+  border: 1px solid #D0D4DB;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+#period-nav button:hover {
+  background: var(--color-surface-subtle);
+}
+
+#period-label {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: #172B4D;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── MONTH VIEW ── */
+.month-view {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  width: 100%;
+}
+
+.cal-day-header {
+  text-align: center;
+  font-size: 11px;
+  font-weight: 700;
+  color: #5E6C84;
+  padding: 4px 0;
+  text-transform: uppercase;
+}
+
+.cal-day-cell {
+  min-height: 44px;
+  border-radius: 8px;
+  overflow: visible;
+  background: #F7F8F9;
+  display: flex;
+  align-items: stretch;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  /* Reset button defaults */
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  text-align: left;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.cal-day {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 5px 2px 4px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #172B4D;
+  min-height: 40px;
+  border-radius: 8px;
+  pointer-events: none; /* let clicks fall through to the outer cell */
+}
+
+.cal-day.today {
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+/* Today is marked by a purple border on the outer cell (gray bg preserved). */
+.cal-day-cell.is-today,
+button.cal-day-cell.is-today {
+  border: 1.5px solid var(--color-accent);
+}
+
+.cal-day.other-month {
+  color: #B0B7C3;
+  font-weight: 400;
+}
+
+#session-participants label {
+  text-transform: capitalize;
+}
+
+.sis-session-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #172B4D;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: capitalize;  /* ← add this line */
+}
+
+.session-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+
+/* Day has one or more ice slots — pale blue fill on the cell. */
+.cal-day-cell.has-ice,
+button.cal-day-cell.has-ice {
+  background: #E6F1FB;
+}
+button.cal-day-cell.has-ice:hover {
+  background: #D6E6F5;
+}
+
+/* ── WEEK VIEW ── vertical stack of day cards ── */
+.week-view {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  min-width: 0;
+}
+
+.week-day-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  background: #fff;
+  border: 1px solid #E6E8EB;
+  border-radius: 12px;
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.week-day-card:hover {
+  background: #FAFAFB;
+  border-color: #D0D4D9;
+}
+
+.week-day-card:active {
+  background: #F0F1F3;
+}
+
+.week-day-card.today {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent) inset;
+}
+
+.week-day-card.today:hover {
+  background: #EFE3FF;
+}
+
+.week-day-card-header {
+  flex: 0 0 auto;
+  min-width: 84px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.week-day-card-weekday {
+  font-size: 14px;
+  font-weight: 700;
+  color: #172B4D;
+  text-transform: capitalize;
+  line-height: 1.2;
+}
+
+.week-day-card.today .week-day-card-weekday {
+  color: var(--color-accent);
+}
+
+.week-day-card-date {
+  font-size: 12px;
+  color: #8993A4;
+  text-transform: capitalize;
+}
+
+.week-day-card-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.week-day-card-empty {
+  font-size: 12px;
+  color: #A5ADBA;
+  font-style: italic;
+}
+
+.week-day-card-stat {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 4px 10px;
+  background: var(--color-surface-subtle);
+  border-radius: 999px;
+  font-size: 12px;
+  color: #5E6C84;
+  white-space: nowrap;
+}
+
+.week-day-card-stat-num {
+  font-weight: 700;
+  color: #172B4D;
+  font-size: 13px;
+}
+
+.week-day-card-stat-label {
+  color: #5E6C84;
+}
+
+.week-day-card.today .week-day-card-stat {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
+
+.week-day-card.today .week-day-card-stat-num,
+.week-day-card.today .week-day-card-stat-label {
+  color: var(--color-accent);
+}
+
+/* ── DAY VIEW ── */
+.day-view {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 1px;
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Top summary card — neutral white card with one colored mini-pill per
+   patch. Spans both grid columns. The .is-today modifier matches the
+   month-view "today" styling: purple border, no fill. */
+.day-summary-card {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  background: #fff;
+  border: 1px solid #E6E8EB;
+  border-radius: 12px;
+}
+
+/* In the month view (7-col grid), span all columns. The default
+   grid-column: 1 / -1 above already does this, but we set it explicitly
+   here for clarity and to override any future column rules. */
+.day-summary-card.in-month-view {
+  grid-column: 1 / -1;
+  margin-bottom: 10px;
+}
+
+/* In the week view (flex column of day cards), the card is just a
+   regular flex item — it sits at the top above the day cards. The
+   margin-bottom matches the gap that the flex layout already provides. */
+.day-summary-card.in-week-view {
+  margin-bottom: 0;
+}
+
+.day-summary-card.is-today {
+  border: 1.5px solid var(--color-accent);
+}
+
+.day-summary-card.empty {
+  display: block;
+  text-align: center;
+  font-style: italic;
+  font-weight: 500;
+  color: #5E6C84;
+  font-size: 14px;
+}
+
+.day-summary-header {
+  flex: 0 0 auto;
+  min-width: 84px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.day-summary-weekday {
+  font-size: 14px;
+  font-weight: 700;
+  color: #172B4D;
+  text-transform: capitalize;
+  line-height: 1.2;
+}
+.day-summary-card.is-today .day-summary-weekday {
+  color: var(--color-accent);
+}
+
+.day-summary-date {
+  font-size: 12px;
+  color: #8993A4;
+  text-transform: capitalize;
+  line-height: 1.2;
+}
+
+.day-summary-body {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.day-time-label {
+  font-size: 11px;
+  color: #8993A4;
+  text-align: right;
+  padding-right: 6px;
+  padding-top: 4px;
+  height: 60px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  white-space: nowrap;
+}
+
+.day-cell {
+  height: 60px;
+  border-top: 1px solid #F0F1F3;
+  background: #fff;
+  position: relative;
+  overflow: visible;
+}
+
+/* ── Ice patch card (in time grid) ── */
+/* The base .ice-slot is neutral; .patch-color-* classes set actual
+   colors for both the patch card and any pills inside it. This keeps
+   the entire patch (header text, pills, session bars, toggles) on a
+   single color theme. */
+.ice-slot {
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  border-radius: 12px;
+  padding: 10px 12px;
+  z-index: 1;
+  cursor: pointer;
+  /* overflow stays visible so wrapped header pills and stacked
+     skater/parent session cards aren't clipped. The inline minHeight
+     (set in JS to the time-window size) keeps the card at least as
+     tall as its booked duration; content can push it taller. */
+  overflow: visible;
+  box-sizing: border-box;
+  /* Allow the card to grow taller than its slot when the session list
+     is expanded — important on dense days. */
+  min-height: 0;
+}
+
+/* ── Day-view list mode ── */
+/* The day view used to be a 2-col grid (hour labels + hour cells) with
+   patches absolutely-positioned by start time and stretched by duration.
+   That created awkward stretched-out cards on long patches and
+   forced fixed-height session blocks. List mode drops the hour rail
+   entirely and stacks patches/orphan sessions as natural-height cards
+   in start-time order. The `.day-view.day-list` selector overrides the
+   grid layout, and `.ice-slot.day-list-item` un-absolutes the patches
+   so they flow inside the stack container. */
+.day-view.day-list {
+  display: block;
+}
+.day-list-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.ice-slot.day-list-item {
+  position: static;
+  left: auto;
+  right: auto;
+  width: 100%;
+  /* Inline minHeight is no longer set in list mode — the card just sizes
+     to its content. */
+}
+/* Skater/parent session card groups inside a patch flow naturally below
+   the header instead of being absolutely positioned at a computed top. */
+.ice-slot.day-list-item .day-list-group {
+  position: static;
+  left: auto;
+  right: auto;
+  margin-top: 8px;
+}
+/* Orphan session card groups (no patch) sit at the same level as
+   patches in the stack. They get a subtle border so they read as
+   distinct cards rather than floating chips. */
+.day-list-orphan {
+  border-radius: 12px;
+  background: transparent;
+}
+/* Past items (today only) are dimmed but still readable/clickable. */
+.day-list-item.is-past {
+  opacity: 0.88;
+}
+.day-list-item.is-past:hover {
+  opacity: 1;
+}
+
+.ice-slot-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.ice-slot-header-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.ice-slot-time {
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.ice-slot-rink {
+  font-size: 11px;
+  text-transform: capitalize;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+}
+
+.ice-slot-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Collapse toggle — full-width, looks like a quiet section divider. */
+.ice-slot-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 8px;
+  padding: 6px 4px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+}
+
+.ice-slot-session-list {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.ice-slot-session-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 8px;
+}
+
+.ice-slot-session-bar {
+  width: 3px;
+  height: 22px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.ice-slot-session-text {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  color: #172B4D;
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+}
+
+.ice-slot-session-dur {
+  font-size: 11px;
+  color: #5E6C84;
+  flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
+}
+
+.ice-slot-session-chev {
+  font-size: 14px;
+  flex-shrink: 0;
+  font-weight: 600;
+  opacity: 0.7;
+}
+
+/* ── Patch pill (used in the top summary AND inside each patch) ── */
+/* The neutral .patch-pill picks up colors when paired with a
+   .patch-color-* class — either on itself (top summary pills) or on an
+   ancestor (.ice-slot.patch-color-*) so all pills inside the card
+   inherit the patch theme. */
+.patch-pill {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 4px;
+  padding: 3px 9px;
+  background: var(--color-surface-subtle);
+  border: 1px solid #E6E8EB;
+  border-radius: 999px;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.patch-pill-num {
+  font-weight: 700;
+  font-size: 12px;
+  color: #172B4D;
+  font-variant-numeric: tabular-nums;
+}
+
+.patch-pill-label {
+  color: #5E6C84;
+}
+
+/* "Over capacity" pill — coral text, regardless of patch color. The
+   patch's normal pills stay color-themed; only this one flips red so
+   over-booking jumps out. */
+.patch-pill.over .patch-pill-num,
+.patch-pill.over .patch-pill-label {
+  color: var(--color-danger);
+}
+.patch-pill.over {
+  background: var(--color-danger-soft);
+  border-color: #FCB1AB;
+}
+
+/* ── Patch color themes ──
+   Each color sets the patch card background, border, header text, and
+   pills (when the pills are descendants of an .ice-slot.patch-color-*).
+   The same color classes are also used directly on the top summary
+   pills, where they color the pill itself instead of being inherited. */
+
+/* === BLUE === */
+.ice-slot.patch-color-blue {
+  background: #fff;
+  border: 1.5px solid #0055CC;
+  box-shadow: 0 0 0 2px rgba(0, 85, 204, 0.12) inset;
+}
+.ice-slot.patch-color-blue .ice-slot-time,
+.ice-slot.patch-color-blue .ice-slot-rink,
+.ice-slot.patch-color-blue .ice-slot-toggle,
+.ice-slot.patch-color-blue .ice-slot-session-chev,
+.ice-slot.patch-color-blue .patch-pill .patch-pill-num,
+.ice-slot.patch-color-blue .patch-pill .patch-pill-label {
+  color: #0055CC;
+}
+.ice-slot.patch-color-blue .patch-pill {
+  background: #DEEBFF;
+  border-color: #B3D4FF;
+}
+.ice-slot.patch-color-blue .ice-slot-session-bar { background: #0055CC; }
+
+/* === GREEN === */
+.ice-slot.patch-color-green {
+  background: #fff;
+  border: 1.5px solid #0F6E56;
+  box-shadow: 0 0 0 2px rgba(15, 110, 86, 0.12) inset;
+}
+.ice-slot.patch-color-green .ice-slot-time,
+.ice-slot.patch-color-green .ice-slot-rink,
+.ice-slot.patch-color-green .ice-slot-toggle,
+.ice-slot.patch-color-green .ice-slot-session-chev,
+.ice-slot.patch-color-green .patch-pill .patch-pill-num,
+.ice-slot.patch-color-green .patch-pill .patch-pill-label {
+  color: #0F6E56;
+}
+.ice-slot.patch-color-green .patch-pill {
+  background: #C5EFDD;
+  border-color: #9FE1CB;
+}
+.ice-slot.patch-color-green .ice-slot-session-bar { background: #0F6E56; }
+
+/* === AMBER === */
+.ice-slot.patch-color-amber {
+  background: #fff;
+  border: 1.5px solid #854F0B;
+  box-shadow: 0 0 0 2px rgba(133, 79, 11, 0.12) inset;
+}
+.ice-slot.patch-color-amber .ice-slot-time,
+.ice-slot.patch-color-amber .ice-slot-rink,
+.ice-slot.patch-color-amber .ice-slot-toggle,
+.ice-slot.patch-color-amber .ice-slot-session-chev,
+.ice-slot.patch-color-amber .patch-pill .patch-pill-num,
+.ice-slot.patch-color-amber .patch-pill .patch-pill-label {
+  color: #854F0B;
+}
+.ice-slot.patch-color-amber .patch-pill {
+  background: #F5DEB3;
+  border-color: #FAC775;
+}
+.ice-slot.patch-color-amber .ice-slot-session-bar { background: #854F0B; }
+
+/* === CORAL === */
+.ice-slot.patch-color-coral {
+  background: #fff;
+  border: 1.5px solid #AE2A19;
+  box-shadow: 0 0 0 2px rgba(174, 42, 25, 0.12) inset;
+}
+.ice-slot.patch-color-coral .ice-slot-time,
+.ice-slot.patch-color-coral .ice-slot-rink,
+.ice-slot.patch-color-coral .ice-slot-toggle,
+.ice-slot.patch-color-coral .ice-slot-session-chev,
+.ice-slot.patch-color-coral .patch-pill .patch-pill-num,
+.ice-slot.patch-color-coral .patch-pill .patch-pill-label {
+  color: #AE2A19;
+}
+.ice-slot.patch-color-coral .patch-pill {
+  background: #FFD5D2;
+  border-color: #FDB4AE;
+}
+.ice-slot.patch-color-coral .ice-slot-session-bar { background: #AE2A19; }
+
+/* === TEAL === */
+.ice-slot.patch-color-teal {
+  background: #fff;
+  border: 1.5px solid #095C5E;
+  box-shadow: 0 0 0 2px rgba(9, 92, 94, 0.12) inset;
+}
+.ice-slot.patch-color-teal .ice-slot-time,
+.ice-slot.patch-color-teal .ice-slot-rink,
+.ice-slot.patch-color-teal .ice-slot-toggle,
+.ice-slot.patch-color-teal .ice-slot-session-chev,
+.ice-slot.patch-color-teal .patch-pill .patch-pill-num,
+.ice-slot.patch-color-teal .patch-pill .patch-pill-label {
+  color: #095C5E;
+}
+.ice-slot.patch-color-teal .patch-pill {
+  background: #BBE5E5;
+  border-color: #8FD0D2;
+}
+.ice-slot.patch-color-teal .ice-slot-session-bar { background: #095C5E; }
+
+/* ── Session blocks (day/week) ── */
+.session-block {
+  display: flex;
+  border-radius: var(--radius-sm);
+  overflow: visible;
+  margin: 2px 0;
+  cursor: pointer;
+  background: #fff;
+  border: 1.5px solid var(--color-accent);
+  min-height: 42px;
+}
+
+.session-block-bar {
+  width: 4px;
+  flex-shrink: 0;
+  background: var(--color-accent);
+}
+
+.session-block-content {
+  padding: 6px 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.session-block-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.session-block-name {
+  font-size: 12px;
+  font-weight: 700;
+  color: #352C63;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+}
+
+.session-block-meta {
+  font-size: 11px;
+  color: #5E4DB2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: capitalize;
+}
+
+.session-block-card-time {
+  font-size: 10px;
+  font-weight: 600;
+  color: #5E4DB2;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Modal button row ── */
+.modal-btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+  
+}
+
+.modal-btn-row button {
+  flex: 1;
+  
+}
+
+/* ── Ensure calendar grid never overflows the card ── */
+#calendar-grid {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Week view: no min-width needed — cards are a vertical stack that adapts to container ── */
+
+button.cal-day-cell {
+  background: #F7F8F9;
+  color: inherit;
+  width: auto;
+}
+
+button.cal-day-cell:hover {
+  background: var(--color-accent-soft);
+}
+
+/* ── Month view: ensure it always fills the container ── */
+.month-view {
+  min-width: 0;
+}
+
+/* ── Extra bottom padding so content clears the fixed nav bar ── */
+/* (form-box margin-bottom is set above to 120px) */
+/* ── Confirm-remove modal overlay ── */
+/* Inline styles on #confirmRemoveModal set most of the positioning; the
+   .open class just flips display from none to flex. Kept minimal here to
+   avoid fighting the inline styles in addConnection.html. */
+.modal-overlay.open {
+  display: flex !important;
+  
+}
+
+/* ============================================================
+   RESPONSIVE APP TUNING
+   Shared overrides for phone-sized screens. Most pages use .box,
+   .form-box, .row, modal cards, and the fixed bottom nav, so these
+   rules improve the whole app without changing page behavior.
+   ============================================================ */
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+canvas,
+video {
+  max-width: 100%;
+}
+
+.app-main {
+  width: 100%;
+  padding-bottom: 112px;
+}
+
+.box,
+.form-box {
+  width: min(100% - 32px, 720px);
+}
+
+.box input,
+.form-box input,
+.form-box select,
+.form-box textarea {
+  max-width: 100%;
+}
+
+.box > *,
+.form-box > *,
+.row > * {
+  min-width: 0;
+}
+
+@media (max-width: 640px) {
+  .app-main {
+    padding-bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .container {
+    width: 100%;
+    justify-content: stretch;
+    align-items: stretch;
+    padding: 10px 10px 0;
+  }
+
+  .box,
+  .form-box {
+    width: 100%;
+    max-width: none;
+    margin: 0 0 16px;
+    padding: 16px 14px;
+    border-radius: 10px;
+    box-shadow: 0 4px 14px rgba(9, 30, 66, 0.08);
+  }
+
+  .box h1,
+  .box h2,
+  .box h3,
+  .form-box h1,
+  .form-box h2,
+  .form-box h3 {
+    line-height: 1.2;
+    margin-bottom: 12px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  input[type="date"],
+  input[type="time"],
+  select,
+  textarea {
+    font-size: 16px;
+    padding: 11px 12px;
+  }
+
+  .row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .links-gap,
+  .modal-btn-row {
+    flex-wrap: wrap;
+  }
+
+  .modal-btn-row button,
+  .btn-action {
+    flex: 1 1 100%;
+    min-width: 0;
+  }
+
+  .bottom-nav {
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    width: calc(100% - 16px);
+    max-width: 520px;
+    padding: 5px 4px 7px;
+  }
+
+  .bottom-nav .nav-item {
+    height: 96px;
+    padding: 6px 2px;
+  }
+
+  .bottom-nav .icon {
+    width: 96px;
+    height: 56px;
+  }
+
+  .bottom-nav .nav-item span {
+    font-size: 9.5px;
+    line-height: 1.1;
+    margin-top: 3px;
+    min-height: calc(1.1em * 2);
+    overflow-wrap: anywhere;
+  }
+
+  .app-footer {
+    display: none;
+  }
+
+  .dashboard-tile {
+    min-height: 76px;
+    padding: 14px 8px;
+  }
+
+  .dashboard-tile p {
+    font-size: 12px;
+    line-height: 1.25;
+  }
+
+  .week-day-card,
+  .day-summary-card,
+  .dash-session-card,
+  .child-card,
+  .student-card {
+    padding: 11px 12px;
+  }
+
+  .week-day-card,
+  .day-summary-card {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .week-day-card-header,
+  .day-summary-header {
+    min-width: 68px;
+  }
+
+  .week-day-card-body,
+  .day-summary-body {
+    justify-content: flex-start;
+  }
+
+  .patch-pill,
+  .week-day-card-stat {
+    white-space: normal;
+  }
+
+  .day-view {
+    grid-template-columns: 38px minmax(0, 1fr);
+  }
+
+  .ice-slot {
+    left: 2px;
+    right: 2px;
+    padding: 9px 10px;
+  }
+
+  .ice-slot-header,
+  .session-block-header {
+    gap: 6px;
+  }
+
+  .ice-slot-header-info {
+    flex: 1 1 140px;
+  }
+
+  .ice-slot-pills {
+    justify-content: flex-start;
+  }
+
+  .session-block-content {
+    padding: 6px 7px;
+  }
+
+  .session-block-name,
+  .session-block-meta {
+    white-space: normal;
+  }
+
+  .session-block-card-time {
+    margin-left: auto;
+  }
+
+  .add-session-modal-card,
+  .delete-modal-card,
+  .dash-session-modal-card,
+  .modal-content {
+    width: 100% !important;
+    max-width: none !important;
+    max-height: calc(100dvh - 24px) !important;
+    border-radius: 10px !important;
+  }
+
+  .add-session-modal-card,
+  .delete-modal-card,
+  .dash-session-modal-card {
+    padding: 18px 16px !important;
+  }
+}
+
+@media (max-width: 430px) {
+  .pay-page-header {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+
+  .pay-page-actions {
+    justify-content: stretch !important;
+  }
+
+  .payment-settings-link {
+    width: 100% !important;
+  }
+
+  .pay-metrics,
+  .pay-metrics.has-uninvoiced {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  .pay-metric {
+    padding: 9px 10px !important;
+  }
+
+  .pay-metric-label,
+  .pay-metric-value {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  .pay-metric-value {
+    font-size: 16px !important;
+  }
+
+  .pay-filter {
+    flex: 1 1 calc(50% - 6px) !important;
+    text-align: center !important;
+  }
+
+  .pay-row,
+  .payment-confirmation,
+  .bill-card-top,
+  .dash-session-card-top {
+    align-items: stretch !important;
+    flex-direction: column !important;
+  }
+
+  .pay-row-right {
+    display: flex !important;
+    align-items: baseline !important;
+    justify-content: space-between !important;
+    gap: 10px !important;
+    text-align: left !important;
+  }
+
+  .pay-row-sub,
+  .pay-row-meta,
+  .bill-card-amount,
+  .dash-session-time {
+    white-space: normal !important;
+  }
+
+  .payment-confirmation-btn {
+    width: 100% !important;
+  }
+
+  .modal-footer {
+    flex-direction: column !important;
+  }
+
+  .modal-footer .btn {
+    width: 100% !important;
+  }
+
+  .pg-header,
+  .inv-header,
+  .inv-title-group {
+    align-items: flex-start !important;
+    flex-wrap: wrap !important;
+  }
+
+  .pg-summary,
+  .inv-number {
+    white-space: normal !important;
+  }
+
+  .pg-card-top,
+  .pg-line,
+  .inv-date-row,
+  .inv-item,
+  .inv-total-row {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    gap: 4px !important;
+  }
+
+  .pg-card-name,
+  .pg-card-sub,
+  .pg-line-desc,
+  .pg-line-amount,
+  .pg-card-amount,
+  .inv-item-amount {
+    white-space: normal !important;
+    overflow: visible !important;
+    text-overflow: clip !important;
+  }
+
+  .pg-card-amount,
+  .pg-line-amount,
+  .inv-item-amount {
+    align-self: flex-start !important;
+  }
+
+  .inv-date-input {
+    width: 100% !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .container {
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .box,
+  .form-box {
+    padding: 14px 10px;
+  }
+
+  #view-toggle {
+    gap: 4px;
+  }
+
+  .view-btn {
+    font-size: 12px;
+  }
+
+  #period-label {
+    font-size: 13px;
+  }
 }

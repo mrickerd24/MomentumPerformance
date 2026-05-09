@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Momentum Performance</title>
   <link rel="stylesheet" href="styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <style>
     #deleteModal {
       display: none;
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0,0,0,0.5);
+      background: rgba(9, 30, 66, 0.54);
       z-index: 9999;
       justify-content: center;
       align-items: center;
@@ -22,11 +22,11 @@
     }
     .delete-modal-card {
       background: #fff;
-      border-radius: 16px;
+      border-radius: var(--radius-lg);
       padding: 28px 24px;
       width: calc(100% - 48px);
       max-width: 380px;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+      box-shadow: var(--shadow-card-strong);
     }
     .delete-modal-card h3 {
       color: #C9372C;
@@ -53,22 +53,16 @@
 </head>
 <body>
 
-<header class="app-header">
-  <div class="header-box">
-    <img src="logo.png" alt="Momentum Performance" class="logo" />
-  </div>
-</header>
-
 <main class="app-main">
   <div class="container">
     <div class="form-box">
 
       <form id="accountSettingsForm">
 
-        <h2 data-key="accountSettings">Account settings</h2>
+        <h2 id="accountSettings" data-key="accountSettings">Account settings</h2>
 
         <!-- Language -->
-        <legend data-key="langselect">Preferred language</legend><br><br>
+        <legend data-key="langselect">Preferred language</legend><br>
         <div class="language-option">
           <input type="radio" name="language" value="en" id="english-language" />
           <label for="english-language" data-key="english">English</label>
@@ -113,6 +107,50 @@
           </div>
         </div><br>
 
+        <!-- Week start day (checkboxes — Days of the week) — coach only -->
+        <div id="weekStart-row">
+          <label data-key="weekStart">What day does your week start</label><br><br>
+          <div class="row">
+            <div class="day-option" style="flex:1;">
+              <input type="radio" name="day" value="monday" id="monday" />
+              <label for="monday" data-key="monday">Monday</label>
+            </div>
+            <div class="day-option" style="flex:1;">
+              <input type="radio" name="day" value="tuesday" id="tuesday" />
+              <label for="tuesday" data-key="tuesday">Tuesday</label>
+            </div>
+          </div><br>
+          <div class="row">
+            <div class="day-option" style="flex:1;">
+              <input type="radio" name="day" value="wednesday" id="wednesday" />
+              <label for="wednesday" data-key="wednesday">Wednesday</label>
+            </div>
+            <div class="day-option" style="flex:1;">
+              <input type="radio" name="day" value="thursday" id="thursday" />
+              <label for="thursday" data-key="thursday">Thursday</label>
+            </div>
+          </div><br>
+          <div class="row">
+            <div class="day-option" style="flex:1;">
+              <input type="radio" name="day" value="friday" id="friday" />
+              <label for="friday" data-key="friday">Friday</label>
+            </div>
+            <div class="day-option" style="flex:1;">
+              <input type="radio" name="day" value="saturday" id="saturday" />
+              <label for="saturday" data-key="saturday">Saturday</label>
+            </div>
+          </div><br>
+          <div class="row">
+            <div class="day-option" style="flex:1;">
+              <input type="radio" name="day" value="sunday" id="sunday" />
+              <label for="sunday" data-key="sunday">Sunday</label>
+            </div>
+            <div style="flex:1;"></div>
+          </div><br><br>
+        </div>
+
+
+
         <!-- Skate Canada number — shown for coach + skater_parent -->
         <div id="skateCan-row">
           <label for="skateCanadaNumber" data-key="skateCan">Skate Canada number</label><br>
@@ -123,7 +161,7 @@
 
         <!-- Club search — shown for non-admin users -->
         <div id="clubSearch-row">
-          <label>Your skating club</label>
+          <label data-key="clubs">Your skating club</label>
           <div id="selected-clubs"></div>
           <br>
           <input type="text" id="clubSearch" placeholder="Search for a club" autocomplete="off" />
@@ -141,27 +179,45 @@
         </div>
 
         <!-- Password -->
-        <div class="row">
-          <div>
-            <label for="changepassword" data-key="changepw">Change password</label><br>
-            <input type="password" id="changepassword" placeholder="New password" autocomplete="new-password" />
-            <div id="password-error" class="field-error"></div>
-          </div>
-          <div>
-            <label for="passwordConfirmation" data-key="confirmNewpw">Confirm new password</label><br>
-            <input type="password" id="passwordConfirmation" placeholder="Confirm password" autocomplete="new-password" />
-            <div id="passwordConfirmation-error" class="field-error"></div>
-          </div>
+        <!-- CSS grid with two columns and three rows: labels on row 1
+             (auto-sized to the tallest label so single-line and two-line
+             labels share the same row height), inputs on row 2 (so they
+             always align horizontally), and error messages on row 3.
+             This stays even when one label wraps in French (e.g.
+             "Confirmation du nouveau mot de passe") and the other
+             doesn't ("Modifier le mot de passe"). -->
+        <div style="display:grid; grid-template-columns:1fr 1fr; grid-template-rows:auto auto auto; column-gap:10px; width:100%;">
+          <label for="changepassword"        data-key="changepw"      style="grid-column:1; grid-row:1;">Change password</label>
+          <label for="passwordConfirmation"  data-key="confirmNewpw"  style="grid-column:2; grid-row:1;">Confirm new password</label>
+
+          <input type="password" id="changepassword"        placeholder="New password"     autocomplete="new-password" style="grid-column:1; grid-row:2; margin-top:6px;" />
+          <input type="password" id="passwordConfirmation"  placeholder="Confirm password" autocomplete="new-password" style="grid-column:2; grid-row:2; margin-top:6px;" />
+
+          <div id="password-error"             class="field-error" style="grid-column:1; grid-row:3;"></div>
+          <div id="passwordConfirmation-error" class="field-error" style="grid-column:2; grid-row:3;"></div>
         </div><br>
 
-        <button type="submit" id="saveChanges" data-key="saveChanges">Save changes</button>
+        <button type="submit" id="saveChanges" class="btn-outlined-blue" data-key="saveChanges">Save changes</button>
         <br><br>
 
       </form>
 
+      <!-- Payment settings link — coach only. Visibility mirrors the
+           existing #pricing-row block: shown for coaches, hidden for
+           skaters/parents/admins via accountSettings.js role check. -->
+      <div id="paymentSettingsLink-row" style="display:none;">
+        <hr style="border: none; border-top: 1px solid #DFE1E6; margin: 8px 0 20px 0;">
+        <a href="paymentSettings.html" id="paymentSettingsLink"
+           style="display:inline-block; padding:10px 16px; border:1px solid var(--color-brand);
+                  border-radius:8px; color:var(--color-brand); text-decoration:none;
+                  font-weight:600; font-size:14px;"
+           data-key="paymentSettings">Payment settings</a>
+        <br><br>
+      </div>
+
       <!-- Delete account trigger — type="button" prevents any form interaction -->
       <hr style="border: none; border-top: 1px solid #DFE1E6; margin: 8px 0 20px 0;">
-      <button type="button" id="openDeleteModal" data-key="deleteAccount" style="background-color: #C9372C;">Delete account</button>
+      <button type="button" id="openDeleteModal" class="btn-danger" data-key="deleteAccount">Delete account</button>
       <br><br>
 
     </div>
@@ -182,8 +238,8 @@
     />
     <div id="deleteConfirm-error" class="field-error"></div>
     <div class="modal-btn-row">
-      <button type="button" id="cancelDeleteBtn" data-key="cancel" style="background: #5E6C84;">Cancel</button>
-      <button type="button" id="confirmDeleteBtn" data-key="deleteAccountBtn" style="background: #C9372C;">Delete my account</button>
+      <button type="button" id="cancelDeleteBtn" class="btn-cancel" data-key="cancel">Cancel</button>
+      <button type="button" id="confirmDeleteBtn" class="btn-danger" data-key="deleteAccountBtn">Delete my account</button>
     </div>
   </div>
 </div>

@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Momentum Performance</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    /* Page-local styles. Reuses styles.css for the surrounding chrome
+       (form-box, app-header, bottom-nav). Only adds what's specific to
+       the payments list — metric cards row, filter pills, invoice
+       rows, status pill colors. Same visual language as paymentSettings.html
+       so the two coach-side payment pages feel like one feature.
+
+       Role-aware: coaches see their issued invoices (MP-120); skaters
+       and parents see invoices addressed to them (MP-126). The JS
+       branches on role after authGuard returns.
+
+       Color philosophy on this page (resolved during MP-120 review):
+         - No teal. Teal is reserved for the paymentSettings sub-headers.
+         - Metric numbers carry the same color as the status they
+           represent: blue for outstanding, red for overdue, green for
+           paid. The label stays muted gray on all three.
+         - Filter pills are color-coded per status. Inactive = white bg
+           + colored border + colored text (subtle). Active = filled
+           with the light shade of the same color (clear "selected"
+           state). The "All" pill uses purple as a neutral selection
+           color since "all statuses" has no single status color of
+           its own.
+         - Row status pills keep the same five-color scheme they had
+           before (gray / blue / red / green / gray-strikethrough). */
+
+    /* --- Billable skater cards ------------------------------------------ */
+    .bill-card {
+      border: 1px solid #DFE1E6;
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+    }
+    .bill-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+    .bill-card-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #172B4D;
+    }
+    .bill-card-amount {
+      font-size: 14px;
+      font-weight: 600;
+      color: #172B4D;
+      white-space: nowrap;
+    }
+    .bill-card-sub {
+      font-size: 12px;
+      color: #5E6C84;
+      margin-bottom: 10px;
+    }
+    .bill-card-btn {
+      width: 100%;
+      padding: 9px;
+      border-radius: 8px;
+      background: #fff;
+      color: #216E4E;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      border: 1px solid #216E4E;
+      cursor: pointer;
+    }
+    .bill-card-btn:hover:not(:disabled) { background: #F1F8E8; }
+    .bill-card-btn:disabled {
+      background: #fff;
+      border-color: #A4CBB7;
+      color: #6A9A80;
+      cursor: not-allowed;
+    }
+    .pay-page-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .pay-page-header h2 {
+      margin: 0;
+      min-width: 0;
+    }
+    .pay-page-actions {
+      display: flex;
+      gap: 8px;
+      justify-content: flex-start;
+      margin: 0 0 14px;
+      flex-wrap: wrap;
+    }
+    .payment-settings-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 34px;
+      padding: 8px 14px;
+      border: 1px solid var(--color-brand);
+      border-radius: 8px;
+      color: var(--color-brand);
+      text-decoration: none;
+      font-family: inherit;
+      font-weight: 600;
+      font-size: 13px;
+      line-height: 1.2;
+      background: #fff;
+      cursor: pointer;
+    }
+    .payment-settings-link:hover {
+      background: var(--color-brand-soft);
+    }
+    .tax-report-modal .modal-content {
+      max-width: 560px;
+    }
+    .tax-report-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .tax-report-controls label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #172B4D;
+    }
+    .tax-report-controls select {
+      min-width: 120px;
+      border: 1px solid #DFE1E6;
+      border-radius: 6px;
+      padding: 7px 10px;
+      font: inherit;
+      font-size: 13px;
+      color: #172B4D;
+      background: #FAFBFC;
+    }
+    .tax-report-note {
+      font-size: 12px;
+      color: #5E6C84;
+      margin-bottom: 12px;
+    }
+    .tax-report-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .tax-report-card {
+      border: 1px solid #DFE1E6;
+      border-radius: 8px;
+      padding: 10px 12px;
+      background: #FAFBFC;
+    }
+    .tax-report-label {
+      font-size: 11px;
+      color: #5E6C84;
+      margin-bottom: 4px;
+    }
+    .tax-report-value {
+      font-size: 17px;
+      font-weight: 700;
+      color: #172B4D;
+    }
+    .tax-report-section {
+      border-top: 1px solid #DFE1E6;
+      padding-top: 10px;
+      margin-top: 10px;
+    }
+    .tax-report-section-title {
+      font-size: 12px;
+      font-weight: 800;
+      color: #5E6C84;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+    .tax-report-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 13px;
+      color: #172B4D;
+      padding: 3px 0;
+    }
+    .tax-report-row strong {
+      font-weight: 800;
+    }
+    .bill-section-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #5E6C84;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 10px;
+    }
+
+    /* --- Metric cards --------------------------------------------------- */
+    /* Four-up grid of summary numbers at the top of the page. Width is
+       constrained by the .form-box parent so we just split equally with
+       gap. On very narrow screens we let them shrink rather than wrap —
+       the labels and numbers are short. */
+    .pay-metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .pay-metrics.has-uninvoiced {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .pay-metric {
+      background: var(--color-surface-subtle);
+      border-radius: 8px;
+      padding: 10px 12px;
+      min-width: 0;
+    }
+    .pay-metric-label {
+      font-size: 11px;
+      color: #5E6C84;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .pay-metric-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: #172B4D;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    /* Each metric gets its own color modifier so the three numbers tell
+       a story at a glance: blue = money you're waiting on, red = money
+       past due, green = money already in. Matches the row status pills
+       so the eye learns the mapping fast. */
+    .pay-metric.is-outstanding .pay-metric-value { color: #0C447C; }
+    .pay-metric.is-overdue     .pay-metric-value { color: #C9372C; }
+    .pay-metric.is-paid        .pay-metric-value { color: #085041; }
+    .pay-metric.is-uninvoiced  .pay-metric-value { color: #534AB7; }
+    .pay-metric.is-affiliate   .pay-metric-value { color: #974F0C; }
+
+    /* --- Filter pills --------------------------------------------------- */
+    /* Horizontal row of status filters. Wraps if the language makes
+       labels too long (FR "En retard" vs EN "Overdue"). Each pill is a
+       <button> so it gets keyboard focus + tap feedback for free.
+
+       Each filter is color-coded per status. We do this through five
+       modifier classes (pay-filter-{status}) that set the inactive
+       palette: white bg + status-colored border + status-colored text.
+       The .active modifier overrides bg with the matching light shade
+       and bumps the border weight to 2px so the selected state reads
+       as a filled state rather than a heavier outline. */
+    .pay-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+    .pay-filter {
+      font: inherit;
+      font-size: 12px;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: #fff;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.12s, border-color 0.12s, color 0.12s;
+      /* Default border style — color is set per modifier below. We use
+         1px so inactive pills don't shift width when going active
+         (active is 2px but with -1px padding compensation; see .active
+         rule). */
+      border: 1px solid #DFE1E6;
+      color: #5E6C84;
+    }
+    .pay-filter:hover { background: #FAFBFC; }
+
+    /* Per-status inactive palette. Border + text color carry the
+       status meaning; the background stays white for a quiet look. */
+    .pay-filter-all     { border-color: #CECBF6; color: #534AB7; }
+    .pay-filter-draft   { border-color: #B4B2A9; color: #444441; }
+    .pay-filter-sent    { border-color: #85B7EB; color: #0C447C; }
+    .pay-filter-overdue { border-color: #F09595; color: #791F1F; }
+    .pay-filter-paid    { border-color: #5DCAA5; color: #085041; }
+    .pay-filter-void    { border-color: #B4B2A9; color: #5E6C84; }
+
+    /* Active state — fill with the light shade and thicken the border
+       to 2px. We compensate the padding by 1px so the pill doesn't
+       jump width when toggling. font-weight goes to 600 to make the
+       active pill the visual anchor of the row. */
+    .pay-filter.active {
+      font-weight: 600;
+      border-width: 2px;
+      padding: 4px 10px;
+    }
+    .pay-filter-all.active     { background: #EEEDFE; }
+    .pay-filter-draft.active   { background: #F1EFE8; }
+    .pay-filter-sent.active    { background: #E6F1FB; }
+    .pay-filter-overdue.active { background: #FCEBEB; }
+    .pay-filter-paid.active    { background: #E1F5EE; }
+    .pay-filter-void.active    { background: #F1EFE8; }
+
+    /* Count badge inside each pill — only rendered for non-zero buckets
+       so empty filters don't shout. Inherits text color from the pill
+       so it color-cycles correctly across active/inactive. */
+    .pay-filter .pay-filter-count {
+      font-weight: 600;
+      margin-left: 4px;
+      opacity: 0.7;
+    }
+
+    /* --- Invoice rows --------------------------------------------------- */
+    /* Each invoice is a horizontally laid-out tap target. Whole row is
+       the View affordance (per design decision in MP-120 prep) — there's
+       no separate button. Hover/active feedback is added via .pay-row
+       so the row reads as clickable. */
+    .pay-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .pay-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid #DFE1E6;
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+      transition: border-color 0.12s, background 0.12s;
+    }
+    .pay-row:hover  { border-color: #B3BAC5; background: #FAFBFC; }
+    .pay-row:active { background: var(--color-surface-subtle); }
+    .pay-row-main {
+      flex: 1;
+      min-width: 0;
+    }
+    .pay-row-top {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+      flex-wrap: wrap;
+    }
+    .pay-row-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #172B4D;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .pay-row-sub {
+      font-size: 12px;
+      color: #5E6C84;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .pay-row-right {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .pay-row-amount {
+      font-size: 14px;
+      font-weight: 600;
+      color: #172B4D;
+      white-space: nowrap;
+    }
+    .pay-row-amount-strikethrough {
+      text-decoration: line-through;
+      color: #5E6C84;
+    }
+    .pay-row-remaining {
+      font-size: 12px;
+      color: #5E6C84;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+    .pay-row-interest {
+      color: #AE2A19;
+      font-weight: 700;
+    }
+    .pay-row-meta {
+      font-size: 11px;
+      color: #5E6C84;
+      margin-top: 2px;
+      white-space: nowrap;
+    }
+    /* "Overdue" date gets the same red as the status pill. */
+    .pay-row-meta.is-overdue { color: #C9372C; font-weight: 600; }
+
+    /* --- Row status pills ----------------------------------------------- */
+    /* Six visual states. Overdue is computed client-side (sent +
+       dueAt < now) — Firestore stores only the four real statuses
+       (draft/sent/paid/void). The state machine in project knowledge
+       has draft → sent → paid/void as the legal transitions; we render
+       void as gray-strikethrough, paid as green, sent as blue, overdue
+       as red, draft as neutral gray. */
+    .pay-pill {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .pay-pill-draft   { background: var(--color-surface-subtle); color: #444441; }
+    .pay-pill-sent    { background: #E6F1FB; color: #0C447C; }
+    .pay-pill-overdue { background: #FCEBEB; color: #791F1F; }
+    .pay-pill-paid    { background: #E1F5EE; color: #085041; }
+    .pay-pill-void    { background: #EBECF0; color: #5E6C84; text-decoration: line-through; }
+
+    .payment-confirmations {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .payment-confirmation {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid #B3DF72;
+      border-radius: 8px;
+      background: #F1F8E8;
+    }
+    .payment-confirmation-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #085041;
+    }
+    .payment-confirmation-sub {
+      font-size: 12px;
+      color: #5E6C84;
+      margin-top: 2px;
+    }
+    .payment-confirmation-btn {
+      flex-shrink: 0;
+      min-height: 34px;
+      padding: 7px 12px;
+      border: none;
+      border-radius: 6px;
+      background: #216E4E;
+      color: #fff;
+      font: inherit;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .payment-confirmation-btn:hover { background: #166243; }
+
+    /* --- Empty state ---------------------------------------------------- */
+    /* Shown when the coach has zero invoices total OR when the current
+       filter+search returns nothing. The two cases use slightly
+       different copy (set in JS) but the same layout. */
+    .pay-empty {
+      text-align: center;
+      padding: 32px 16px;
+      color: #5E6C84;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .pay-empty-cta {
+      display: inline-block;
+      margin-top: 12px;
+      color: var(--color-brand);
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .pay-empty-cta:hover { text-decoration: underline; }
+
+    /* --- Loading state -------------------------------------------------- */
+    /* Matches the muted text style elsewhere (e.g. paymentSettings load
+       state). Replaced once the first read resolves. */
+    .pay-loading {
+      text-align: center;
+      padding: 24px 16px;
+      color: #5E6C84;
+      font-size: 13px;
+    }
+
+    /* --- "Forbidden" / non-coach state ---------------------------------- */
+    /* Defensive: if a non-coach somehow lands on this page (e.g. a
+       shared link), show a friendly message instead of an empty list.
+       Real protection is in authGuard + Firestore rules — this is
+       just the UI fallback. */
+    .pay-forbidden {
+      text-align: center;
+      padding: 32px 16px;
+      color: #5E6C84;
+      font-size: 14px;
+    }
+
+    /* --- Invoice Modal -------------------------------------------------- */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(9, 30, 66, 0.54);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: #fff;
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card-strong);
+      max-width: 500px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-bottom: 1px solid #DFE1E6;
+    }
+    .modal-header h3 {
+      font-size: 16px;
+      font-weight: 600;
+      color: #172B4D;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #5E6C84;
+      cursor: pointer;
+      padding: 0;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-close:hover { color: #172B4D; }
+    .modal-body {
+      padding: 16px;
+    }
+    .invoice-details {
+      margin-bottom: 16px;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #172B4D;
+    }
+    .invoice-tax-toggle {
+      padding: 12px;
+      background: var(--color-surface-subtle);
+      border-radius: 4px;
+      margin-bottom: 16px;
+    }
+    .invoice-tax-toggle label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #172B4D;
+    }
+    .invoice-tax-toggle input {
+      cursor: pointer;
+    }
+    .modal-footer {
+      display: flex;
+      gap: 8px;
+      padding: 16px;
+      border-top: 1px solid #DFE1E6;
+      justify-content: flex-end;
+    }
+    .modal-footer .btn {
+      flex: 1 1 0;
+      min-height: 38px;
+      font: inherit;
+      font-size: 13px;
+      padding: 8px 16px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .modal-footer .btn-cancel {
+      background: #EBECF0;
+      color: #172B4D;
+    }
+    .modal-footer .btn-cancel:hover { background: #DFE1E6; }
+    .modal-footer .btn-success {
+      background: #E1F5EE;
+      color: #085041;
+    }
+    .modal-footer .btn-success:hover { background: #C9E9DF; }
+    .modal-footer .btn-danger {
+      background: #FFEBE9;
+      color: #AE2A19;
+    }
+    .modal-footer .btn-danger:hover { background: #FFD5D2; }
+    .modal-footer .btn-primary {
+      background: var(--color-brand-soft);
+      color: #0C447C;
+    }
+    .modal-footer .btn-primary:hover { background: #CCE0FF; }
+    .payment-submit-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      border-top: 1px solid #DFE1E6;
+      margin-top: 12px;
+      padding-top: 12px;
+    }
+    .payment-submit-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #172B4D;
+    }
+    .payment-method-options {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .payment-method-options label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: #172B4D;
+      cursor: pointer;
+    }
+    .payment-submit-field label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: #5E6C84;
+      margin-bottom: 4px;
+    }
+    .payment-submit-field input {
+      width: 100%;
+      box-sizing: border-box;
+      border: 1px solid #DFE1E6;
+      border-radius: 6px;
+      padding: 8px 10px;
+      font: inherit;
+      font-size: 13px;
+      color: #172B4D;
+      background: #FAFBFC;
+    }
+    .payment-submit-field input:focus {
+      outline: none;
+      border-color: #534AB7;
+    }
+    @media print {
+      body * {
+        visibility: hidden !important;
+      }
+      #taxReportModal,
+      #taxReportModal * {
+        visibility: visible !important;
+      }
+      #taxReportModal {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: auto !important;
+        bottom: auto !important;
+        display: block !important;
+        width: 100% !important;
+        background: #fff !important;
+      }
+      #taxReportModal .modal-content {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        max-width: none !important;
+        width: 100% !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+      #taxReportModal .modal-header,
+      #taxReportModal .modal-footer {
+        display: none !important;
+      }
+      #taxReportModal .modal-body {
+        padding: 0 !important;
+      }
+      body:not(.printing-tax-report) #taxReportModal,
+      body:not(.printing-tax-report) #taxReportModal * {
+        visibility: hidden !important;
+      }
+      body.printing-tax-report #invoiceModal,
+      body.printing-tax-report #invoiceModal * {
+        visibility: hidden !important;
+      }
+      #invoiceModal,
+      #invoiceModal * {
+        visibility: visible !important;
+      }
+      body.printing-tax-report #taxReportModal,
+      body.printing-tax-report #taxReportModal * {
+        visibility: visible !important;
+      }
+      #invoiceModal {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        right: auto !important;
+        bottom: auto !important;
+        display: block !important;
+        width: 100% !important;
+        background: #fff !important;
+      }
+      #invoiceModal .modal-content {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        max-width: none !important;
+        width: 100% !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+      #invoiceModal .modal-header,
+      #invoiceModal .modal-footer {
+        display: none !important;
+      }
+      #invoiceModal .modal-body {
+        padding: 0 !important;
+      }
+      #invoiceModal .invoice-details {
+        margin: 0 !important;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<main class="app-main">
+  <div class="container">
+    <div class="form-box">
+
+      <div class="pay-page-header">
+        <h2 id="page-title" data-key="paymentsTitle">Payments</h2>
+      </div>
+
+      <div class="pay-page-actions">
+          <button type="button" id="tax-report-link"
+             class="payment-settings-link" style="display:none;"
+             data-key="yearlySummary">
+            Yearly summary
+          </button>
+        <a href="paymentSettings.html" id="payment-settings-link"
+           class="payment-settings-link" style="display:none;"
+           data-key="paymentSettings">
+          Payment settings
+        </a>
+        <button type="button" id="my-coaches-btn"
+                class="payment-settings-link" style="display:none;"
+                data-key="myCoaches">
+          My coaches
+        </button>
+      </div>
+
+      <!-- Metric cards: billable sessions, billed invoices, overdue invoices,
+           and earned payments. All read off the loaded payment data so they
+           update together when the list refreshes. -->
+      <div class="pay-metrics" id="payMetrics">
+        <div class="pay-metric is-uninvoiced" id="metricUninvoicedCard">
+          <div class="pay-metric-label" data-key="payBillable">Billable</div>
+          <div class="pay-metric-value" id="metricUninvoiced">—</div>
+        </div>
+        <div class="pay-metric is-outstanding">
+          <div class="pay-metric-label" data-key="payBilled">Billed</div>
+          <div class="pay-metric-value" id="metricOutstanding">—</div>
+        </div>
+        <div class="pay-metric is-overdue">
+          <div class="pay-metric-label" data-key="payOverdue">Overdue</div>
+          <div class="pay-metric-value" id="metricOverdue">—</div>
+        </div>
+        <div class="pay-metric is-paid">
+          <div class="pay-metric-label" id="metricPaidLabel" data-key="payEarned">Revenus</div>
+          <div class="pay-metric-value" id="metricPaid">—</div>
+        </div>
+        <div class="pay-metric is-affiliate" id="metricAffiliateCard" style="display:none;">
+          <div class="pay-metric-label" data-key="payAffiliate">Affiliate coaches</div>
+          <div class="pay-metric-value" id="metricAffiliate">—</div>
+        </div>
+      </div>
+
+      <!-- Filter pills. The "all" pill is the default-active. Each
+           pill carries a pay-filter-{status} modifier for its inactive
+           palette; payment.js toggles the .active class to switch
+           into the filled state. Counts are injected by JS from the
+           loaded invoice list. -->
+      <div class="pay-filters" id="payFilters">
+        <button type="button" class="pay-filter pay-filter-all active" data-status="all"
+                data-key="payFilterAll">All</button>
+        <button type="button" class="pay-filter pay-filter-draft" data-status="draft"
+                data-key="payFilterDraft">Draft</button>
+        <button type="button" class="pay-filter pay-filter-sent" data-status="sent"
+                data-key="payFilterSent">Sent</button>
+        <button type="button" class="pay-filter pay-filter-overdue" data-status="overdue"
+                data-key="payFilterOverdue">Overdue</button>
+        <button type="button" class="pay-filter pay-filter-paid" data-status="paid"
+                data-key="payFilterPaid">Paid</button>
+        <button type="button" class="pay-filter pay-filter-void" data-status="void"
+                data-key="payFilterVoid">Void</button>
+      </div>
+
+      <div id="paymentConfirmations" class="payment-confirmations" style="display:none;"></div>
+
+      <!-- Billable skater cards -->
+      <div id="billableSection" style="display:none;">
+        <div data-key="toBill" class="bill-section-title">To bill</div>
+        <div id="billableList" class="pay-list"></div>
+        <div style="border-top:1px solid #DFE1E6;margin:16px 0;"></div>
+      </div>
+
+      <!-- The list itself, plus the loading / empty / forbidden slots.
+           JS toggles which one is visible. -->
+      <div id="payLoading" class="pay-loading" data-key="payLoading">Loading invoices…</div>
+
+      <div id="payerCreditNotice" style="display:none;background:#E3FCEF;color:#085041;border-radius:6px;padding:10px 12px;font-size:13px;margin-bottom:12px;"></div>
+
+      <div id="payList" class="pay-list" style="display:none;"></div>
+
+      <div id="payEmpty" class="pay-empty" style="display:none;">
+        <div id="payEmptyText" data-key="payEmptyAll">
+          No invoices yet, generate your first batch from the dashboard.
+        </div>
+        <a id="payEmptyCta" class="pay-empty-cta" href="dashboard.html"
+           data-key="payEmptyCtaAll">Go to dashboard</a>
+      </div>
+
+      <div id="payForbidden" class="pay-forbidden" style="display:none;"
+           data-key="payForbidden">
+        You don't have permission to view this page.
+      </div>
+
+      <!-- Invoice review modal -->
+      <div id="invoiceModal" class="modal" style="display:none;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="modalTitle" style="margin:0;">Invoice Details</h3>
+            <button type="button" class="modal-close" id="modalClose">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div id="invoiceDetails" class="invoice-details"></div>
+            <div class="invoice-tax-toggle">
+              <label>
+                <input type="checkbox" id="invoiceTaxToggle" />
+                <span data-key="taxIncluded">Include taxes</span>
+              </label>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-cancel" id="modalCancel" data-key="buttonCancel">Cancel</button>
+            <button type="button" class="btn btn-danger" id="modalDeleteInvoice" data-key="delete">Delete</button>
+            <button type="button" class="btn btn-success" id="modalSaveDraft" data-key="buttonSaveDraft">Save draft</button>
+            <button type="button" class="btn btn-primary" id="modalSendInvoice" data-key="buttonSendInvoice">Send invoice</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="taxReportModal" class="modal tax-report-modal" style="display:none;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 id="taxReportTitle" style="margin:0;" data-key="yearlySummary">Yearly summary</h3>
+            <button type="button" class="modal-close" id="taxReportClose">&times;</button>
+          </div>
+          <div class="modal-body">
+            <div class="tax-report-controls">
+              <label for="taxReportYear" data-key="taxReportYear">Year</label>
+              <select id="taxReportYear"></select>
+            </div>
+            <div class="tax-report-note" id="taxReportNote" data-key="taxReportNote">
+              Internal tax summary only. Use it to prepare Canada and Quebec tax reporting with your accountant.
+            </div>
+            <div id="taxReportContent"></div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-primary" id="taxReportPrint" data-key="printSummary">Print</button>
+            <button type="button" class="btn btn-cancel" id="taxReportDone" data-key="buttonClose">Close</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- My Coaches modal -->
+      <div id="myCoachesModal" class="modal" style="display:none;">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h3 style="margin:0;" data-key="myCoaches">My Coaches</h3>
+            <button type="button" class="modal-close" id="myCoachesClose">&times;</button>
+          </div>
+          <div class="modal-body" id="myCoachesBody"></div>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+
+
+
+</main>
+
+<nav class="bottom-nav">
+  <button class="nav-item" id="dashboard-btn">
+    <img src="dashboardIcon.png" class="icon" />
+    <span data-key="dashboard">Dashboard</span>
+  </button>
+  <button class="nav-item" id="calendar-btn">
+    <img src="calendarIcon.png" class="icon" />
+    <span data-key="calendar">Calendar</span>
+  </button>
+  <button class="nav-item" id="payment-btn">
+    <img src="paymentIcon.png" class="icon" />
+    <span data-key="payment">Payment</span>
+  </button>
+  <button class="nav-item" id="settings-btn">
+    <img src="settings.png" class="icon" />
+    <span data-key="settings">Settings</span>
+  </button>
+  <button class="nav-item" id="logout-btn">
+    <img src="logout.png" class="icon" />
+    <span data-key="logout">Logout</span>
+  </button>
+</nav>
+
+<footer class="app-footer">
+  <br><br>
+  <div class="footer-content">
+    <span>© 2026 Momentum Performance</span>
+  </div>
+</footer>
+
+<script type="module" src="payment.js"></script>
+</body>
+</html>

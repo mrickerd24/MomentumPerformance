@@ -1,4 +1,5 @@
 import { db, getLang, applyLanguage, authGuard, initNav, translations } from "./app.js";
+import { injectNotificationBell } from "./notifications.js";
 import {
   collection, query, where, getDocs,
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -20,12 +21,14 @@ function renderStudents(students) {
   }
 
   students.forEach(student => {
+    const clubLabels = (student.clubNames || []).join(", ");
     const card = document.createElement("div");
     card.className = "student-card";
     card.innerHTML = `
       <strong style="font-size:14px">${student.name}</strong><br>
       <span style="font-size:12px;color:#5E6C84">${student.email}</span><br>
       <span style="font-size:11px;color:#0C66E4;font-weight:600;">${student.roles.join(", ")}</span>
+      ${clubLabels ? `<br><span style="font-size:11px;color:#5E6C84;"> ⛸  ${clubLabels}</span>` : ""}
     `;
     list.appendChild(card);
   });
@@ -51,9 +54,10 @@ async function loadStudents(myUid) {
 
     if (isStudent) {
       students.push({
-        name:  data.names[otherUid],
-        email: data.emails[otherUid],
-        roles: otherRoles,
+        name:      data.names[otherUid],
+        email:     data.emails[otherUid],
+        roles:     otherRoles,
+        clubNames: data.clubNames?.[otherUid] || [],
       });
     }
   });
@@ -73,12 +77,13 @@ async function loadStudents(myUid) {
 
 // ---------- INIT -----------------
 document.addEventListener("DOMContentLoaded", () => {
-  applyLanguage(); // ← was missing before
+  applyLanguage();
   authGuard([], (user, userData) => {
     const t = translations[getLang()];
     document.getElementById("page-title").textContent = t.students;
     document.getElementById("search-label").textContent = t.searchByName;
     initNav("students.html");
+    injectNotificationBell(user.uid);
     loadStudents(user.uid);
   });
 });

@@ -5,16 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Momentum Performance</title>
   <link rel="stylesheet" href="styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
 </head>
 <body>
-
-<header class="app-header">
-  <div class="header-box">
-    <img src="logo.png" alt="Momentum Performance" class="logo" />
-  </div>
-</header>
 
 <main class="app-main">
   <div class="container">
@@ -22,10 +16,28 @@
 
       <h2 id="page-title"></h2>
 
+      <!-- Action buttons shown at the top of the page: add student (for
+           coaches), add coach (for skaters/parents), or both for multi-role
+           users. Wired up in addConnection.js based on current user roles. -->
+      <div id="action-buttons" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px;"></div>
+
       <label for="searchInput" id="search-label"></label><br>
       <input type="text" id="searchInput" autocomplete="off" /><br><br>
-      <button id="searchBtn"></button>
+      <button id="searchBtn" class="btn-outlined-blue"></button>
       <br><br>
+
+      <!-- Children section. Shown only for parents. The "Add child" button
+           opens the child form modal; the list below renders one card per
+           child, cycling through 6 Jira-style status colors. Tap a card to
+           open the edit modal (which contains a Delete button). -->
+      <div id="children-section" style="display:none">
+        <hr style="margin: 20px 0;">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:8px; flex-wrap:wrap;">
+          <h3 id="children-title" style="margin:0;"></h3>
+          <button id="addChildBtn" class="btn-outlined-blue btn-compact"></button>
+        </div>
+        <div id="children-list" style="margin-top:12px;"></div>
+      </div>
 
       <div id="search-results"></div>
 
@@ -41,15 +53,88 @@
         <div id="pending-list"></div>
       </div>
 
+      <!-- Connected list. For single-role users this is a single list. For
+           multi-role users (e.g. coach who also skates), it's split into two
+           sub-sections ("My students", "My coaches") with a horizontal rule
+           between them — wired up in addConnection.js. -->
       <div id="connected-section" style="display:none">
         <hr style="margin: 20px 0;">
         <h3 id="connected-title"></h3>
-        <div id="connected-list"></div>
+
+        <!-- Students sub-section: shown when viewer is a coach and has any
+             connected skaters/parents. Heading + list hidden via display:none
+             when empty or when the viewer isn't a coach. -->
+        <div id="connected-students-sub" style="display:none">
+          <h4 id="connected-students-title" style="font-size:14px; color:#5E6C84; margin:12px 0 8px;"></h4>
+          <div id="connected-students-list"></div>
+        </div>
+
+        <!-- Divider between the two sub-lists, only shown when BOTH are
+             populated. Mirrors the dashboard's coach/skater section divider. -->
+        <hr id="connected-sub-divider" style="display:none; margin: 16px 0; border:none; border-top:1px solid #E6E8EB;">
+
+        <!-- Coaches sub-section: shown when viewer is a skater/parent and has
+             any connected coaches. -->
+        <div id="connected-coaches-sub" style="display:none">
+          <h4 id="connected-coaches-title" style="font-size:14px; color:#5E6C84; margin:12px 0 8px;"></h4>
+          <div id="connected-coaches-list"></div>
+        </div>
       </div>
 
     </div>
   </div>
 </main>
+
+<!-- Confirm-remove modal. Hidden by default; shown via .open on the overlay.
+     The "Remove" button's click handler is wired dynamically in
+     addConnection.js so it can call the right deleteDoc for whichever
+     connection is being removed. -->
+<div id="confirmRemoveModal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(23,43,77,0.55); z-index:1100; align-items:center; justify-content:center; padding:16px;">
+  <div style="background:#fff; border-radius:var(--radius-lg); padding:20px; max-width:360px; width:100%; box-shadow:var(--shadow-card-strong);">
+    <h3 id="confirmRemoveTitle" style="margin:0 0 8px; font-size:16px;"></h3>
+    <p id="confirmRemoveMsg" style="margin:0 0 18px; color:#5E6C84; font-size:13px;"></p>
+    <div style="display:flex; gap:10px; justify-content:flex-end;">
+      <button id="confirmRemoveCancel" class="btn-cancel btn-compact" style="padding:8px 14px;"></button>
+      <button id="confirmRemoveOk" class="btn-danger btn-compact" style="padding:8px 14px;"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Child form modal — shared between Add and Edit. The mode is determined
+     by addConnection.js when opening it: opening with no childId is Add;
+     opening with a childId pre-fills the inputs and shows a Delete button
+     in the footer. -->
+<div id="childFormModal" class="modal-overlay" style="display:none; position:fixed; inset:0; background:rgba(23,43,77,0.55); z-index:1000; align-items:center; justify-content:center; padding:16px;">
+  <div style="background:#fff; border-radius:var(--radius-lg); padding:20px; max-width:400px; width:100%; box-shadow:var(--shadow-card-strong); max-height:90vh; overflow-y:auto;">
+    <h3 id="childFormTitle" style="margin:0 0 14px; font-size:16px;"></h3>
+
+    <label id="childFirstNameLabel" for="childFirstName" style="font-size:13px; color:#172B4D; font-weight:600;"></label>
+    <input type="text" id="childFirstName" autocomplete="off" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #DFE1E6; border-radius:8px; font-size:14px; margin:4px 0 4px;">
+    <p id="childFirstName-error" style="color:#C9372C; font-size:12px; margin:0 0 10px; min-height:14px;"></p>
+
+    <label id="childLastNameLabel" for="childLastName" style="font-size:13px; color:#172B4D; font-weight:600;"></label>
+    <input type="text" id="childLastName" autocomplete="off" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #DFE1E6; border-radius:8px; font-size:14px; margin:4px 0 4px;">
+    <p id="childLastName-error" style="color:#C9372C; font-size:12px; margin:0 0 10px; min-height:14px;"></p>
+
+    <label id="childSkateCanLabel" for="childSkateCanadaNumber" style="font-size:13px; color:#172B4D; font-weight:600;"></label>
+    <input type="text" id="childSkateCanadaNumber" autocomplete="off" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #DFE1E6; border-radius:8px; font-size:14px; margin:4px 0 4px;">
+    <p id="childSkateCanadaNumber-error" style="color:#C9372C; font-size:12px; margin:0 0 10px; min-height:14px;"></p>
+
+    <label id="childClubLabel" for="childClubSearch" style="font-size:13px; color:#172B4D; font-weight:600;"></label>
+    <div id="childSelectedClub" style="margin:4px 0 4px;"></div>
+    <input type="text" id="childClubSearch" autocomplete="off" style="width:100%; box-sizing:border-box; padding:8px 10px; border:1px solid #DFE1E6; border-radius:8px; font-size:14px; margin:4px 0 4px;">
+    <div id="childClubResults" style="max-height:160px; overflow-y:auto; margin-bottom:4px;"></div>
+    <p id="childClub-error" style="color:#C9372C; font-size:12px; margin:0 0 10px; min-height:14px;"></p>
+
+    <div style="display:flex; gap:10px; justify-content:space-between; margin-top:8px;">
+      <button id="childFormDelete" class="btn-danger btn-compact" style="display:none;"></button>
+      <div style="display:flex; gap:10px; margin-left:auto;">
+        <button id="childFormCancel" class="btn-cancel btn-compact"></button>
+        <button id="childFormSave"   class="btn-success btn-compact"></button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <nav class="bottom-nav">
   <button class="nav-item" id="dashboard-btn">

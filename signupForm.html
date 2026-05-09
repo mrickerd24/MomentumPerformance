@@ -5,15 +5,27 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Momentum Performance</title>
   <link rel="stylesheet" href="styles.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    .signup-consent {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin: 6px 0 4px;
+      font-size: 13px;
+      line-height: 1.4;
+      color: #172B4D;
+    }
+    .signup-consent input {
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+  </style>
 </head>
 <body>
 
 <header class="app-header">
-  <div class="header-box">
-    <img src="logo.png" alt="Momentum Performance" class="logo" />
-  </div>
   <div class="lang-box">
     <button id="lang-toggle" class="lang-btn">EN / FR</button>
   </div>
@@ -30,6 +42,14 @@
         <div class="role-option">
           <input type="checkbox" name="role" value="coach" id="roleCoach" />
           <label for="roleCoach" data-key="coach">Coach</label>
+        </div>
+        <div id="coachManagementOption" class="role-option" style="display:none; margin-left:22px; margin-top:8px;">
+          <input type="checkbox" id="managesCoaches" />
+          <label for="managesCoaches" data-key="manageOtherCoaches">I manage other coaches</label>
+        </div><br>
+        <div class="role-option">
+          <input type="checkbox" name="role" value="affiliateCoach" id="roleAffiliateCoach" />
+          <label for="roleAffiliateCoach" data-key="affiliateCoach">Affiliate coach</label>
         </div><br>
         <div class="role-option">
           <input type="checkbox" name="role" value="skater" id="roleSkater" />
@@ -41,14 +61,15 @@
         </div><br><br>
 
         <!-- Club search -->
-
-        <label data-key="clubs">Your skating club</label><br>
-        <div id="selected-clubs"></div>
-        <br>
-        <input type="text" id="clubSearch" placeholder="Search for a club" autocomplete="off"/><br>
-        <br>
-        <div id="club-results"></div>
-        <div id="clubSearch-error" class="field-error"></div>
+        <div id="clubSection">
+          <label data-key="clubs">Your skating club</label><br>
+          <div id="selected-clubs"></div>
+          <br>
+          <input type="text" id="clubSearch" placeholder="Search for a club" autocomplete="off"/><br>
+          <br>
+          <div id="club-results"></div>
+          <div id="clubSearch-error" class="field-error"></div>
+        </div>
 
         <!-- Personal info -->
         <label for="name" data-key="name">Name</label><br>
@@ -67,9 +88,11 @@
         <input type="tel" id="phoneNumber" placeholder="XXX-XXX-XXXX" />
         <div id="phoneNumber-error" class="field-error"></div><br>
 
-        <label for="skateCanadaNumber" data-key="skateCan">Skate Canada number</label><br>
-        <input type="text" id="skateCanadaNumber" placeholder="XXXXXXXXXXX" />
-        <div id="skateCanadaNumber-error" class="field-error"></div><br>
+        <div id="skateCanadaSection">
+          <label for="skateCanadaNumber" data-key="skateCan">Skate Canada number</label><br>
+          <input type="text" id="skateCanadaNumber" placeholder="XXXXXXXXXXX" />
+          <div id="skateCanadaNumber-error" class="field-error"></div><br>
+        </div>
 
         <label for="password" data-key="createpw">Create a password</label><br>
         <input type="password" id="password" placeholder="Password" />
@@ -80,7 +103,19 @@
         <div id="passwordConfirmation-error" class="field-error"></div>
         <br><br>
 
-        <button type="submit" id="createAccount" data-key="createAccount">Create account</button>
+        <label class="signup-consent" for="termsAccepted">
+          <input type="checkbox" id="termsAccepted" />
+          <span>
+            <span data-key="termsAgreePrefix">I agree to the</span>
+            <a href="terms.html" target="_blank" rel="noopener" data-key="termsLink">Terms and Conditions</a>
+            <span data-key="termsAgreeAnd">and</span>
+            <a href="privacy.html" target="_blank" rel="noopener" data-key="privacyLink">Privacy Policy</a>.
+          </span>
+        </label>
+        <div id="termsAccepted-error" class="field-error"></div>
+        <br>
+
+        <button type="submit" id="createAccount" class="btn-outlined-blue" data-key="createAccount">Create account</button>
         <br><br>
 
       </form>

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Momentum Performance</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    /* invoice.html — Coach invoice detail page (MP-124).
+       Visual language matches payment.html and paymentGenerate.html:
+       purple accent, no teal, form-box wrapper, same button shapes.
+
+       Sections: header (back + number + pill) → skater info → dates →
+       line items → totals → notes → action buttons. */
+
+    /* ── Page header ──────────────────────────────────────────────── */
+    .inv-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 2px;
+    }
+    .inv-back {
+      font-size: 16px;
+      color: #5E6C84;
+      text-decoration: none;
+      cursor: pointer;
+      padding: 4px 6px;
+      margin-left: -6px;
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+    .inv-back:hover { background: #F4F5F7; }
+    .inv-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+    .inv-number {
+      font-size: 18px;
+      font-weight: 600;
+      color: #172B4D;
+      white-space: nowrap;
+    }
+
+    /* ── Status pill ──────────────────────────────────────────────── */
+    .inv-pill {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .inv-pill-draft   { background: #F4F5F7; color: #5E6C84; }
+    .inv-pill-sent    { background: #DEEBFF; color: #0C447C; }
+    .inv-pill-overdue { background: #FFEBE6; color: #AE2A19; }
+    .inv-pill-paid    { background: #E3FCEF; color: #085041; }
+    .inv-pill-void    { background: #F4F5F7; color: #5E6C84; text-decoration: line-through; }
+
+    /* ── Skater info ──────────────────────────────────────────────── */
+    .inv-skater {
+      font-size: 15px;
+      font-weight: 600;
+      color: #172B4D;
+      margin: 10px 0 2px;
+    }
+    .inv-via {
+      font-size: 13px;
+      font-weight: 400;
+      color: #5E6C84;
+    }
+
+    /* ── Divider ──────────────────────────────────────────────────── */
+    .inv-divider {
+      height: 1px;
+      background: #DFE1E6;
+      margin: 14px 0;
+    }
+
+    /* ── Date rows ────────────────────────────────────────────────── */
+    .inv-dates { display: flex; flex-direction: column; gap: 6px; }
+    .inv-date-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+    }
+    .inv-date-label { color: #5E6C84; }
+    .inv-date-val   { color: #172B4D; font-weight: 500; }
+    .inv-date-input {
+      border: 1px solid #DFE1E6;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font: inherit;
+      font-size: 13px;
+      color: #172B4D;
+      background: #FAFBFC;
+    }
+    .inv-date-input:focus {
+      outline: none;
+      border-color: #534AB7;
+    }
+
+    /* ── Section label ────────────────────────────────────────────── */
+    .inv-section-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #5E6C84;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 8px;
+    }
+
+    /* ── Line items ───────────────────────────────────────────────── */
+    .inv-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+      padding: 5px 0;
+      font-size: 13px;
+      border-bottom: 1px solid #F4F5F7;
+    }
+    .inv-item:last-child { border-bottom: none; }
+    .inv-item-desc   { color: #172B4D; flex: 1; min-width: 0; }
+    .inv-item-amount { color: #172B4D; font-weight: 500; white-space: nowrap; }
+
+    /* ── Totals ───────────────────────────────────────────────────── */
+    .inv-totals { display: flex; flex-direction: column; gap: 4px; }
+    .inv-total-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #5E6C84;
+    }
+    .inv-total-row.inv-grand-total {
+      font-size: 15px;
+      font-weight: 700;
+      color: #172B4D;
+      padding-top: 6px;
+      border-top: 1px solid #DFE1E6;
+      margin-top: 4px;
+    }
+    .inv-discount-val { color: #085041; }
+    .inv-total-row.inv-overdue-interest {
+      align-items: center;
+      padding: 8px 10px;
+      border: 1px solid #F5A097;
+      border-radius: 6px;
+      background: #FFEBE9;
+      color: #AE2A19;
+      font-weight: 700;
+      margin-top: 6px;
+    }
+
+    /* ── Notes ────────────────────────────────────────────────────── */
+    .inv-notes-text {
+      font-size: 13px;
+      color: #172B4D;
+      white-space: pre-wrap;
+      min-height: 20px;
+    }
+    .inv-notes-text.is-empty { color: #5E6C84; font-style: italic; }
+    .inv-notes-input {
+      width: 100%;
+      min-height: 80px;
+      border: 1px solid #DFE1E6;
+      border-radius: 6px;
+      padding: 8px;
+      font: inherit;
+      font-size: 13px;
+      color: #172B4D;
+      resize: vertical;
+      box-sizing: border-box;
+      background: #FAFBFC;
+    }
+    .inv-notes-input:focus {
+      outline: none;
+      border-color: #534AB7;
+    }
+
+    /* ── Action buttons ───────────────────────────────────────────── */
+    .inv-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .inv-btn {
+      width: 100%;
+      padding: 11px;
+      border-radius: 8px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .inv-btn:disabled { cursor: not-allowed; }
+    #invSendBtn:disabled { opacity: 1 !important; }
+    .inv-btn-primary {
+      background: #fff;
+      color: #534AB7;
+      border-color: #534AB7;
+      font-weight: 500;
+    }
+    .inv-btn-primary:hover:not(:disabled) { background: #F4F3FF; }
+    .inv-btn-secondary {
+      background: #fff;
+      color: #172B4D;
+      border-color: #DFE1E6;
+      font-weight: 500;
+    }
+    .inv-btn-secondary:hover:not(:disabled) { background: #FAFBFC; border-color: #B3BAC5; }
+    .inv-btn-save {
+      background: #fff;
+      color: #534AB7;
+      border-color: #534AB7;
+      font-weight: 500;
+    }
+    .inv-btn-save:hover:not(:disabled) { background: #F4F3FF; }
+    .inv-btn-danger {
+      background: none;
+      border: none;
+      color: #AE2A19;
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 0;
+      cursor: pointer;
+      text-align: center;
+    }
+    .inv-btn-danger:hover { text-decoration: underline; }
+
+    /* ── Error banner ─────────────────────────────────────────────── */
+    .inv-error-banner {
+      background: #FFEBE6;
+      color: #AE2A19;
+      border-radius: 6px;
+      padding: 8px 12px;
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    /* ── Loading / not-found states ───────────────────────────────── */
+    .inv-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: #5E6C84;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<main class="app-main">
+  <div class="container">
+    <div class="form-box">
+
+      <!-- Loading state -->
+      <div id="invLoading" class="inv-state" data-key="invLoading">Loading invoice…</div>
+
+      <!-- Not-found / forbidden -->
+      <div id="invNotFound" class="inv-state" style="display:none;"
+           data-key="invNotFound">Invoice not found.</div>
+
+      <!-- Invoice detail -->
+      <div id="invDetail" style="display:none;">
+
+        <!-- Header: back + invoice number + status pill -->
+        <div class="inv-header">
+          <a class="inv-back" href="payment.html" aria-label="Back">←</a>
+          <div class="inv-title-group">
+            <span class="inv-number" id="invNumber">—</span>
+            <span class="inv-pill inv-pill-draft" id="invStatusPill">Draft</span>
+          </div>
+        </div>
+
+        <!-- Skater name (+ "via parent" if applicable) -->
+        <div class="inv-skater" id="invSkaterLine">—</div>
+        <div class="inv-via" id="invCoachLine" style="margin-top:2px;"></div>
+
+        <div class="inv-divider"></div>
+
+        <!-- Dates -->
+        <div class="inv-dates" id="invDates">
+          <div class="inv-date-row">
+            <span class="inv-date-label" data-key="invIssuedOn">Issued</span>
+            <span class="inv-date-val" id="invIssuedVal">—</span>
+          </div>
+          <div class="inv-date-row" id="invDueRow">
+            <span class="inv-date-label" id="invDueLabel" data-key="invDueOn">Due</span>
+            <span class="inv-date-val" id="invDueVal">—</span>
+            <input type="date" class="inv-date-input" id="invDueInput" style="display:none;" />
+          </div>
+          <div class="inv-date-row" id="invPaidRow" style="display:none;">
+            <span class="inv-date-label" data-key="invPaidOn">Paid on</span>
+            <span class="inv-date-val" id="invPaidVal">—</span>
+          </div>
+        </div>
+
+        <div class="inv-divider"></div>
+
+        <!-- Line items -->
+        <div class="inv-section-label" data-key="sessionPlural">Sessions</div>
+        <div id="invItems"></div>
+
+        <div class="inv-divider"></div>
+
+        <!-- Totals -->
+        <div class="inv-totals">
+          <div class="inv-total-row" id="invSubtotalRow">
+            <span data-key="invSubtotal">Subtotal</span>
+            <span id="invSubtotal">—</span>
+          </div>
+          <div class="inv-total-row" id="invGstRow" style="display:none;">
+            <span data-key="invGst">GST</span>
+            <span id="invGstVal">—</span>
+          </div>
+          <div class="inv-total-row" id="invQstRow" style="display:none;">
+            <span data-key="invQst">QST</span>
+            <span id="invQstVal">—</span>
+          </div>
+          <div class="inv-total-row" id="invDiscountRow" style="display:none;">
+            <span data-key="invDiscount">Discount</span>
+            <span class="inv-discount-val" id="invDiscountVal">—</span>
+          </div>
+          <div class="inv-total-row inv-grand-total">
+            <span>Total</span>
+            <span id="invTotal">—</span>
+          </div>
+          <div class="inv-total-row" id="invCreditRow" style="display:none;">
+            <span data-key="creditApplied">Credit applied</span>
+            <span class="inv-discount-val" id="invCreditVal">—</span>
+          </div>
+          <div class="inv-total-row inv-overdue-interest" id="invOverdueInterestRow" style="display:none;">
+            <span id="invOverdueInterestLabel" data-key="overdueInterest">Overdue interest</span>
+            <span id="invOverdueInterestVal">—</span>
+          </div>
+          <div class="inv-total-row inv-grand-total" id="invTotalDueRow" style="display:none;">
+            <span data-key="totalDue">Total due</span>
+            <span id="invTotalDue">—</span>
+          </div>
+        </div>
+
+        <!-- Notes -->
+        <div class="inv-divider"></div>
+        <div class="inv-section-label" data-key="invPaymentNotes">Payment instructions</div>
+        <p class="inv-notes-text" id="invNotesText" style="display:none;"></p>
+        <textarea class="inv-notes-input" id="invNotesInput"
+                  data-key-placeholder="psNotesPlaceholder"
+                  placeholder="e.g. E-transfers to coach@example.com — please include the invoice number."
+                  style="display:none;"></textarea>
+
+        <!-- Error banner -->
+        <div class="inv-error-banner" id="invErrorBanner" style="display:none; margin-top:12px;"></div>
+
+        <!-- Save notes button (shown for draft + sent) -->
+        <div style="margin-top:10px;" id="invSaveNotesWrap" style="display:none;">
+          <button type="button" class="inv-btn inv-btn-save" id="invSaveNotesBtn"
+                  data-key="invSaveNotes" style="display:none;">Save notes</button>
+        </div>
+
+        <!-- Primary actions -->
+        <div class="inv-actions" id="invActions" style="margin-top:16px;"></div>
+
+      </div>
+    </div>
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <button class="nav-item" id="dashboard-btn">
+    <img src="dashboardIcon.png" class="icon" />
+    <span data-key="dashboard">Dashboard</span>
+  </button>
+  <button class="nav-item" id="calendar-btn">
+    <img src="calendarIcon.png" class="icon" />
+    <span data-key="calendar">Calendar</span>
+  </button>
+  <button class="nav-item" id="payment-btn">
+    <img src="paymentIcon.png" class="icon" />
+    <span data-key="payment">Payment</span>
+  </button>
+  <button class="nav-item" id="settings-btn">
+    <img src="settings.png" class="icon" />
+    <span data-key="settings">Settings</span>
+  </button>
+  <button class="nav-item" id="logout-btn">
+    <img src="logout.png" class="icon" />
+    <span data-key="logout">Logout</span>
+  </button>
+</nav>
+
+<footer class="app-footer">
+  <br><br>
+  <div class="footer-content">
+    <span>© 2026 Momentum Performance</span>
+  </div>
+</footer>
+
+<script type="module" src="invoice.js"></script>
+</body>
+</html>

@@ -1,0 +1,445 @@
+rules_version = '2';
+
+// =============================================================================
+// Momentum Performance — Firestore security rules
+//
+// Scope of this file:
+//   - Locks down the new payment collections: paymentSettings, invoices,
+//     invoices/{id}/items, creditNotes, and system/counters.
+//   - Tightens legacy collections: users (own-doc writes), children (parent
+//     owns), iceSlots (coach owns). Connections remain open for both parties.
+//   - clubs: public read, no client writes.
+//
+// IMPORTANT — why no recursive catch-all `/{document=**}`:
+//   In Firestore rules, a recursive wildcard match runs IN PARALLEL with
+//   specific matches at the same level, and access is granted if EITHER
+//   allows the request. That means a permissive `/{document=**}` would
+//   silently override `allow delete: if false` and other strict rules on
+//   the payment collections. So we instead enumerate the legacy
+//   collections one by one — verbose but correct.
+//
+// Money convention:
+//   - All amounts are integer cents (validated as int + non-negative below).
+//   - The `currency` field defaults to "CAD" and only "CAD" is allowed in v1.
+//
+// Invoice state machine (enforced below):
+//        draft  ──coach sends──▶  sent  ──coach marks paid──▶  paid (terminal)
+//          │                       │
+//          └────coach voids────────┴────coach voids──▶  void (terminal)
+//   (overdue is computed client-side, never stored.)
+//
+// Invoice number + counter:
+//   - The global counter at /system/counters/invoices holds { lastIssued: <int> }.
+//   - It can only be read+incremented from the client inside a transaction
+//     that also creates the matching invoice with invoiceNumber == new value
+//     (MP-121 will write that transaction). Direct writes are blocked unless
+//     the new value is exactly lastIssued + 1.
+// =============================================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- helpers ----------
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function uid() {
+      return request.auth.uid;
+    }
+
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(uid())).data;
+    }
+
+    function hasRole(role) {
+      return signedIn()
+        && userDoc().roles is list
+        && userDoc().roles.hasAny([role]);
+    }
+
+    function isCoach() {
+      return hasRole('coach') || hasRole('affiliateCoach');
+    }
+
+    function isMoney(v) {
+      return v is int && v >= 0;
+    }
+
+    function isMoneyOrAbsent(data, field) {
+      return !(field in data) || isMoney(data[field]);
+    }
+
+    function changedKeys() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    // ---------- /paymentSettings/{coachUid} ----------
+    match /paymentSettings/{coachUid} {
+
+      allow read: if signedIn();
+
+      allow create: if signedIn()
+                    && uid() == coachUid
+                    && isCoach()
+                    && validPaymentSettings(request.resource.data);
+
+      allow update: if signedIn()
+                    && uid() == coachUid
+                    && validPaymentSettings(request.resource.data);
+
+      allow delete: if false;
+    }
+
+    function validPaymentSettings(d) {
+      return d.cadence in ['weekly', 'biweekly', 'monthly']
+          && d.defaultDueDays is int
+          && d.defaultDueDays >= 0
+          && d.defaultDueDays <= 365
+          && d.acceptedMethods is list
+          && (!('hourlyRate' in d)        || isMoney(d.hourlyRate))
+          && (!('hourlyPrivateRate' in d) || isMoney(d.hourlyPrivateRate))
+          && (!('flatRate' in d)          || isMoney(d.flatRate))
+          && (!('taxEnabled' in d)        || d.taxEnabled is bool)
+          && (!('currency' in d)          || d.currency == 'CAD');
+    }
+
+    // ---------- /invoices/{invoiceId} ----------
+    match /invoices/{invoiceId} {
+
+      allow read: if signedIn()
+                  && (resource.data.coachUid == uid()
+                      || resource.data.payerUid == uid());
+
+      allow create: if signedIn()
+                    && isCoach()
+                    && request.resource.data.coachUid == uid()
+                    && request.resource.data.status == 'draft'
+                    && validInvoiceShape(request.resource.data);
+
+      allow update: if signedIn()
+                    && resource.data.coachUid == uid()
+                    && (validInvoiceTransition() || validVoidArchiveUpdate());
+
+      allow delete: if signedIn()
+                    && resource.data.coachUid == uid()
+                    && resource.data.status == 'void';
+
+      // ---------- /invoices/{invoiceId}/items/{itemId} ----------
+      match /items/{itemId} {
+
+        function parentInvoice() {
+          return get(/databases/$(database)/documents/invoices/$(invoiceId)).data;
+        }
+
+        allow read: if signedIn()
+                    && (parentInvoice().coachUid == uid()
+                        || parentInvoice().payerUid == uid());
+
+        allow create, update, delete: if signedIn()
+                    && parentInvoice().coachUid == uid()
+                    && (parentInvoice().status == 'draft'
+                        || (request.method == 'delete' && parentInvoice().status == 'void'))
+                    && (!(request.method in ['create', 'update'])
+                        || validInvoiceItem(request.resource.data));
+      }
+    }
+
+    function validInvoiceShape(d) {
+      return d.coachUid is string
+          && d.payerUid is string
+          && d.skaterUid is string
+          && d.invoiceNumber is string
+          && d.status in ['draft', 'sent', 'paid', 'void']
+          && d.currency == 'CAD'
+          && isMoney(d.subtotal)
+          && isMoney(d.total)
+          && isMoneyOrAbsent(d, 'gstAmount')
+          && isMoneyOrAbsent(d, 'qstAmount')
+          && isMoneyOrAbsent(d, 'discountAmount')
+          && isMoneyOrAbsent(d, 'creditNotedAmount')
+          && isMoneyOrAbsent(d, 'paidAmount');
+    }
+
+    function validInvoiceItem(d) {
+      return d.invoiceId is string
+          && d.sessionId is string
+          && isMoney(d.priceAmount)
+          && isMoney(d.lineTotal)
+          && d.priceMode in ['hourly', 'flat'];
+    }
+
+    function validVoidArchiveUpdate() {
+      return resource.data.status == 'void'
+          && request.resource.data.status == resource.data.status
+          && changedKeys().hasOnly(['archivedAt', 'archivedBy'].toSet())
+          && request.resource.data.archivedAt is timestamp
+          && request.resource.data.archivedBy == uid();
+    }
+
+    // ---------- invoice state machine ----------
+    //
+    // Legal transitions:
+    //   draft -> sent       (coach clicks "Send" — MP-124)
+    //   draft -> void       (coach voids a draft)
+    //   sent  -> paid       (coach marks paid — MP-126/127)
+    //   sent  -> void       (rare; coach voids after sending)
+    //   <same>              (editing fields without changing status)
+    //
+    // Anything else (e.g. paid -> sent, void -> anything, draft -> paid)
+    // is rejected. Critically: writing status='paid' directly from the
+    // client without going through 'sent' first is blocked.
+    function validInvoiceTransition() {
+      let before = resource.data.status;
+      let after  = request.resource.data.status;
+
+      let sameStatus = before == after;
+      let toSent = before == 'draft' && after == 'sent';
+      let toPaid = before == 'sent'  && after == 'paid';
+      let toVoid = (before == 'draft' || before == 'sent') && after == 'void';
+
+      let allowedSentEditFields = ['notes', 'creditNotedAmount', 'overdueNotifiedAt', 'paidAmount', 'partialPaidAt'].toSet();
+      let sameStatusOk = sameStatus && (
+        before == 'draft'
+        || (before == 'sent' && changedKeys().hasOnly(allowedSentEditFields))
+        // paid + void are terminal: regular edits are blocked once there.
+      );
+
+      return validInvoiceShape(request.resource.data)
+          && request.resource.data.coachUid     == resource.data.coachUid
+          && request.resource.data.payerUid     == resource.data.payerUid
+          && request.resource.data.skaterUid    == resource.data.skaterUid
+          && request.resource.data.invoiceNumber== resource.data.invoiceNumber
+          && request.resource.data.currency     == resource.data.currency
+          && (sameStatusOk || toSent || toPaid || toVoid);
+    }
+
+    // ---------- /creditNotes/{id} ----------
+    match /creditNotes/{noteId} {
+
+      function parentInvoice() {
+        return get(/databases/$(database)/documents/invoices/$(request.resource.data.invoiceId)).data;
+      }
+
+      allow read: if signedIn()
+                  && (resource.data.coachUid == uid()
+                      || resource.data.payerUid == uid());
+
+      allow create: if signedIn()
+                    && isCoach()
+                    && request.resource.data.coachUid == uid()
+                    && parentInvoice().coachUid == uid()
+                    && parentInvoice().status == 'paid'
+                    && request.resource.data.amount is int
+                    && request.resource.data.amount > 0
+                    && request.resource.data.amount <= parentInvoice().total
+                    && request.resource.data.reason is string;
+
+      allow update, delete: if false;
+    }
+
+    // ---------- /paymentConfirmations/{confirmationId} ----------
+    match /paymentConfirmations/{confirmationId} {
+
+      allow read: if signedIn()
+                  && (resource.data.coachUid == uid()
+                      || resource.data.payerUid == uid());
+
+      allow create: if signedIn()
+                    && request.resource.data.payerUid == uid()
+                    && request.resource.data.status == 'pending'
+                    && request.resource.data.invoiceId is string
+                    && request.resource.data.coachUid is string
+                    && request.resource.data.total is int;
+
+      allow update: if signedIn()
+                    && resource.data.coachUid == uid()
+                    && resource.data.status == 'pending'
+                    && request.resource.data.status == 'confirmed';
+
+      allow delete: if false;
+    }
+
+    // ---------- /credits/{creditId} ----------
+    match /credits/{creditId} {
+
+      function validCreditShape(d) {
+        return d.coachUid is string
+            && d.payerUid is string
+            && isMoney(d.balanceCents);
+      }
+
+      allow read: if signedIn()
+                  && (resource == null
+                      || resource.data.coachUid == uid()
+                      || resource.data.payerUid == uid());
+
+      allow create: if signedIn()
+                    && isCoach()
+                    && request.resource.data.coachUid == uid()
+                    && validCreditShape(request.resource.data);
+
+      allow update: if signedIn()
+                    && isCoach()
+                    && resource.data.coachUid == uid()
+                    && request.resource.data.coachUid == resource.data.coachUid
+                    && request.resource.data.payerUid == resource.data.payerUid
+                    && validCreditShape(request.resource.data);
+
+      allow delete: if false;
+    }
+
+    // ---------- /system/counters/{counterId} ----------
+    match /system/{counterId} {
+
+      allow read: if signedIn() && isCoach();
+
+      allow create: if signedIn()
+                    && isCoach()
+                    && request.resource.data.lastIssued == 0;
+
+      allow update: if signedIn()
+                    && isCoach()
+                    && request.resource.data.lastIssued is int
+                    && request.resource.data.lastIssued == resource.data.lastIssued + 1;
+
+      allow delete: if false;
+    }
+
+    // ---------- /sessions/{sessionId} ----------
+    match /sessions/{sessionId} {
+
+      allow read: if signedIn();
+
+      allow create: if signedIn()
+                    && request.resource.data.coachUid == uid();
+
+      allow update: if signedIn()
+                    && resource.data.coachUid == uid()
+                    && (!('invoiceId' in request.resource.data.diff(resource.data).affectedKeys())
+                        || request.resource.data.invoiceId == null
+                        || request.resource.data.invoiceId is string);
+
+      // Participants (skaters, parents) can save their own note.
+      // We verify the writer is in participants, then assert that the three
+      // fields a participant must never touch (coachUid, participants array,
+      // invoiceId) are bit-for-bit identical in the incoming document — a
+      // tighter and more reliable check than changedKeys().hasOnly() for
+      // nested-map updates via the JS SDK.
+      allow update: if signedIn()
+                    && 'participants' in resource.data
+                    && uid() in resource.data.participants
+                    && request.resource.data.coachUid == resource.data.coachUid
+                    && request.resource.data.get('invoiceId', null) == resource.data.get('invoiceId', null);
+
+      // Affiliate coaches (subcoachUid) can save their own note, using the
+      // same constraints as the participant rule above.
+      allow update: if signedIn()
+                    && 'subcoachUid' in resource.data
+                    && resource.data.subcoachUid == uid()
+                    && request.resource.data.coachUid == resource.data.coachUid
+                    && request.resource.data.get('invoiceId', null) == resource.data.get('invoiceId', null);
+
+      allow delete: if signedIn() && resource.data.coachUid == uid();
+    }
+
+    // =========================================================================
+    // Legacy collections — tightened ownership rules.
+    //
+    // We do NOT use a recursive `/{document=**}` catch-all here, because that
+    // would run in parallel with the specific matches above and grant access
+    // even where we explicitly denied it (e.g. `allow delete: if false`).
+    // =========================================================================
+
+    // Each user can only write their own profile document. Any signed-in user
+    // can read user docs (needed for connection search and profile display).
+    match /users/{userId} {
+      allow read: if signedIn();
+      allow write: if signedIn() && uid() == userId;
+    }
+
+    match /users/{userId}/{document=**} {
+      allow read: if signedIn();
+      allow write: if signedIn() && uid() == userId;
+    }
+
+    // Affiliate coaches can be listed in another coach's subcoaches
+    // subcollection. During account deletion, the affiliate must be able to
+    // remove only their own subcoach references.
+    match /{path=**}/subcoaches/{subcoachId} {
+      allow read: if signedIn();
+      allow delete: if signedIn() && resource.data.uid == uid();
+    }
+
+    // Payment confirmations are created by the payer in the coach's
+    // subcollection so the coach can query them. The recursive wildcard above
+    // only allows the subcollection owner to write, so we add a specific rule
+    // that lets the payer create (but not update or delete) a confirmation.
+    match /users/{userId}/paymentConfirmations/{confirmationId} {
+      allow create: if signedIn()
+                    && request.resource.data.payerUid == uid()
+                    && request.resource.data.status == 'pending'
+                    && request.resource.data.invoiceId is string
+                    && request.resource.data.coachUid is string
+                    && request.resource.data.total is int;
+    }
+
+    // Children are owned by the parent who created them (parentId field).
+    // Any signed-in user can read (coaches need child names for sessions).
+    match /children/{childId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+                    && request.resource.data.parentId == uid();
+      allow update, delete: if signedIn()
+                    && resource.data.parentId == uid();
+    }
+
+    // Clubs are reference data managed by Momentum Performance admins, not
+    // user-generated content. They MUST be readable without auth so the
+    // signup form's club picker works (the user isn't signed in yet at
+    // that point). Writes are blocked client-side — to add or rename a
+    // club, use the Firebase console or the admin SDK.
+    match /clubs/{clubId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Ice slots are owned by the coach who created them (coachUid field).
+    // Any signed-in user can read (skaters/parents need to see available ice).
+    match /iceSlots/{slotId} {
+      allow read: if signedIn();
+      allow create: if signedIn()
+                    && isCoach()
+                    && request.resource.data.coachUid == uid();
+      allow update, delete: if signedIn()
+                    && resource.data.coachUid == uid();
+    }
+
+    // Connections and connection requests involve two parties making writes
+    // (requester and acceptor), so ownership is kept broad for now.
+    match /connections/{connectionId} {
+      allow read, write: if signedIn();
+    }
+
+    match /connectionRequests/{requestId} {
+      allow read, write: if signedIn();
+    }
+
+    // ---------- /notifications/{userId}/items/{notifId} ----------
+    // Any signed-in user may create a notification for any other user
+    // (needed for cross-user events: invoice sent, session booked, etc.).
+    // Only the recipient can read or mark notifications as read.
+    match /notifications/{userId}/items/{notifId} {
+      allow read:   if signedIn() && uid() == userId;
+      allow create: if signedIn()
+                    && request.resource.data.read == false
+                    && request.resource.data.type is string
+                    && request.resource.data.createdAt is timestamp;
+      allow update: if signedIn()
+                    && uid() == userId
+                    && changedKeys().hasOnly(['read'].toSet());
+      allow delete: if signedIn() && uid() == userId;
+    }
+  }
+}

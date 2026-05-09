@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Momentum Performance</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    /* paymentGenerate.html — preview/confirm screen for MP-121.
+       Coach lands here from the dashboard "Unbilled" tile, sees one
+       proposed draft per skater, can deselect any they don't want to
+       create yet, expands a card to see line items + tax breakdown,
+       then commits with "Create N drafts."
+
+       Visual language matches payment.html (the list page) so the
+       generation flow feels like a sibling. We re-use:
+         - .form-box wrapper from styles.css for the card + header
+         - the purple accent color used in payment.html for "All" pills
+           on a couple of CTA + link affordances. No teal anywhere
+           (paymentSettings owns teal).
+
+       Page-local styles only — no entries belong in the global stylesheet
+       because nothing else generates invoices. */
+
+    /* ── Header strip ──────────────────────────────────────────────── */
+    /* The back link + page title sit on one row. The summary line
+       beneath it ("3 invoices · 12 sessions · $1,180.00 total") updates
+       live as the coach toggles checkboxes — that's why it gets its own
+       id. */
+    .pg-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .pg-back {
+      font-size: 16px;
+      color: #5E6C84;
+      text-decoration: none;
+      cursor: pointer;
+      padding: 4px 6px;
+      margin-left: -6px; /* visually align the arrow with the title */
+      border-radius: 4px;
+    }
+    .pg-back:hover { background: #F4F5F7; }
+    .pg-summary {
+      font-size: 13px;
+      color: #5E6C84;
+      margin-bottom: 14px;
+    }
+
+    /* ── Bulk select bar ───────────────────────────────────────────── */
+    /* Two link-style buttons separated by a middot. Hidden when there
+       are zero proposed drafts (empty state takes over). */
+    .pg-bulk {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 12px;
+    }
+    .pg-bulk-btn {
+      color: #534AB7;
+      cursor: pointer;
+      font-weight: 500;
+      background: none;
+      border: none;
+      padding: 0;
+      font: inherit;
+      font-size: 12px;
+    }
+    .pg-bulk-btn:hover { text-decoration: underline; }
+    .pg-bulk-sep { color: #B3BAC5; }
+
+    /* ── Draft cards ───────────────────────────────────────────────── */
+    /* Each card represents one proposed draft invoice. Top row holds
+       the checkbox, skater name, and the running total; sub line shows
+       payer + session count; the "Show / Hide line items" toggle
+       expands the card to a per-session breakdown plus subtotal/tax/
+       total. Same border/radius/padding as the list rows on payment.html
+       so the two pages feel related. */
+    .pg-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+    .pg-card {
+      border: 1px solid #DFE1E6;
+      border-radius: 8px;
+      padding: 12px;
+      background: #fff;
+      transition: border-color 0.12s, opacity 0.12s;
+    }
+    /* Deselected cards get muted so the eye still sees them but
+       understands they're excluded. We dim instead of hiding so the
+       coach can see *what* they excluded and undo easily. */
+    .pg-card.is-deselected { opacity: 0.55; }
+    .pg-card.is-deselected .pg-card-name,
+    .pg-card.is-deselected .pg-card-amount {
+      text-decoration: line-through;
+      text-decoration-color: #B3BAC5;
+    }
+
+    .pg-card-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .pg-card-checkbox {
+      margin-top: 3px;
+      flex-shrink: 0;
+      cursor: pointer;
+    }
+    .pg-card-main {
+      flex: 1;
+      min-width: 0;
+    }
+    .pg-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+    .pg-card-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: #172B4D;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
+    }
+    .pg-card-amount {
+      font-size: 14px;
+      font-weight: 600;
+      color: #172B4D;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .pg-card-sub {
+      font-size: 12px;
+      color: #5E6C84;
+      margin-top: 2px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ── Expand toggle + line items panel ──────────────────────────── */
+    /* The toggle is a button styled like a link — keyboard accessible,
+       but visually subtle. Caret flips ▾ / ▴ via the .is-expanded
+       modifier on the panel. */
+    .pg-toggle {
+      background: none;
+      border: none;
+      padding: 6px 0 0 0;
+      margin: 0;
+      font: inherit;
+      font-size: 12px;
+      color: #534AB7;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .pg-toggle:hover { text-decoration: underline; }
+    .pg-lines {
+      margin-top: 8px;
+      padding-top: 8px;
+      border-top: 1px dashed #DFE1E6;
+      display: none;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .pg-lines.is-expanded { display: flex; }
+    /* One row per session in the breakdown. Date + type/duration on
+       the left, line total on the right. Single line — long names get
+       truncated rather than wrapping (the coach can always click into
+       the invoice detail later for full info). */
+    .pg-line {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      font-size: 12px;
+    }
+    .pg-line-desc {
+      color: #5E6C84;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      flex: 1;
+      min-width: 0;
+    }
+    .pg-line-amount {
+      color: #172B4D;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    /* Subtotal row sits between the lines and the tax rows. Visually
+       offset with a thin top border to read as a summary. */
+    .pg-line-subtotal {
+      padding-top: 6px;
+      border-top: 1px dashed #DFE1E6;
+      margin-top: 2px;
+    }
+    .pg-line-subtotal .pg-line-desc { color: #5E6C84; }
+    /* Tax rows are muted because the coach can't change them here —
+       they're a function of paymentSettings. */
+    .pg-line-tax .pg-line-desc,
+    .pg-line-tax .pg-line-amount {
+      color: #5E6C84;
+    }
+    /* The big total row at the bottom of the expansion. Slightly larger
+       and weight 600 so it terminates the card cleanly. */
+    .pg-line-total {
+      padding-top: 4px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .pg-line-total .pg-line-desc { color: #172B4D; }
+
+    /* ── CTAs ──────────────────────────────────────────────────────── */
+    /* Stacked vertically rather than side-by-side because on a narrow
+       phone the create button needs to be visually dominant — the
+       coach is committing real records, not closing a dialog. */
+    .pg-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .pg-btn {
+      padding: 11px;
+      border-radius: 8px;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .pg-btn-primary {
+      background: #fff;
+      color: var(--color-accent);
+      border-color: var(--color-accent);
+    }
+    .pg-btn-primary:hover:not(:disabled) { background: var(--color-accent-soft); }
+    /* Disabled when zero cards are selected — no point in committing
+       an empty action. */
+    .pg-btn-primary:disabled {
+      background: var(--color-surface-subtle);
+      border-color: #DFE1E6;
+      color: #8993A4;
+      cursor: not-allowed;
+    }
+    .pg-btn-secondary {
+      background: #fff;
+      color: #5E6C84;
+      border-color: #DFE1E6;
+      font-weight: 500;
+    }
+    .pg-btn-secondary:hover { background: #FAFBFC; border-color: #B3BAC5; }
+
+    /* ── Empty / loading / forbidden states ────────────────────────── */
+    /* Same look as payment.html — muted gray text, centered, generous
+       vertical padding. We toggle which one is visible from JS. */
+    .pg-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: #5E6C84;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .pg-state-cta {
+      display: inline-block;
+      margin-top: 12px;
+      color: #0C66E4;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .pg-state-cta:hover { text-decoration: underline; }
+
+    /* ── Submit overlay ────────────────────────────────────────────── */
+    /* Shown while the Firestore transaction runs. Blocks further input
+       (don't let the coach click "Create" twice and burn two slots out
+       of the global counter). The overlay is just a translucent white
+       layer with a centered status message — no spinner image asset
+       needed; we use animated dots. */
+    .pg-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .pg-overlay.is-visible { display: flex; }
+    .pg-overlay-text {
+      font-size: 14px;
+      color: #172B4D;
+      font-weight: 500;
+    }
+    @keyframes pg-dots {
+      0%, 20%   { content: "."; }
+      40%       { content: ".."; }
+      60%, 100% { content: "..."; }
+    }
+    .pg-overlay-text::after {
+      content: ".";
+      animation: pg-dots 1.4s steps(3) infinite;
+      display: inline-block;
+      width: 1.5ch;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+
+<main class="app-main">
+  <div class="container">
+    <div class="form-box">
+
+      <!-- Header strip: back arrow + title. The arrow goes to dashboard
+           because that's where the user clicked "Unbilled". History
+           back would also work but a hard link is reliable across
+           refreshes / direct visits. -->
+      <div class="pg-header">
+        <a id="pgBack" class="pg-back" href="dashboard.html" aria-label="Back">←</a>
+        <h2 style="margin:0; font-size:18px; font-weight:500;" data-key="pgTitle">Generate invoices</h2>
+      </div>
+      <div id="pgSummary" class="pg-summary">—</div>
+
+      <!-- Bulk select bar. Hidden by JS while loading and on empty
+           states; shown alongside the list once we have data. -->
+      <div id="pgBulk" class="pg-bulk" style="display:none;">
+        <button type="button" class="pg-bulk-btn" id="pgSelectAll" data-key="pgSelectAll">Select all</button>
+        <span class="pg-bulk-sep">·</span>
+        <button type="button" class="pg-bulk-btn" id="pgDeselectAll" data-key="pgDeselectAll">Deselect all</button>
+      </div>
+
+      <!-- Loading state. Replaced once the unbilled query resolves. -->
+      <div id="pgLoading" class="pg-state" data-key="pgLoading">Loading unbilled sessions…</div>
+
+      <!-- The list of proposed drafts. Populated by JS. Each card =
+           one skater = one future invoice. -->
+      <div id="pgList" class="pg-list" style="display:none;"></div>
+
+      <!-- Empty state when there's nothing unbilled. -->
+      <div id="pgEmpty" class="pg-state" style="display:none;">
+        <div data-key="pgEmpty">Nothing to bill — all completed sessions have already been invoiced.</div>
+        <a class="pg-state-cta" href="dashboard.html" data-key="pgEmptyCta">Back to dashboard</a>
+      </div>
+
+      <!-- Forbidden state for non-coach users who somehow land here.
+           Real protection is in authGuard + Firestore rules; this is
+           the UI fallback. -->
+      <div id="pgForbidden" class="pg-state" style="display:none;" data-key="pgForbidden">
+        This page is only available to coaches.
+      </div>
+
+      <!-- Action buttons. The primary button's label updates live to
+           reflect how many drafts will be created ("Create 3 drafts").
+           Disabled when zero are selected. -->
+      <div id="pgActions" class="pg-actions" style="display:none;">
+        <button type="button" id="pgCreateBtn" class="pg-btn pg-btn-primary">Create drafts</button>
+        <button type="button" id="pgCancelBtn" class="pg-btn pg-btn-secondary" data-key="cancel">Cancel</button>
+      </div>
+
+      <!-- Generic error slot — used when the transaction fails. We
+           keep it inline rather than alert() so the coach can read it
+           and the page state (selections, expansions) is preserved. -->
+      <div id="pgError" class="pg-state" style="display:none; color:#C9372C;"></div>
+
+    </div>
+  </div>
+</main>
+
+<!-- Submit overlay: covers the page during the Firestore transaction
+     so the coach can't double-click. Sits outside .container so its
+     position:fixed isn't constrained by ancestor transforms. -->
+<div id="pgOverlay" class="pg-overlay">
+  <div class="pg-overlay-text" id="pgOverlayText" data-key="pgCreating">Creating drafts</div>
+</div>
+
+<nav class="bottom-nav">
+  <button class="nav-item" id="dashboard-btn">
+    <img src="dashboardIcon.png" class="icon" />
+    <span data-key="dashboard">Dashboard</span>
+  </button>
+  <button class="nav-item" id="calendar-btn">
+    <img src="calendarIcon.png" class="icon" />
+    <span data-key="calendar">Calendar</span>
+  </button>
+  <button class="nav-item" id="payment-btn">
+    <img src="paymentIcon.png" class="icon" />
+    <span data-key="payment">Payment</span>
+  </button>
+  <button class="nav-item" id="settings-btn">
+    <img src="settings.png" class="icon" />
+    <span data-key="settings">Settings</span>
+  </button>
+  <button class="nav-item" id="logout-btn">
+    <img src="logout.png" class="icon" />
+    <span data-key="logout">Logout</span>
+  </button>
+</nav>
+
+<footer class="app-footer">
+  <br><br>
+  <div class="footer-content">
+    <span>© 2026 Momentum Performance</span>
+  </div>
+</footer>
+
+<script type="module" src="paymentGenerate.js"></script>
+</body>
+</html>

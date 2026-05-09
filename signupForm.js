@@ -1,7 +1,7 @@
-import { auth, db } from "./app.js";
+import { auth, db, toTitleCase } from "./app.js";
 import { translations, setLanguage } from "./translations.js";
 import { createUserWithEmailAndPassword, deleteUser } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { doc, setDoc, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { doc, setDoc, collection, getDocs, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ---------------- CLUBS ----------------
 let allClubs = [];
@@ -27,11 +27,10 @@ function renderSelectedClubs() {
     chip.style.cssText = `
       display:inline-flex; align-items:center; gap:6px;
       background:#E9F2FF; color:#0C66E4; border:1px solid #0C66E4;
-      border-radius:999px; padding:4px 10px; margin:4px 4px 4px 0;
+      border-radius:12px; padding:4px 10px; margin:4px 4px 4px 0;
       font-size:12px; font-weight:600;
     `;
-    chip.innerHTML = `${club.name} <span style="cursor:pointer;font-weight:700;">✕</span>`;
-    chip.querySelector("span").addEventListener("click", () => {
+    chip.innerHTML = `${club.name} <span id="removeClubBtn" style="cursor:pointer;font-weight:700;">✕</span>`;    chip.querySelector("span").addEventListener("click", () => {
       selectedClubs = selectedClubs.filter(s => s.id !== club.id);
       renderSelectedClubs();
       filterClubs(document.getElementById("clubSearch").value);
@@ -90,6 +89,51 @@ if (langToggle) {
   });
 }
 
+// ---------------- ROLE-BASED FIELD VISIBILITY ----------------
+function getCheckedRoles() {
+  return Array.from(document.querySelectorAll('input[name="role"]:checked')).map(el => el.value);
+}
+
+function isParentOnly() {
+  const roles = getCheckedRoles();
+  return roles.length === 1 && roles[0] === "parent";
+}
+
+function updateRoleBasedFields() {
+  const parentOnly = isParentOnly();
+  const clubSection = document.getElementById("clubSection");
+  const skateSection = document.getElementById("skateCanadaSection");
+  const coachManagementOption = document.getElementById("coachManagementOption");
+  const managesCoachesInput = document.getElementById("managesCoaches");
+  const coachSelected = document.getElementById("roleCoach")?.checked;
+
+  if (clubSection)  clubSection.style.display  = parentOnly ? "none" : "";
+  if (skateSection) skateSection.style.display = parentOnly ? "none" : "";
+  if (coachManagementOption) coachManagementOption.style.display = coachSelected ? "" : "none";
+  if (!coachSelected && managesCoachesInput) managesCoachesInput.checked = false;
+
+  // Clear values/errors when hidden so they don't carry over into validation/payload
+  if (parentOnly) {
+    selectedClubs = [];
+    renderSelectedClubs();
+    const clubSearch = document.getElementById("clubSearch");
+    if (clubSearch) clubSearch.value = "";
+    const clubResults = document.getElementById("club-results");
+    if (clubResults) clubResults.innerHTML = "";
+    const clubError = document.getElementById("clubSearch-error");
+    if (clubError) clubError.innerText = "";
+
+    const skateInput = document.getElementById("skateCanadaNumber");
+    if (skateInput) skateInput.value = "";
+    const skateError = document.getElementById("skateCanadaNumber-error");
+    if (skateError) skateError.innerText = "";
+  }
+}
+
+document.querySelectorAll('input[name="role"]').forEach(cb => {
+  cb.addEventListener("change", updateRoleBasedFields);
+});
+
 // ---------------- FORM ----------------
 const form = document.getElementById("signupForm");
 
@@ -98,16 +142,18 @@ form.addEventListener("submit", (e) => {
 
   const checkedRoles = Array.from(document.querySelectorAll('input[name="role"]:checked')).map(el => el.value);
 
-  const nameVal     = document.getElementById("name").value.trim();
-  const lastNameVal = document.getElementById("lastName").value.trim();
+  const nameVal     = toTitleCase(document.getElementById("name").value);
+  const lastNameVal = toTitleCase(document.getElementById("lastName").value);
   const emailVal    = document.getElementById("emailAddress").value.trim();
   const phoneVal    = document.getElementById("phoneNumber").value.trim();
   const skateNum    = document.getElementById("skateCanadaNumber").value.trim();
   const password    = document.getElementById("password").value;
   const confirmPw   = document.getElementById("passwordConfirmation").value;
+  const termsAccepted = document.getElementById("termsAccepted").checked;
+  const managesCoaches = checkedRoles.includes("coach") && !!document.getElementById("managesCoaches")?.checked;
 
   // Clear errors
-  ["name", "lastName", "emailAddress", "phoneNumber", "password", "passwordConfirmation"].forEach(id => {
+  ["name", "lastName", "emailAddress", "phoneNumber", "password", "passwordConfirmation", "termsAccepted"].forEach(id => {
     const el = document.getElementById(`${id}-error`);
     if (el) el.innerText = "";
   });
@@ -115,13 +161,14 @@ form.addEventListener("submit", (e) => {
 
   let valid = true;
   if (checkedRoles.length === 0)            { alert(translations[currentLang].selectRole); valid = false; }
-  if (selectedClubs.length === 0)           { document.getElementById("clubSearch-error").innerText = translations[currentLang].selectClub || "Please select at least one club"; valid = false; }
+  if (!isParentOnly() && selectedClubs.length === 0) { document.getElementById("clubSearch-error").innerText = translations[currentLang].selectClub || "Please select at least one club"; valid = false; }
   if (!nameVal)                             { document.getElementById("name-error").innerText = translations[currentLang].firstNameRequired; valid = false; }
   if (!lastNameVal)                         { document.getElementById("lastName-error").innerText = translations[currentLang].lastNameRequired; valid = false; }
   if (!emailVal || !emailVal.includes("@")) { document.getElementById("emailAddress-error").innerText = translations[currentLang].invalidEmail; valid = false; }
   if (!phoneVal)                            { document.getElementById("phoneNumber-error").innerText = translations[currentLang].phoneRequired; valid = false; }
   if (!password)                            { document.getElementById("password-error").innerText = translations[currentLang].passwordRequired; valid = false; }
   if (password !== confirmPw)               { document.getElementById("passwordConfirmation-error").innerText = translations[currentLang].passwordMismatch; valid = false; }
+  if (!termsAccepted)                       { document.getElementById("termsAccepted-error").innerText = translations[currentLang].termsRequired; valid = false; }
   if (!valid) return;
 
   let createdUser = null;
@@ -136,7 +183,12 @@ form.addEventListener("submit", (e) => {
         phoneNumber:       phoneVal,
         skateCanadaNumber: skateNum,
         roles:             checkedRoles,
+        managesCoaches,
         clubs:             selectedClubs.map(c => c.id),
+        termsAccepted:      true,
+        termsAcceptedAt:    serverTimestamp(),
+        termsVersion:       "2026-05-04",
+        privacyVersion:     "2026-05-04",
       });
     })
     .then(() => {
@@ -157,4 +209,5 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("clubSearch").addEventListener("input", (e) => {
     filterClubs(e.target.value);
   });
+  updateRoleBasedFields();
 });

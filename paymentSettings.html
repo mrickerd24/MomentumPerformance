@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Momentum Performance</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.ico" type="image/x-icon" />
+  <style>
+    /* Page-local styles. Reuses existing styles.css for inputs/buttons/
+       layout. Only adding what's specific to this page (section
+       dividers, the "method" cards, the $-prefixed amount input, the
+       coming-soon pill, and the saved-banner). */
+
+    /* Make every <input> and <select> in this form span the form box
+       (matches account settings / signup style). The bare-element
+       global rule in styles.css doesn't set width, so inputs render at
+       their default ~150px. We force full width here so the form
+       reads correctly. */
+    #paymentSettingsForm input[type="text"],
+    #paymentSettingsForm input[type="number"],
+    #paymentSettingsForm select,
+    #paymentSettingsForm textarea {
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 42px;
+      padding: 10px 12px;
+      border: 1px solid #D0D4DB;
+      border-radius: 8px;
+      background: #fff;
+      color: #172B4D;
+      font: inherit;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+    }
+    #paymentSettingsForm input[type="text"]:focus,
+    #paymentSettingsForm input[type="number"]:focus,
+    #paymentSettingsForm select:focus,
+    #paymentSettingsForm textarea:focus {
+      border-color: var(--color-border-focus);
+      box-shadow: var(--shadow-focus);
+    }
+    #paymentSettingsForm select {
+      appearance: none;
+      background-image:
+        linear-gradient(45deg, transparent 50%, #5E6C84 50%),
+        linear-gradient(135deg, #5E6C84 50%, transparent 50%);
+      background-position:
+        calc(100% - 18px) 18px,
+        calc(100% - 12px) 18px;
+      background-size: 6px 6px, 6px 6px;
+      background-repeat: no-repeat;
+      padding-right: 34px;
+    }
+
+    /* Section divider + heading. We use the same teal color for all
+       sub-headings as the rest of the app, then a small muted hint below. */
+    .ps-section { margin-top: 22px; }
+    .ps-section:first-of-type { margin-top: 0; }
+    .ps-section-title {
+      color: var(--color-brand);
+      font-weight: 700;
+      font-size: 14px;
+      margin: 0 0 4px 0;
+    }
+    .ps-section-hint {
+      color: #5E6C84;
+      font-size: 12px;
+      margin: 0 0 12px 0;
+      line-height: 1.4;
+    }
+    .ps-divider {
+      border: none;
+      border-top: 1px solid #DFE1E6;
+      margin: 0 0 16px 0;
+    }
+
+    /* $ prefix for rate inputs. Wrapper is position:relative; the span
+       is absolutely placed inside, and the input gets left padding to
+       make room. */
+    .ps-amount-wrap {
+      position: relative;
+    }
+    .ps-amount-wrap > .ps-amount-prefix {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #5E6C84;
+      font-size: 14px;
+      pointer-events: none;
+    }
+    .ps-amount-wrap > input {
+      padding-left: 26px !important;
+    }
+    .ps-amount-wrap.ps-percent-wrap > .ps-amount-prefix {
+      left: auto;
+      right: 12px;
+    }
+    .ps-amount-wrap.ps-percent-wrap > input {
+      padding-left: 12px !important;
+      padding-right: 30px !important;
+    }
+
+    /* Method cards: stacked single-column on mobile (form-box is narrow,
+       so two-up makes everything cramped). Each card is a label wrapping
+       a checkbox. Clicking anywhere on the card toggles. */
+    .ps-method-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .ps-method {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid #D0D4DB;
+      border-radius: 8px;
+      background: #fff;
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .ps-method:has(input:checked) {
+      border-color: var(--color-brand);
+      background: var(--color-brand-soft);
+    }
+    .ps-method input { margin: 0; cursor: pointer; flex-shrink: 0; }
+    .ps-method.disabled {
+      cursor: not-allowed;
+      background: var(--color-surface-subtle);
+      color: #8993A4;
+    }
+    .ps-method.disabled input { cursor: not-allowed; }
+    .ps-soon-pill {
+      margin-left: auto;
+      font-size: 10px;
+      font-weight: 700;
+      background: #DFE1E6;
+      color: #5E6C84;
+      padding: 2px 8px;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    /* Tax-detail block: hidden until the toggle is checked. */
+    .ps-tax-detail { display: none; margin-top: 14px; }
+    .ps-tax-detail.open { display: block; }
+
+    /* Result toast. Matches existing changesSaved-style banners. */
+    #ps-result {
+      margin-top: 14px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      display: none;
+    }
+    #ps-result.ok  { background: #DCFCE7; color: #1F845A; border: 1px solid #1F845A; }
+    #ps-result.err { background: #FDECEA; color: #C9372C; border: 1px solid #C9372C; }
+
+    /* Custom-due-days input is shown conditionally; tighten the gap
+       above so it doesn't look detached. */
+    #customDueDaysWrap { margin-top: 10px; }
+
+    /* Notes textarea: pad like other inputs but allow vertical resize. */
+    textarea.ps-notes {
+      min-height: 130px;
+      font-family: inherit;
+      resize: vertical;
+    }
+    textarea.ps-notes:focus {
+      border-color: var(--color-border-focus);
+      box-shadow: var(--shadow-focus);
+    }
+
+    /* Save button. Match existing btn-outlined-blue with full width on
+       this form so it lines up with the inputs above. */
+    #saveBtn { width: 100%; margin-top: 8px; }
+  </style>
+</head>
+<body>
+
+<main class="app-main">
+  <div class="container">
+    <div class="form-box">
+
+      <form id="paymentSettingsForm" autocomplete="off">
+
+        <h2 data-key="paymentSettingsTitle">Payment settings</h2>
+        <p class="ps-section-hint" data-key="paymentSettingsSub" style="margin-top:-4px; margin-bottom:18px;">
+          Set your rates, payment timing, and invoice details.
+        </p>
+
+        <!-- ============== Pricing ============== -->
+        <div class="ps-section">
+          <hr class="ps-divider">
+          <p class="ps-section-title" data-key="psPricing">Pricing</p>
+          <p class="ps-section-hint" data-key="psPricingHint">
+            These rates pre-fill new sessions. You can override per session.
+          </p>
+
+          <label for="hourlyRate" data-key="psHourlyRate">Hourly rate (group)</label><br>
+          <div class="ps-amount-wrap">
+            <span class="ps-amount-prefix">$</span>
+            <input type="text" inputmode="decimal" id="hourlyRate" placeholder="0.00" />
+          </div>
+          <div id="hourlyRate-error" class="field-error"></div>
+
+          <br>
+          <label for="hourlyPrivateRate" data-key="psHourlyPrivateRate">Hourly rate (private)</label><br>
+          <div class="ps-amount-wrap">
+            <span class="ps-amount-prefix">$</span>
+            <input type="text" inputmode="decimal" id="hourlyPrivateRate" placeholder="0.00" />
+          </div>
+          <div id="hourlyPrivateRate-error" class="field-error"></div>
+
+          <br>
+          <label for="flatRate" data-key="psFlatRate">Flat rate (optional)</label><br>
+          <div class="ps-amount-wrap">
+            <span class="ps-amount-prefix">$</span>
+            <input type="text" inputmode="decimal" id="flatRate" placeholder="0.00" />
+          </div>
+          <div id="flatRate-error" class="field-error"></div>
+        </div>
+
+        <!-- ============== Billing cadence ============== -->
+        <div class="ps-section">
+          <hr class="ps-divider">
+          <p class="ps-section-title" data-key="psCadence">Billing cadence</p>
+          <p class="ps-section-hint" data-key="psCadenceHint">
+            How often you usually prepare invoices. You can still create one anytime.
+          </p>
+          <select id="cadence">
+            <option value="weekly"   data-key="psCadenceWeekly">Weekly</option>
+            <option value="biweekly" data-key="psCadenceBiweekly">Every two weeks</option>
+            <option value="monthly"  data-key="psCadenceMonthly">Monthly</option>
+          </select>
+        </div>
+
+        <!-- ============== Overdue interest ============== -->
+        <div class="ps-section">
+          <hr class="ps-divider">
+          <p class="ps-section-title" data-key="psOverdueInterest">Interest on overdue payment</p>
+          <p class="ps-section-hint" data-key="psOverdueInterestHint">
+            Percentage added to the unpaid amount when an invoice is overdue.
+          </p>
+          <input type="hidden" id="defaultDueDays" value="14" />
+          <div class="ps-amount-wrap ps-percent-wrap">
+            <input type="text" inputmode="decimal" id="overdueInterestPercent" placeholder="0" />
+            <span class="ps-amount-prefix">%</span>
+          </div>
+          <div id="overdueInterestPercent-error" class="field-error"></div>
+        </div>
+
+        <!-- ============== Accepted payment methods ============== -->
+        <div class="ps-section">
+          <hr class="ps-divider">
+          <p class="ps-section-title" data-key="psMethods">Accepted payment methods</p>
+          <p class="ps-section-hint" data-key="psMethodsHint">
+            What you accept for off-platform payment. Skaters/parents will see these on the invoice.
+          </p>
+          <div class="ps-method-list">
+            <label class="ps-method">
+              <input type="checkbox" id="method-etransfer" value="etransfer" />
+              <span data-key="psEtransfer">E-transfer</span>
+            </label>
+            <label class="ps-method">
+              <input type="checkbox" id="method-cash" value="cash" />
+              <span data-key="psCash">Cash</span>
+            </label>
+            <label class="ps-method">
+              <input type="checkbox" id="method-cheque" value="cheque" />
+              <span data-key="psCheque">Cheque</span>
+            </label>
+            <label class="ps-method disabled">
+              <input type="checkbox" disabled />
+              <span data-key="psStripe">Stripe</span>
+              <span class="ps-soon-pill" data-key="psComingSoon">Soon</span>
+            </label>
+            <label class="ps-method disabled">
+              <input type="checkbox" disabled />
+              <span data-key="psPaypal">PayPal</span>
+              <span class="ps-soon-pill" data-key="psComingSoon">Soon</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- ============== Tax ============== -->
+        <div class="ps-section">
+          <hr class="ps-divider">
+          <p class="ps-section-title" data-key="psTax">Sales tax</p>
+          <p class="ps-section-hint" data-key="psTaxHint">
+            Turn on if you charge GST/QST. We'll add the lines automatically when generating invoices.
+          </p>
+
+          <label class="ps-method">
+            <input type="checkbox" id="taxEnabled" />
+            <span data-key="psTaxEnabledLabel">I charge GST and QST</span>
+          </label>
+
+          <div id="taxDetail" class="ps-tax-detail">
+            <br>
+            <label for="gstNumber" data-key="psGstNumber">GST registration number</label><br>
+            <input type="text" id="gstNumber" placeholder="123456789RT0001" />
+            <div id="gstNumber-error" class="field-error"></div>
+
+            <br>
+            <label for="qstNumber" data-key="psQstNumber">QST registration number</label><br>
+            <input type="text" id="qstNumber" placeholder="1234567890TQ0001" />
+            <div id="qstNumber-error" class="field-error"></div>
+
+            <br>
+            <p class="ps-section-hint" data-key="psTaxRatesNote">
+              Rates: GST 5%, QST 9.975%. Managed by the platform.
+            </p>
+          </div>
+        </div>
+
+        <!-- ============== "How to pay" notes ============== -->
+        <div class="ps-section">
+          <hr class="ps-divider">
+          <p class="ps-section-title" data-key="psNotes">"How to pay" notes</p>
+          <p class="ps-section-hint" data-key="psNotesHint">
+            Free text shown on every invoice. Good place for your e-transfer email, a reminder to include the invoice number, etc.
+          </p>
+          <textarea id="invoiceNotes" class="ps-notes"
+            data-key-placeholder="psNotesPlaceholder"
+            placeholder="e.g. E-transfers to coach@example.com. Please include the invoice number in the message."></textarea>
+        </div>
+
+        <br>
+        <button type="submit" id="saveBtn" class="btn-outlined-blue" data-key="saveChanges">Save changes</button>
+
+        <div id="ps-result"></div>
+      </form>
+
+    </div>
+  </div>
+</main>
+
+<nav class="bottom-nav">
+  <button class="nav-item" id="dashboard-btn">
+    <img src="dashboardIcon.png" class="icon" />
+    <span data-key="dashboard">Dashboard</span>
+  </button>
+  <button class="nav-item" id="calendar-btn">
+    <img src="calendarIcon.png" class="icon" />
+    <span data-key="calendar">Calendar</span>
+  </button>
+  <button class="nav-item" id="payment-btn">
+    <img src="paymentIcon.png" class="icon" />
+    <span data-key="payment">Payment</span>
+  </button>
+  <button class="nav-item" id="settings-btn">
+    <img src="settings.png" class="icon" />
+    <span data-key="settings">Settings</span>
+  </button>
+  <button class="nav-item" id="logout-btn">
+    <img src="logout.png" class="icon" />
+    <span data-key="logout">Logout</span>
+  </button>
+</nav>
+
+<footer class="app-footer">
+  <br><br>
+  <div class="footer-content">
+    <span>© 2026 Momentum Performance</span>
+  </div>
+</footer>
+
+<script type="module" src="paymentSettings.js"></script>
+</body>
+</html>
